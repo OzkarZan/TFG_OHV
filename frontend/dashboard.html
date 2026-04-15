@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <!-- Mismas configuraciones iniciales que la landing (index.html) para mantener consistencia de código -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - AutoSync</title>
+
+    <!-- Importes de Bootstrap CDN, Iconos Vectoriales(FontAwesome) y la Lógica CSS personalizada compartida -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="./css/styles.css">
+</head>
+<body>
+    
+    <!-- ==============================================
+         CONTENEDOR GLOBAL DEL DASHBOARD
+         Estructura construida empleando 'd-flex' (Flexbox) 
+         para dividir horizontalmente el Menú y el Área Principal
+         ============================================== -->
+    <div class="d-flex" id="wrapper">
+        
+        <!-- SIDEBAR (Barra de Navegación Izquierda - Menú Interno)
+             Se ha configurado usando `position-fixed` y `vh-100` (100% alto de ventana) 
+             para que el menú siempre quede quieto y sea solo el resto lo que scrolee -->
+        <nav id="sidebar" class="bg-dark text-white d-flex flex-column p-3 vh-100 position-fixed shadow">
+            
+            <!-- Branding: Logotipo del Dashboard Privado (Link a Landing) -->
+            <a href="index.html" class="d-flex align-items-center mb-4 me-md-auto text-white text-decoration-none gap-2" title="Volver a la landing page">
+                <i class="fas fa-cogs fs-5"></i>
+                <span class="fs-5 fw-bold">AutoSync</span>
+            </a>
+
+            <!-- Módulos de Operación de la Herramienta (ul lista de botones) -->
+            <ul class="nav nav-pills flex-column mb-auto">
+                <li class="nav-item mb-1">
+                    <!-- Clase 'active' aplica un fondo de color primario en el sidebar actual -->
+                    <a href="dashboard.html" class="nav-link active" aria-current="page">
+                        <i class="fas fa-tachometer-alt fa-fw me-2"></i> Dashboard
+                    </a>
+                </li>
+                <!-- El resto de modulos tienen 'sidebar-link' que por CSS reaccionará a Hover y Color -->
+                <li class="nav-item mb-1">
+                    <a href="#" class="nav-link sidebar-link">
+                        <i class="fas fa-calendar-alt fa-fw me-2"></i> Calendario
+                    </a>
+                </li>
+                <li class="nav-item mb-1">
+                    <a href="#" class="nav-link sidebar-link">
+                        <i class="fas fa-boxes fa-fw me-2"></i> Inventario/Stock
+                    </a>
+                </li>
+                <li class="nav-item mb-1">
+                    <a href="#" class="nav-link sidebar-link">
+                        <i class="fas fa-tools fa-fw me-2"></i> Reparaciones
+                    </a>
+                </li>
+                <li class="nav-item mb-1">
+                    <a href="#" class="nav-link sidebar-link">
+                        <i class="fas fa-users fa-fw me-2"></i> Clientes
+                    </a>
+                </li>
+            </ul>
+            
+            <hr class="border-secondary"> <!-- Separador Horizontal semi-transparente -->
+            
+            <!-- Zona inferior del menú para salida de emergencia de sesión -->
+            <div>
+                <!-- Enlace que cierra sesión llevando al index.html de forma visual -->
+                <a href="index.html" class="nav-link sidebar-link">
+                    <i class="fas fa-sign-out-alt fa-fw me-2 text-danger"></i> Cerrar Sesión
+                </a>
+            </div>
+        </nav>
+
+        <!-- AREA PRINCIPAL (Page Content)
+             Este bloque posee 'flex-grow-1' ocupando todo el ancho restante que dejó el Sidebar y desplaza
+             un poco su margin izquierdo mediante CSS (#page-content-wrapper). Permite el Scroll nativo. -->
+        <div id="page-content-wrapper" class="flex-grow-1 bg-light">
+            
+            <!-- HEADER SUPERIOR DEL DASHBOARD -->
+            <header class="d-flex justify-content-between align-items-center py-3 px-4 bg-white border-bottom shadow-sm">
+                <!-- Título que define en qué zona está el usuario conectado -->
+                <h4 class="mb-0 fw-bold text-dark">VISTA GENERAL DEL TALLER</h4>
+                
+                <!-- Opciones Superiores Derecha (Turno y Perfil de Usuario) -->
+                <div class="d-flex align-items-center gap-4">
+                    <!-- Selector Rápido del Horario de Trabajo Activo usando 'form-select' nativo -->
+                    <div class="d-flex align-items-center">
+                        <span class="text-muted fw-bold me-2 small">Turno:</span>
+                        <select class="form-select form-select-sm border-primary fw-bold" style="width: auto;">
+                            <option selected>Mañana</option>
+                            <option>Tarde</option>
+                            <option>Noche</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Simulación Gráfica de un perfil conectado (Miniatura vía API UiAvatars + Nombre) -->
+                    <div class="d-flex align-items-center">
+                        <img src="https://ui-avatars.com/api/?name=Admin+User&background=0055d4&color=fff" alt="User" class="rounded-circle me-2" width="36" height="36">
+                        <!-- 'd-none d-md-inline' = En móviles escondemos el texto para evitar saturación de pantalla -->
+                        <strong class="d-none d-md-inline">Administrador</strong>
+                    </div>
+                </div>
+            </header>
+
+            <!-- MARCO DE CONTENIDOS (GRID SYSTEM PADRE) -->
+            <!-- Aquí el Dashboard comienza realmente a estructurar Widgets y Tablas -->
+            <div class="container-fluid py-4 px-4">
+
+                <!-- 1) FILA DE WIDGETS DE RESUMEN (KPIs Superiores) -->
+                <div class="row g-3 mb-4">
+                    
+                    <!-- KPI 1: Citas del día actual -->
+                    <!-- Columna de tamaño 3 en pantallas Extra-Grandes(xl), 6 en tablets (sm), 12 en Móvil -->
+                    <div class="col-xl-3 col-sm-6">
+                        <!-- Borde de grosor (border-4) con el color primario (azul) para destacar la métrica -->
+                        <div class="card border-0 shadow-sm custom-stat-card border-start border-primary border-4 h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="text-muted fw-bold mb-1">Citas de Hoy</h6>
+                                        <h3 class="fw-bold mb-0">12</h3>
+                                    </div>
+                                    <!-- Contenedor del Icono con fondo dinámico azul -->
+                                    <div class="icon-shape bg-primary text-white rounded p-3 shadow-sm">
+                                        <i class="fas fa-calendar-check fs-4"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- KPI 2: Total de Reparaciones Activas en el Instante (Warning-Naranja) -->
+                    <div class="col-xl-3 col-sm-6">
+                        <div class="card border-0 shadow-sm custom-stat-card border-start border-warning border-4 h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="text-muted fw-bold mb-1">Reparaciones Activas</h6>
+                                        <h3 class="fw-bold mb-0">5</h3>
+                                    </div>
+                                    <div class="icon-shape bg-warning text-white rounded p-3 shadow-sm">
+                                        <i class="fas fa-wrench fs-4"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- KPI 3: Notificación Crucial Preventiva (Danger-Rojo) P.ej: Sin Aceite o Frenos -->
+                    <div class="col-xl-3 col-sm-6">
+                        <div class="card border-0 shadow-sm custom-stat-card border-start border-danger border-4 h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="text-muted fw-bold mb-1">Alertas de Stock</h6>
+                                        <h3 class="fw-bold mb-0">3</h3>
+                                    </div>
+                                    <div class="icon-shape bg-danger text-white rounded p-3 shadow-sm">
+                                        <i class="fas fa-exclamation-triangle fs-4"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- KPI 4: Trabajos Cerrados y Facturados (Success-Verde) -->
+                    <div class="col-xl-3 col-sm-6">
+                        <div class="card border-0 shadow-sm custom-stat-card border-start border-success border-4 h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="text-muted fw-bold mb-1">Trabajos Completados</h6>
+                                        <h3 class="fw-bold mb-0">8</h3>
+                                    </div>
+                                    <div class="icon-shape bg-success text-white rounded p-3 shadow-sm">
+                                        <i class="fas fa-check-circle fs-4"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div> <!-- Fin fila de resumenes KPI -->
+
+                <!-- 2) SEGUNDA DIVISIÓN PRINCIPAL: TABLA V/S BOTONES AL LATERAL -->
+                <div class="row g-4">
+                    
+                    <!-- Columna Amplia Izquierda (La Tabla Central que agrupará la información tabular) -->
+                    <div class="col-lg-9">
+                        <div class="card border-0 shadow-sm custom-card h-100">
+                            <!-- Titulo de Tabla -->
+                            <div class="card-header bg-white border-bottom py-3">
+                                <h5 class="fw-bold mb-0"><i class="fas fa-list-ul me-2 text-primary"></i>Cola de Trabajos</h5>
+                            </div>
+                            
+                            <div class="card-body p-0">
+                                <!-- Envoltura que hace aparecer la barra espaciadora en tablas extensas desde el movil -->
+                                <div class="table-responsive">
+                                    <!-- Table-hover crea un efecto de sombreado de línea cada vez que pasamos el ratón por encima -->
+                                    <table class="table table-hover align-middle mb-0">
+                                        <!-- Cabeceras de columnas -->
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th class="ps-4">Hora de llegada</th>
+                                                <th>Cliente / Vehículo</th>
+                                                <th>Servicio solicitado</th>
+                                                <th>Estado</th>
+                                            </tr>
+                                        </thead>
+                                        
+                                        <!-- Lista estática de simulados (Datos de las colas de reparación) -->
+                                        <tbody>
+                                            <!-- Fila 1 -->
+                                            <tr>
+                                                <td class="ps-4 fw-bold text-dark">08:00 AM</td>
+                                                <td>
+                                                    <div class="fw-bold">Juan Pérez</div>
+                                                    <div class="small text-muted">1234 ABC - Ford Focus</div>
+                                                </td>
+                                                <td>Revisión General</td>
+                                                <!-- Ejemplo de 'Bagde' de estado; P.ej Info (Azul) para ingresos -->
+                                                <td><span class="badge bg-info text-dark p-2">En Taller</span></td>
+                                            </tr>
+                                            <!-- Fila 2 -->
+                                            <tr>
+                                                <td class="ps-4 fw-bold text-dark">09:30 AM</td>
+                                                <td>
+                                                    <div class="fw-bold">María Gómez</div>
+                                                    <div class="small text-muted">5678 DEF - Toyota Corolla</div>
+                                                </td>
+                                                <td>Cambio de Aceite</td>
+                                                <!-- Warning amarillo p/ elementos a la espera -->
+                                                <td><span class="badge bg-warning text-dark p-2">Pendiente</span></td>
+                                            </tr>
+                                            <!-- Fila 3 -->
+                                            <tr>
+                                                <td class="ps-4 fw-bold text-dark">11:00 AM</td>
+                                                <td>
+                                                    <div class="fw-bold">Carlos Ruiz</div>
+                                                    <div class="small text-muted">9012 GHI - VW Golf</div>
+                                                </td>
+                                                <td>Reparación Frenos</td>
+                                                <!-- Éxito verde para estados definitivos -->
+                                                <td><span class="badge bg-success p-2">Confirmado</span></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Columna Menor (Botonera auxiliar a la derecha, util para la gestión rápida de los mecánicos) -->
+                    <div class="col-lg-3">
+                        <div class="card border-0 shadow-sm custom-card h-100">
+                            <!-- Header de carta contextual amarillo (Aviso Rápido / Opciones Flash) -->
+                            <div class="card-header bg-white border-bottom py-3">
+                                <h5 class="fw-bold mb-0"><i class="fas fa-bolt me-2 text-warning"></i>Acciones Rápidas</h5>
+                            </div>
+                            
+                            <!-- Contenedor flex con 'gap-3' para dar separación de igual tamaño a todos los botones apilados -->
+                            <div class="card-body d-flex flex-column gap-3 p-4">
+                                <!-- Botón Principal Color Códex Primario -->
+                                <button class="btn btn-primary d-flex align-items-center py-2 shadow-sm">
+                                    <i class="fas fa-plus-circle fa-fw me-2"></i> Crear nueva reparación
+                                </button>
+                                <!-- Variante outline resalta los bordes creando menos carga cognitiva -->
+                                <button class="btn btn-outline-primary d-flex align-items-center py-2 bg-white">
+                                    <i class="fas fa-user-plus fa-fw me-2"></i> Registrar cliente
+                                </button>
+                                <!-- Variación color secondary o Gris/Neutro => indica menor prioridad -->
+                                <button class="btn btn-outline-secondary d-flex align-items-center py-2 bg-white">
+                                    <i class="fas fa-box-open fa-fw me-2"></i> Reponer inventario
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div> <!-- Fin del container fluid interno -->
+        </div> <!-- Fin de área principal Page Content wrapper -->
+    </div> <!-- Límite de la arquitectura interna de D-flex Flexbox -->
+
+    <!-- JS de Bootstrap CDN para comportamiento de interactividad general (Tooltips, Desplegables, etc) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
