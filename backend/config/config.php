@@ -1,18 +1,25 @@
 <?php
-class Database {
+class Database
+{
     private $host = "db";
-    private $db_name = "autosync_db";
-    private $username = "root";
-    private $password = "root";
+    private $db_name;
+    private $username;
+    private $password;
     public $conn;
 
-    public function getConnection() {
+    public function getConnection()
+    {
         $this->conn = null;
+
+        // Inicializamos las variables aquí dentro, donde sí se permiten funciones
+        $this->db_name = getenv('DB_NAME');
+        $this->username = getenv('DB_USER');
+        $this->password = getenv('DB_PASSWORD'); // Asegúrate de que coincida con el .env
 
         try {
             $this->conn = new PDO("mysql:host=" . $this->host . ";dbname=" . $this->db_name, $this->username, $this->password);
             $this->conn->exec("set names utf8mb4");
-        } catch(PDOException $exception) {
+        } catch (PDOException $exception) {
             header('Content-Type: application/json');
             http_response_code(500);
             echo json_encode(array("message" => "Error de conexión: " . $exception->getMessage()));
@@ -22,4 +29,3 @@ class Database {
         return $this->conn;
     }
 }
-?>
