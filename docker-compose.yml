@@ -34,3 +34,13 @@ services:
       - ./backend:/var/www/html
     depends_on:
       - db
+
+  # 3. FRONTEND (WEB) <--- ESTA ES LA PARTE NUEVA
+  frontend:
+    image: nginx:alpine
+    container_name: autosync_frontend
+    restart: always
+    ports:
+      - "80:80" # Esto hace que al entrar a la IP del servidor se vea la web
+    volumes:
+      - ./frontend:/usr/share/nginx/html # Mapea tu carpeta local 'frontend' al servidor web
