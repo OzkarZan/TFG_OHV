@@ -1,0 +1,32 @@
+name: Deploy to Self-Hosted Runner
+
+on:
+  push:
+    branches:
+      - main
+      - oscar
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Descargar el código más reciente
+        uses: actions/checkout@v4
+
+      - name: Crear archivo .env desde Secrets
+        run: |
+          echo "DB_HOST=${{ secrets.DB_HOST }}" > .env
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+          echo "DB_ROOT_PASSWORD=${{ secrets.DB_ROOT_PASSWORD }}" >> .env
+          echo "DB_USER=${{ secrets.DB_USER }}" >> .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+
+      - name: Desplegar con Docker Compose
+        run: |
+          # Bajar servicios actuales, y reconstruir las imagenes
+          docker compose down
+          docker compose up -d --build
+          
+      - name: Limpiar imágenes Docker antiguas
+        run: docker image prune -f

@@ -41,6 +41,6 @@ services:
     container_name: autosync_frontend
     restart: always
     ports:
-      - "80:80" # Esto hace que al entrar a la IP del servidor se vea la web
+      - "8080:80" # El tráfico de Cloudflare Tunnel vendrá por este puerto 8080
     volumes:
       - ./frontend:/usr/share/nginx/html # Mapea tu carpeta local 'frontend' al servidor web
