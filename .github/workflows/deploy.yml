@@ -3,7 +3,7 @@ name: Deploy to Self-Hosted Runner
 on:
   push:
     branches:
-      - main
+      - master
       - oscar
 
 jobs:
@@ -27,6 +27,6 @@ jobs:
           # Bajar servicios actuales, y reconstruir las imagenes
           docker compose down
           docker compose up -d --build
-          
+
       - name: Limpiar imágenes Docker antiguas
         run: docker image prune -f
