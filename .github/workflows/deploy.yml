@@ -1,4 +1,4 @@
-name: Deploy to Self-Hosted Runner
+name: Despligue de pagina al servidor automatico TFG
 
 on:
   push:
