@@ -1,5 +1,6 @@
 CREATE DATABASE IF NOT EXISTS autosync_db;
 USE autosync_db;
+
 CREATE TABLE `TALLER` (
   `id_taller` int PRIMARY KEY AUTO_INCREMENT,
   `nombre` varchar(100) NOT NULL,
@@ -9,13 +10,21 @@ CREATE TABLE `TALLER` (
   `horario` varchar(100)
 );
 
+CREATE TABLE `USUARIOS` (
+  `id_usuario` int PRIMARY KEY AUTO_INCREMENT,
+  `email` varchar(100) UNIQUE NOT NULL,
+  `password_hash` varchar(255) NOT NULL,
+  `rol` ENUM('cliente', 'empleado', 'admin') NOT NULL DEFAULT 'cliente',
+  `nombre_completo` varchar(100) NOT NULL,
+  `fecha_registro` datetime DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE `CLIENTES` (
   `id_cliente` int PRIMARY KEY AUTO_INCREMENT,
-  `nombre` varchar(100) NOT NULL,
+  `id_usuario` int NOT NULL,
   `telefono` varchar(20),
-  `email` varchar(100) UNIQUE NOT NULL,
-  `google_id` varchar(255),
-  `token_acceso` varchar(255)
+  `direccion` varchar(255),
+  FOREIGN KEY (`id_usuario`) REFERENCES `USUARIOS` (`id_usuario`) ON DELETE CASCADE
 );
 
 CREATE TABLE `VEHICULOS` (
@@ -24,7 +33,8 @@ CREATE TABLE `VEHICULOS` (
   `modelo` varchar(50),
   `marca` varchar(50),
   `anio` int,
-  `id_cliente` int
+  `id_cliente` int,
+  FOREIGN KEY (`id_cliente`) REFERENCES `CLIENTES` (`id_cliente`) ON DELETE CASCADE
 );
 
 CREATE TABLE `CITAS` (
@@ -32,36 +42,50 @@ CREATE TABLE `CITAS` (
   `fecha_hora` datetime NOT NULL,
   `motivo` text,
   `estado` ENUM ('Pendiente', 'Confirmada', 'Cancelada') DEFAULT 'Pendiente',
+  `prioridad` ENUM ('Alta', 'Media', 'Baja') DEFAULT 'Media',
   `es_emergencia` boolean DEFAULT false,
   `id_cliente` int,
   `id_vehiculo` int,
-  `id_taller` int
-);
-
-CREATE TABLE `PRESUPUESTOS` (
-  `id_presupuesto` int PRIMARY KEY AUTO_INCREMENT,
-  `id_cita` int UNIQUE,
-  `monto_total` decimal(10,2),
-  `fecha_emision` date,
-  `estado` ENUM ('Pendiente', 'Aceptado', 'Rechazado') DEFAULT 'Pendiente'
+  `id_taller` int,
+  FOREIGN KEY (`id_cliente`) REFERENCES `CLIENTES` (`id_cliente`),
+  FOREIGN KEY (`id_vehiculo`) REFERENCES `VEHICULOS` (`id_vehiculo`),
+  FOREIGN KEY (`id_taller`) REFERENCES `TALLER` (`id_taller`)
 );
 
 CREATE TABLE `REPARACIONES` (
   `id_reparacion` int PRIMARY KEY AUTO_INCREMENT,
-  `id_presupuesto` int UNIQUE,
+  `id_cita` int,
+  `modelo_auto` varchar(100) NOT NULL,
+  `matricula` varchar(20) NOT NULL,
+  `descripcion_motivo` text NOT NULL,
   `diagnostico` text,
   `fecha_entrada` datetime,
   `fecha_salida` datetime,
   `km_entrada` int,
+  `estado_presupuesto` ENUM ('Pendiente', 'Aprobado', 'No Aprobado') DEFAULT 'Pendiente',
   `estado` ENUM ('En Proceso', 'Esperando Piezas', 'Finalizada') DEFAULT 'En Proceso',
-  `precio_final` decimal(10,2)
+  `precio_final` decimal(10,2),
+  FOREIGN KEY (`id_cita`) REFERENCES `CITAS` (`id_cita`)
+);
+
+CREATE TABLE `PRESUPUESTOS` (
+  `id_presupuesto` int PRIMARY KEY AUTO_INCREMENT,
+  `id_reparacion` int NOT NULL,
+  `total_piezas` decimal(10,2) DEFAULT 0,
+  `total_mano_obra` decimal(10,2) DEFAULT 0,
+  `gran_total` decimal(10,2) DEFAULT 0,
+  `fecha_emision` date,
+  `estado` ENUM ('Borrador', 'Enviado', 'Aprobado', 'Rechazado') DEFAULT 'Borrador',
+  FOREIGN KEY (`id_reparacion`) REFERENCES `REPARACIONES` (`id_reparacion`)
 );
 
 CREATE TABLE `MECANICOS` (
   `id_mecanico` int PRIMARY KEY AUTO_INCREMENT,
-  `nombre` varchar(100) NOT NULL,
+  `id_usuario` int NOT NULL,
   `especialidad` varchar(100),
-  `id_taller` int
+  `id_taller` int,
+  FOREIGN KEY (`id_usuario`) REFERENCES `USUARIOS` (`id_usuario`) ON DELETE CASCADE,
+  FOREIGN KEY (`id_taller`) REFERENCES `TALLER` (`id_taller`)
 );
 
 CREATE TABLE `REPUESTOS` (
@@ -73,37 +97,31 @@ CREATE TABLE `REPUESTOS` (
   `precio_unitario` decimal(10,2)
 );
 
+CREATE TABLE `PRESUPUESTO_DETALLES` (
+  `id_detalle` int PRIMARY KEY AUTO_INCREMENT,
+  `id_presupuesto` int NOT NULL,
+  `tipo_item` ENUM ('Repuesto', 'Mano de Obra') NOT NULL,
+  `id_repuesto` int,
+  `descripcion` varchar(255) NOT NULL,
+  `cantidad` decimal(8,2) NOT NULL DEFAULT 1,
+  `precio_unitario` decimal(10,2) NOT NULL,
+  FOREIGN KEY (`id_presupuesto`) REFERENCES `PRESUPUESTOS` (`id_presupuesto`) ON DELETE CASCADE,
+  FOREIGN KEY (`id_repuesto`) REFERENCES `REPUESTOS` (`id_repuesto`)
+);
+
 CREATE TABLE `REPARACION_MECANICO` (
   `id_reparacion` int,
   `id_mecanico` int,
-  PRIMARY KEY (`id_reparacion`, `id_mecanico`)
+  PRIMARY KEY (`id_reparacion`, `id_mecanico`),
+  FOREIGN KEY (`id_reparacion`) REFERENCES `REPARACIONES` (`id_reparacion`),
+  FOREIGN KEY (`id_mecanico`) REFERENCES `MECANICOS` (`id_mecanico`)
 );
 
 CREATE TABLE `REPARACION_REPUESTOS` (
   `id_reparacion` int,
   `id_repuesto` int,
   `cantidad_usada` int NOT NULL,
-  PRIMARY KEY (`id_reparacion`, `id_repuesto`)
+  PRIMARY KEY (`id_reparacion`, `id_repuesto`),
+  FOREIGN KEY (`id_reparacion`) REFERENCES `REPARACIONES` (`id_reparacion`),
+  FOREIGN KEY (`id_repuesto`) REFERENCES `REPUESTOS` (`id_repuesto`)
 );
-
-ALTER TABLE `VEHICULOS` ADD FOREIGN KEY (`id_cliente`) REFERENCES `CLIENTES` (`id_cliente`) ON DELETE CASCADE;
-
-ALTER TABLE `CITAS` ADD FOREIGN KEY (`id_cliente`) REFERENCES `CLIENTES` (`id_cliente`);
-
-ALTER TABLE `CITAS` ADD FOREIGN KEY (`id_vehiculo`) REFERENCES `VEHICULOS` (`id_vehiculo`);
-
-ALTER TABLE `CITAS` ADD FOREIGN KEY (`id_taller`) REFERENCES `TALLER` (`id_taller`);
-
-ALTER TABLE `CITAS` ADD FOREIGN KEY (`id_cita`) REFERENCES `PRESUPUESTOS` (`id_cita`);
-
-ALTER TABLE `PRESUPUESTOS` ADD FOREIGN KEY (`id_presupuesto`) REFERENCES `REPARACIONES` (`id_presupuesto`);
-
-ALTER TABLE `MECANICOS` ADD FOREIGN KEY (`id_taller`) REFERENCES `TALLER` (`id_taller`);
-
-ALTER TABLE `REPARACION_MECANICO` ADD FOREIGN KEY (`id_reparacion`) REFERENCES `REPARACIONES` (`id_reparacion`);
-
-ALTER TABLE `REPARACION_MECANICO` ADD FOREIGN KEY (`id_mecanico`) REFERENCES `MECANICOS` (`id_mecanico`);
-
-ALTER TABLE `REPARACION_REPUESTOS` ADD FOREIGN KEY (`id_reparacion`) REFERENCES `REPARACIONES` (`id_reparacion`);
-
-ALTER TABLE `REPARACION_REPUESTOS` ADD FOREIGN KEY (`id_repuesto`) REFERENCES `REPUESTOS` (`id_repuesto`);
