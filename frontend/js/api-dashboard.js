@@ -5,39 +5,84 @@ document.addEventListener('DOMContentLoaded', () => {
     // ===== 1. GESTIÓN DE VISTAS (SPA - Arquitectura de una sola página) =====
     const menuDashboard = document.getElementById('menuDashboard');
     const menuInventario = document.getElementById('menuInventario');
+    const menuCalendario = document.getElementById('menuCalendario');
+    const menuReparaciones = document.getElementById('menuReparaciones');
+    const menuClientes = document.getElementById('menuClientes');
+
     const viewDashboard = document.getElementById('viewDashboard');
     const viewInventario = document.getElementById('viewInventario');
+    const viewCalendario = document.getElementById('viewCalendario');
+    const viewReparaciones = document.getElementById('viewReparaciones');
+    const viewClientes = document.getElementById('viewClientes');
 
-    if (menuDashboard && menuInventario) {
+    function hideAllViews() {
+        viewDashboard.classList.add('d-none');
+        viewInventario.classList.add('d-none');
+        viewCalendario.classList.add('d-none');
+        viewReparaciones.classList.add('d-none');
+        viewClientes.classList.add('d-none');
+        
+        menuDashboard.classList.remove('active');
+        menuInventario.classList.remove('active');
+        menuCalendario.classList.remove('active');
+        menuReparaciones.classList.remove('active');
+        menuClientes.classList.remove('active');
+        
+        menuDashboard.classList.add('sidebar-link');
+        menuInventario.classList.add('sidebar-link');
+        menuCalendario.classList.add('sidebar-link');
+        menuReparaciones.classList.add('sidebar-link');
+        menuClientes.classList.add('sidebar-link');
+        
+        viewDashboard.classList.remove('d-flex');
+    }
+
+    if (menuDashboard && menuInventario && menuCalendario && menuReparaciones && menuClientes) {
         menuDashboard.addEventListener('click', (e) => {
             e.preventDefault();
-            // Control visual del Sidebar
+            hideAllViews();
             menuDashboard.classList.add('active');
             menuDashboard.classList.remove('sidebar-link');
-            menuInventario.classList.remove('active');
-            menuInventario.classList.add('sidebar-link');
-            
-            // Swap Divs
             viewDashboard.classList.remove('d-none');
             viewDashboard.classList.add('d-flex');
-            viewInventario.classList.add('d-none');
         });
 
         menuInventario.addEventListener('click', (e) => {
             e.preventDefault();
-            // Control visual del Sidebar
+            hideAllViews();
             menuInventario.classList.add('active');
             menuInventario.classList.remove('sidebar-link');
-            menuDashboard.classList.remove('active');
-            menuDashboard.classList.add('sidebar-link');
-            
-            // Swap Divs
             viewInventario.classList.remove('d-none');
-            viewDashboard.classList.add('d-none');
-            viewDashboard.classList.remove('d-flex');
-            
-            // Disparar la carga de la API inmediatamente al ver la pantalla
-            cargarInventario();
+            if(window.cargarInventario) window.cargarInventario();
+        });
+
+        menuCalendario.addEventListener('click', (e) => {
+            e.preventDefault();
+            hideAllViews();
+            menuCalendario.classList.add('active');
+            menuCalendario.classList.remove('sidebar-link');
+            viewCalendario.classList.remove('d-none');
+            if (window.calendar) {
+                window.calendar.render();
+            }
+        });
+
+        menuReparaciones.addEventListener('click', (e) => {
+            e.preventDefault();
+            hideAllViews();
+            menuReparaciones.classList.add('active');
+            menuReparaciones.classList.remove('sidebar-link');
+            viewReparaciones.classList.remove('d-none');
+            if(window.cargarReparaciones) window.cargarReparaciones();
+        });
+
+        menuClientes.addEventListener('click', (e) => {
+            e.preventDefault();
+            hideAllViews();
+            menuClientes.classList.add('active');
+            menuClientes.classList.remove('sidebar-link');
+            viewClientes.classList.remove('d-none');
+            if(window.cargarClientes) window.cargarClientes();
         });
     }
 

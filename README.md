@@ -16,13 +16,15 @@ La plataforma permite administrar el stock de piezas y el calendario de citas me
 ---
 
 ## 🛠️ Stack Tecnológico
-El proyecto se desarrolla integrando conocimientos del ciclo con herramientas de IA:
+El proyecto se desarrolla integrando conocimientos del ciclo con herramientas de IA y DevOps modernas:
 
-* **Frontend:** HTML, CSS, Bootstrap y JavaScript.
-* **Backend:** API REST construida en PHP.
-* **Base de Datos:** MySQL.
+* **Frontend:** HTML5, CSS3 (Vanilla), Bootstrap 5 y JavaScript (ES6+).
+* **Backend:** API REST construida en PHP (Arquitectura MVC simplificada).
+* **Base de Datos:** MySQL 8.0.
+* **Infraestructura:** Docker & Docker Compose para contenerización.
+* **Servidor Web:** Nginx (Proxy inverso).
+* **CI/CD:** GitHub Actions para despliegue automatizado.
 * **IA/Automatización:** Botpress para el sistema de chatbot.
-* **Entorno de Codificación:** Antigravity.
 
 ---
 
@@ -33,8 +35,8 @@ Utilizamos una metodología **Scrum** con ciclos de vida repetitivos para constr
 | :--- | :--- | :--- | :--- |
 | **Análisis** | Requisitos e historias de usuario. | 02/03 - 15/03 | ✅ Finalizado |
 | **Diseño** | Wireframes y arquitectura del sistema. | 16/03 - 23/03 | ✅ Finalizado |
-| **Core Dev I** | Backend PHP y Base de Datos MySQL. | 24/03 - 19/04 | 🏗️ En curso |
-| **Core Dev II** | Gestión de stock, calendario y Botpress. | 20/04 - 03/05 | 📅 Pendiente |
+| **Core Dev I** | Registro dual (Cliente/Empleado), Login y Auth. | 24/03 - 19/04 | ✅ Finalizado |
+| **Core Dev II** | Gestión de stock, calendario y Botpress. | 20/04 - 03/05 | 🏗️ En curso |
 | **Pruebas** | Plan de pruebas y memoria final. | 04/05 - 18/05 | 📅 Pendiente |
 
 ---
@@ -47,14 +49,30 @@ Utilizamos una metodología **Scrum** con ciclos de vida repetitivos para constr
 
 ---
 
-## 🚀 Instalación y Uso
-> [!IMPORTANT]
-> El proyecto se encuentra en fase de desarrollo activo.
+## 🚀 Instalación y Despliegue
+El proyecto está completamente dockerizado para facilitar su despliegue en cualquier entorno.
 
-1. Clonar el repositorio.
-2. Configurar un entorno local con soporte para PHP y MySQL.
-3. Importar el esquema de base de datos (disponible próximamente en `/database`).
-4. Configurar el acceso a la API de Botpress en el archivo de configuración.
+### Requisitos Previos
+* Docker y Docker Compose instalados.
+* Git.
+
+### Pasos para ejecución local
+1. **Clonar el repositorio:**
+   ```bash
+   git clone https://github.com/tu-usuario/AutoSync.git
+   cd AutoSync/TFG_OHV
+   ```
+2. **Configurar variables de entorno:**
+   Crea un archivo `.env` basado en las necesidades de tu base de datos (ver ejemplo en el código).
+3. **Levantar los servicios:**
+   ```bash
+   docker compose up -d --build
+   ```
+4. **Acceso:**
+   Abre tu navegador en `http://localhost:8080`.
+
+### Despliegue Automático
+El proyecto cuenta con un flujo de **GitHub Actions** (`deploy.yml`) que despliega automáticamente los cambios en la rama `master` al servidor de producción.
 
 ---
 
