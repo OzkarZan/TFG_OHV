@@ -36,8 +36,9 @@ document.addEventListener('DOMContentLoaded', () => {
             submitBtn.disabled = true;
 
             try {
-                // POST usando IP directa para evitar fallos de CORS/DNS del LiveServer de VSCode
-                const response = await fetch('http://127.0.0.1:8000/api/login.php', {
+                // POST usando IP dinámica para funcionar tanto en local como en producción
+                const API_BASE = `${window.location.protocol}//${window.location.hostname}:8000/api`;
+                const response = await fetch(`${API_BASE}/login.php`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -66,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             } catch (error) {
                 console.error("Error en Fetch:", error);
-                alert("Error crítico conectando a la API (URL fija a 127.0.0.1): " + error.message);
+                alert("Error crítico conectando a la API: " + error.message);
                 submitBtn.innerText = originalText;
                 submitBtn.disabled = false;
             }
@@ -90,7 +91,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const rPass = document.getElementById('regPassword').value;
 
             try {
-                const response = await fetch('http://127.0.0.1:8000/api/register.php', {
+                const API_BASE = `${window.location.protocol}//${window.location.hostname}:8000/api`;
+                const response = await fetch(`${API_BASE}/register.php`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ nombre: rName, email: rEmail, password: rPass })
