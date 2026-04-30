@@ -36,8 +36,8 @@ document.addEventListener('DOMContentLoaded', () => {
             submitBtn.disabled = true;
 
             try {
-                // POST usando IP dinámica para funcionar tanto en local como en producción
-                const API_BASE = `${window.location.protocol}//${window.location.hostname}:8000/api`;
+                // Usar ruta relativa para aprovechar el proxy inverso de Nginx
+                const API_BASE = '/api';
                 const response = await fetch(`${API_BASE}/login.php`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -91,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const rPass = document.getElementById('regPassword').value;
 
             try {
-                const API_BASE = `${window.location.protocol}//${window.location.hostname}:8000/api`;
+                const API_BASE = '/api';
                 const response = await fetch(`${API_BASE}/register.php`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
