@@ -1,0 +1,27 @@
+/AutoSync
+│
+├── /backend                # Lógica de servidor y API REST en PHP 
+│   ├── /config             # Configuración y conexión a DB (db.php) 
+│   ├── /api                # Endpoints (auth_login.php, get_repuestos.php, create_cita.php)
+│   └── /models             # Clases PHP según el Modelo SQL (Citas, Repuestos, etc.)
+│
+├── /frontend               # Interfaz de usuario (HTML, CSS, JS, Bootstrap) 
+│   ├── /assets             # Recursos estáticos del sistema
+│   │   ├── /css            # Hojas de estilo y framework Bootstrap
+│   │   ├── /js             # Lógica de cliente, Fetch API y validaciones
+│   │   └── /img            # Logotipos y recursos visuales [cite: 2]
+│   └── /views              # Vistas principales (dashboard.php, inventory.php, login.php) 
+│
+├── /database               # Gestión de la base de datos MySQL 
+│   ├── schema.sql          # Script de creación de tablas
+│   └── data_test.sql       # Datos de prueba para la demostración del TFG
+│
+├── /docs                   # Documentación técnica y entregas
+│   ├── /memoria            # documentacion.pdf (Memoria actualizada) 
+│   └── /disenos            # Modelo SQL.jpeg y WireFrame.pdf
+│
+├── /chatbot                # Integración de IA con Botpress 
+│   └── botpress_flow.json  # Exportación del flujo de atención 24/7 
+│
+├── .gitignore              # Archivos excluidos del repositorio (config locales, tokens, apis)
+└── README.md               # Guía de instalación y descripción del proyecto

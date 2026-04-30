@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: autosync_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      # Este mapeo indica que cualquier .sql aquí se ejecutará automáticamente al crear la BBDD
+      - ./database/autosync_db.sql:/docker-entrypoint-initdb.d/init.sql
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: autosync_backend
+    restart: always
+    environment:
+      - DB_HOST=db
+      - DB_NAME=${DB_NAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_USER=${DB_USER}
+    ports:
+      - "8000:80"
+    volumes:
+      # Sincroniza la carpeta backend local con el servidor web
+      - ./backend:/var/www/html
+    depends_on:
+      - db
+
+  # 3. FRONTEND (WEB) <--- ESTA ES LA PARTE NUEVA
+  frontend:
+    image: nginx:alpine
+    container_name: autosync_frontend
+    restart: always
+    ports:
+      - "8080:80" # El tráfico de Cloudflare Tunnel vendrá por este puerto 8080
+    volumes:
+      - ./frontend:/usr/share/nginx/html # Mapea tu carpeta local 'frontend' al servidor web
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf # Monta la configuración del proxy inverso
