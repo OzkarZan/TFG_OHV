@@ -1,4 +1,8 @@
 .env
+.env.*
+*.sql
+*.key
+*.pem
 .antigravity/
 .agent/
 srccc/
