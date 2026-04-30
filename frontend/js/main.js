@@ -148,6 +148,39 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 // 5. INICIALIZACIÓN AL CARGAR LA PÁGINA
 // =====================================================
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     console.log('✅ AutoSync Landing Page Cargada');
+
+    // Comprobar sesión activa
+    try {
+        const response = await fetch('/api/auth/me', { credentials: 'include' });
+        const navAuthBtnContainer = document.querySelector('li.nav-item button[data-bs-target="#loginModal"]')?.parentElement;
+        
+        if (response.ok) {
+            const data = await response.json();
+            if (navAuthBtnContainer) {
+                const dashboardLink = data.rol === 'empleado' || data.rol === 'admin' ? 'dashboard.html' : 'client.html';
+                navAuthBtnContainer.innerHTML = `
+                    <div class="dropdown">
+                        <button class="btn btn-login dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user-circle me-1"></i> ${data.nombre_completo} <small>(${data.rol})</small>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="dropdownMenuButton">
+                            <li><a class="dropdown-item fw-bold" href="${dashboardLink}">Ir a mi panel</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger fw-bold" href="#" id="btnLogout">Cerrar Sesión</a></li>
+                        </ul>
+                    </div>
+                `;
+
+                document.getElementById('btnLogout').addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+                    window.location.reload();
+                });
+            }
+        }
+    } catch (e) {
+        console.error('Error verificando sesión:', e);
+    }
 });

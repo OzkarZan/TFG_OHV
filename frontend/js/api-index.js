@@ -4,26 +4,45 @@ document.addEventListener('DOMContentLoaded', () => {
     const empleadoLoginToggle = document.getElementById('empleadoLoginToggle');
     const submitBtn = loginForm ? loginForm.querySelector('button[type="submit"]') : null;
     
-    let isEmployee = false; // Modo cliente por defecto (va a client.html)
+    let isEmployee = false; // Modo cliente por defecto (login)
+    let isEmployeeRegister = false; // Modo cliente por defecto (registro)
 
+    // Toggle para login (empleado/cliente)
     if (empleadoLoginToggle && submitBtn) {
         empleadoLoginToggle.addEventListener('click', (e) => {
             e.preventDefault();
             isEmployee = !isEmployee; // alternar estado
-            
             if (isEmployee) {
-                // UI de Empleado
                 submitBtn.innerText = "ACCEDER AL TALLER (ADMIN)";
                 submitBtn.classList.add('text-primary');
                 empleadoLoginToggle.innerHTML = '<i class="fas fa-user me-1"></i>Volver a acceso de Cliente';
             } else {
-                // UI de Cliente
                 submitBtn.innerText = "Registrarse en AutoSync";
                 submitBtn.classList.remove('text-primary');
                 empleadoLoginToggle.innerHTML = '<i class="fas fa-lock me-1"></i>¿Eres empleado de AutoSync? Ingresa aquí';
             }
         });
     }
+
+    // Toggle para registro de empleado
+    const empleadoRegisterToggle = document.getElementById('empleadoRegisterToggle');
+    if (empleadoRegisterToggle) {
+        empleadoRegisterToggle.addEventListener('click', (e) => {
+            e.preventDefault();
+            isEmployeeRegister = !isEmployeeRegister;
+            if (isEmployeeRegister) {
+                empleadoRegisterToggle.innerHTML = '<i class="fas fa-user me-1"></i>Registrarse como cliente';
+            } else {
+                empleadoRegisterToggle.innerHTML = '<i class="fas fa-lock me-1"></i>¿Eres empleado? Regístrate aquí';
+            }
+        });
+    }
+
+
+
+
+
+
 
     if(loginForm) {
         loginForm.addEventListener('submit', async (e) => {
@@ -38,26 +57,24 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 // Usar ruta relativa para aprovechar el proxy inverso de Nginx
                 const API_BASE = '/api';
-                const response = await fetch(`${API_BASE}/login.php`, {
+                const response = await fetch(`${API_BASE}/auth/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include', // Send session cookies
                     body: JSON.stringify({
                         email: email,
-                        google_id: "form_" + new Date().getTime(),
-                        nombre: email.split('@')[0]
+                        password: document.querySelector('input[type="password"]').value
                     })
                 });
 
                 const data = await response.json();
 
                 if(response.ok) {
-                    localStorage.setItem('autosync_token', data.token);
-                    
-                    // Lógica fundamental de roles
-                    if (isEmployee) {
-                        window.location.href = 'dashboard.html'; // Taller
+                    // Redirigir basado en el rol devuelto por el servidor
+                    if (data.rol === 'admin' || data.rol === 'empleado') {
+                        window.location.href = 'dashboard.html';
                     } else {
-                        window.location.href = 'client.html'; // Visión Cliente
+                        window.location.href = 'client.html';
                     }
                 } else {
                     alert("Error lógico del Backend: " + data.message);
@@ -92,19 +109,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
             try {
                 const API_BASE = '/api';
-                const response = await fetch(`${API_BASE}/register.php`, {
+                
+                // Si el toggle de empleado está activo, enviar el rol y el access_code
+                // Determinar rol según toggle de registro
+                const rol = isEmployeeRegister ? 'empleado' : 'cliente';
+                let bodyData = { nombre: rName, email: rEmail, password: rPass, rol: rol };
+                
+                if (isEmployeeRegister) {
+                    const code = prompt("Introduce el código de acceso del taller:");
+                    if (!code) {
+                        btnReg.innerText = originalText;
+                        btnReg.disabled = false;
+                        return;
+                    }
+                    bodyData.access_code = code;
+                }
+
+                const response = await fetch(`${API_BASE}/auth/register`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ nombre: rName, email: rEmail, password: rPass })
+                    credentials: 'include',
+                    body: JSON.stringify(bodyData)
                 });
 
                 const data = await response.json();
 
                 if (response.ok) {
                     alert(data.message);
-                    localStorage.setItem('autosync_token', data.token);
-                    // Los nuevos siempre son clientes inicialmente
-                    window.location.href = 'client.html';
+                    // Los nuevos siempre son clientes inicialmente (o empleados si se registraron así)
+                    if (rol === 'empleado') {
+                        window.location.href = 'dashboard.html';
+                    } else {
+                        window.location.href = 'client.html';
+                    }
                 } else {
                     alert("No se pudo registrar: " + data.message);
                     btnReg.innerText = originalText;
