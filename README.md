@@ -1,17 +1,26 @@
 # AutoSync - Gestor de Talleres 🚗💨
 
-**AutoSync** es una plataforma web enfocada en la gestión comunicativa y de stock de talleres mecánicos. El proyecto surge de la necesidad de modernizar los procesos manuales —como las agendas de papel y las llamadas telefónicas— que aún predominan en el sector.
+**AutoSync** es una plataforma integral diseñada para transformar la operativa de los talleres mecánicos tradicionales en un ecosistema digital eficiente. El proyecto centraliza la gestión de clientes, empleados, citas y stock en una única interfaz moderna y accesible.
 
 ---
 
-## 📋 Descripción del Proyecto
-La plataforma permite administrar el stock de piezas y el calendario de citas mediante un panel de control centralizado. Además, integra un chatbot inteligente para automatizar notificaciones y la atención al cliente.
+## 📋 ¿Qué hace AutoSync?
+La plataforma actúa como el núcleo operativo del taller, facilitando la comunicación y la organización mediante las siguientes funcionalidades clave:
 
-### 🎯 Objetivos Principales
-* **Digitalización:** Eliminar el uso de agendas físicas mediante un panel de control para stock y tareas.
-* **Automatización:** Implementación de un chatbot (Botpress) con respuesta inmediata 24/7.
-* **Optimización de Citas:** Sistema de reserva online para agilizar el flujo de trabajo y reducir llamadas perdidas.
-* **Control de Inventario:** Supervisión exacta de entradas y salidas de materiales.
+### 👥 Gestión Dual de Usuarios
+*   **Portal del Cliente:** Permite a los usuarios registrarse, solicitar citas online, consultar el estado de sus reparaciones y recibir notificaciones automáticas.
+*   **Portal del Empleado (Admin):** Un panel de control avanzado para mecánicos y gestores donde pueden supervisar el calendario global, gestionar el inventario de piezas, emitir presupuestos y actualizar el progreso de cada vehículo.
+
+### 📅 Sistema de Citas Inteligente
+*   Optimización del flujo de trabajo mediante un calendario digital que evita solapamientos y reduce el tiempo de espera.
+*   Automatización de recordatorios para mejorar la puntualidad y la asistencia.
+
+### 📦 Control de Inventario en Tiempo Real
+*   Seguimiento exacto de entradas y salidas de stock.
+*   Alertas de bajo nivel de existencias para asegurar que nunca falten piezas críticas para las reparaciones.
+
+### 🤖 Atención Automatizada 24/7
+*   Integración de un chatbot inteligente (Botpress) capaz de resolver dudas frecuentes, agendar citas básicas y proporcionar información sobre horarios y servicios sin intervención humana inmediata.
 
 ---
 
@@ -46,33 +55,6 @@ Utilizamos una metodología **Scrum** con ciclos de vida repetitivos para constr
 * **Tutor:** Amparo Marin Velasco.
 * **Centro:** IES Enrique Tierno Galván (Madrid).
 * **Ciclo:** Desarrollo de Aplicaciones Web (DAW).
-
----
-
-## 🚀 Instalación y Despliegue
-El proyecto está completamente dockerizado para facilitar su despliegue en cualquier entorno.
-
-### Requisitos Previos
-* Docker y Docker Compose instalados.
-* Git.
-
-### Pasos para ejecución local
-1. **Clonar el repositorio:**
-   ```bash
-   git clone https://github.com/tu-usuario/AutoSync.git
-   cd AutoSync/TFG_OHV
-   ```
-2. **Configurar variables de entorno:**
-   Crea un archivo `.env` basado en las necesidades de tu base de datos (ver ejemplo en el código).
-3. **Levantar los servicios:**
-   ```bash
-   docker compose up -d --build
-   ```
-4. **Acceso:**
-   Abre tu navegador en `http://localhost:8080`.
-
-### Despliegue Automático
-El proyecto cuenta con un flujo de **GitHub Actions** (`deploy.yml`) que despliega automáticamente los cambios en la rama `master` al servidor de producción.
 
 ---
 
