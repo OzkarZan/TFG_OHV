@@ -1,10 +1,20 @@
 <?php
+// Cargar variables de entorno desde .env
+require_once __DIR__ . '/env.php';
+
 class Database {
-    private $host = "db";
-    private $db_name = "autosync_db";
-    private $username = "root";
-    private $password = "root";
+    private $host;
+    private $db_name;
+    private $username;
+    private $password;
     public $conn;
+
+    public function __construct() {
+        $this->host = getenv('DB_HOST') ?: 'db';
+        $this->db_name = getenv('DB_NAME') ?: 'autosync_db';
+        $this->username = getenv('DB_USER') ?: 'root';
+        $this->password = getenv('DB_PASSWORD') ?: 'root';
+    }
 
     public function getConnection() {
         $this->conn = null;

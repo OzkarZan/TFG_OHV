@@ -1,0 +1,14 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+    
+    # No reescribir si es un archivo o carpeta existente
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+    
+    # Reescribir todas las peticiones a index.html (para SPA)
+    # EXCEPTO las que van a /api/
+    RewriteCond %{REQUEST_URI} !^/api/
+    RewriteRule ^ index.html [QSA,L]
+</IfModule>

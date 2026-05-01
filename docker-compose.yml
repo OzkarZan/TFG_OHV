@@ -14,16 +14,19 @@ services:
       # Este mapeo indica que cualquier .sql aquí se ejecutará automáticamente al crear la BBDD
       - ./database/autosync_db.sql:/docker-entrypoint-initdb.d/init.sql
 
-  backend:
+  web:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: autosync_backend
+    container_name: autosync_web
     restart: always
     ports:
-      - "8000:80"
+      - "5500:80"
     volumes:
-      # Sincroniza la carpeta backend local con el servidor web
-      - ./backend:/var/www/html
+      # Sincroniza ambas carpetas
+      - ./backend:/var/www/html/api
+      - ./frontend:/var/www/html
     depends_on:
       - db
+    environment:
+      - APACHE_DOCUMENT_ROOT=/var/www/html
