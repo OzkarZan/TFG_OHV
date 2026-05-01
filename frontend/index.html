@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AutoSync. Gestión de Precisión para Talleres Modernos. Revoluciona el flujo de trabajo de tu taller con automatizaci­ón avanzada.">
+    <meta name="theme-color" content="#0062a0">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="AutoSync - Gestión de Precisión para Talleres">
+    <meta property="og:description" content="Automatiza tu taller y sincroniza cada reparación con precisión milimétrica.">
+    <meta property="og:type" content="website">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="AutoSync - Gestión de Precisión para Talleres">
+
+    <title>AutoSync - Gestión de Precisión para Talleres Modernos</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Google Fonts: Space Grotesk y Manrope -->
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- ============================================
+         HEADER / NAVEGACIÓN (Floating Glassmorphism Bar)
+         ============================================ -->
+    <header class="navbar-header">
+        <nav class="navbar navbar-expand-lg navbar-custom">
+            <div class="container-lg">
+                <!-- Logo / Brand -->
+                <a class="navbar-brand" href="#home">
+                    <span class="brand-text">AutoSync</span>
+                </a>
+
+                <!-- Toggle Button (Mobile) -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Navigation Links -->
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto align-items-center gap-4">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#sobre-nosotros">Sobre nosotros</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#servicios">Servicios</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#contacto">Contacto</a>
+                        </li>
+                        <li class="nav-item">
+                            <button type="button" class="btn btn-login" data-bs-toggle="modal" data-bs-target="#loginModal">Iniciar sesión</button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- ============================================
+         SECCIÓN HERO
+         ============================================ -->
+    <section id="home" class="hero-section">
+        <div class="container-lg">
+            <div class="hero-content">
+                <h1 class="hero-title">GESTIÓN DE PRECISIÓN</h1>
+                <p class="hero-subtitle">Revoluciona el flujo de trabajo de tu taller con automatización avanzada. Desde el ingreso hasta la entrega, sincroniza cada reparación con precisión milimétrica.</p>
+
+                <!-- Hero CTA Buttons -->
+                <div class="hero-buttons">
+                    <button class="btn btn-primary-custom btn-lg">Reservar en línea</button>
+                    <button class="btn btn-secondary-custom btn-lg">Consultar estado de la reparación</button>
+                </div>
+
+                <!-- Hero Stats -->
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <div class="stat-number">500+</div>
+                        <div class="stat-label">TALLERES SINCRONIZADOS</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">98%</div>
+                        <div class="stat-label">PRECISIÓN EN PUNTUALIDAD</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">24/7</div>
+                        <div class="stat-label">SOPORTE AUTOMATIZADO</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         SECCIÓN 1: REPARACIONES EN TIEMPO REAL
+         ============================================ -->
+    <section id="servicios" class="feature-section feature-1">
+        <div class="container-lg">
+            <div class="section-header">
+                <span class="section-badge">EFICIENCIA TOTAL</span>
+                <h2 class="section-title">REPARACIONES EN TIEMPO REAL</h2>
+            </div>
+
+            <div class="row align-items-center">
+                <div class="col-lg-6 feature-content">
+                    <ul class="feature-list">
+                        <li>
+                            <strong>Seguimiento automatizado:</strong> Monitoriza cada etapa del proceso técnico sin intervención manual.
+                        </li>
+                        <li>
+                            <strong>Carga instantánea de evidencias:</strong> Sube fotos y videos del diagnóstico directamente desde la tablet del mecánico.
+                        </li>
+                        <li>
+                            <strong>Historial clínico digital:</strong> Acceso completo a la hoja de vida del vehículo en segundos.
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-6 feature-visual">
+                    <div class="feature-placeholder">
+                        <div class="placeholder-icon">⚙️</div>
+                        <p>Interfaz de seguimiento en tiempo real</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         SECCIÓN 2: NOTIFICACIONES AUTOMATIZADAS
+         ============================================ -->
+    <section class="feature-section feature-2">
+        <div class="container-lg">
+            <div class="section-header">
+                <span class="section-badge">COMUNICACIÓN 360</span>
+                <h2 class="section-title">NOTIFICACIONES AUTOMATIZADAS</h2>
+            </div>
+
+            <div class="row align-items-center">
+                <div class="col-lg-6 feature-visual order-lg-2">
+                    <div class="feature-placeholder">
+                        <div class="placeholder-icon">📱</div>
+                        <p>Sistema de notificaciones inteligentes</p>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 feature-content order-lg-1">
+                    <ul class="feature-list">
+                        <li>
+                            <strong>Actualizaciones proactivas ETA:</strong> Informa automáticamente al cliente sobre la hora estimada de entrega.
+                        </li>
+                        <li>
+                            <strong>Solicitudes de aprobación:</strong> El cliente autoriza presupuestos adicionales con un solo clic desde su móvil.
+                        </li>
+                        <li>
+                            <strong>Recordatorios de mantenimiento:</strong> Fideliza enviando alertas preventivas basadas en el uso del vehículo.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         SECCIÓN 3: CONTROL DE STOCK INTELIGENTE
+         ============================================ -->
+    <section class="feature-section feature-3">
+        <div class="container-lg">
+            <div class="section-header">
+                <span class="section-badge">INVENTARIO MAESTRO</span>
+                <h2 class="section-title">CONTROL DE STOCK INTELIGENTE</h2>
+            </div>
+
+            <div class="row align-items-center">
+                <div class="col-lg-6 feature-content">
+                    <ul class="feature-list">
+                        <li>
+                            <strong>Escaneo e inventario:</strong> Controla entradas y salidas de repuestos mediante códigos QR y barcodes.
+                        </li>
+                        <li>
+                            <strong>Análisis de rendimiento:</strong> Identifica los repuestos de mayor rotación para optimizar tus compras.
+                        </li>
+                        <li>
+                            <strong>Alertas de Stock Bajo:</strong> Nunca detengas una reparación por falta de piezas críticas.
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-6 feature-visual">
+                    <div class="feature-placeholder">
+                        <div class="placeholder-icon">📦</div>
+                        <p>Dashboard de inventario en tiempo real</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         SECCIÓN CTA FINAL
+         ============================================ -->
+    <section class="cta-final-section">
+        <div class="container-lg">
+            <div class="cta-content">
+                <h2 class="cta-title">¿LISTO PARA AUTOMATIZAR TU TALLER?</h2>
+                <p class="cta-description">Únete a la red de talleres más eficientes del país y transforma la experiencia de tus clientes hoy mismo.</p>
+
+                <div class="cta-buttons">
+                    <button class="btn btn-primary-custom btn-lg">Empezar ahora</button>
+                    <button class="btn btn-secondary-custom btn-lg">Contactar a ventas</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         FOOTER
+         ============================================ -->
+    <footer class="footer-section">
+        <div class="container-lg">
+            <div class="footer-content">
+                <div class="footer-main">
+                    <p class="footer-copyright">© 2024 AutoSync. Gestión de Precisión para Talleres Modernos.</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#privacidad" class="footer-link">Privacidad</a>
+                    <a href="#terminos" class="footer-link">Términos</a>
+                    <a href="#soporte" class="footer-link">Soporte</a>
+                    <a href="#api" class="footer-link">API</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ============================================
+         CHATBOT FLOTANTE
+         ============================================ -->
+    <div class="chatbot-widget" id="chatbot-widget">
+        <div class="chatbot-toggle" id="chatbot-toggle">
+            <span class="chatbot-icon">💬</span>
+        </div>
+        <div class="chatbot-window" id="chatbot-window">
+            <div class="chatbot-header">
+                <h3>Bot de estado 24/7</h3>
+                <button class="chatbot-close" id="chatbot-close">&times;</button>
+            </div>
+            <div class="chatbot-body">
+                <div class="chatbot-message bot-message">
+                    <p>Hola, ¿quieres saber el estado de tu vehículo?</p>
+                </div>
+                <div class="chatbot-inputs">
+                    <input type="text" class="chatbot-input" placeholder="Escribe tu número de referencia...">
+                    <button class="chatbot-send">Enviar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================
+         LOGIN MODAL (Estilo Scanner / Minimalista)
+         ============================================ -->
+    <div class="modal fade custom-modal" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content modal-login-wrapper p-4 p-md-5">
+                
+                <!-- Esquinas decorativas del recuadro -->
+                <div class="corner-bracket top-left"></div>
+                <div class="corner-bracket top-right"></div>
+                <div class="corner-bracket bottom-left"></div>
+                <div class="corner-bracket bottom-right"></div>
+                
+                <!-- Botón clásico para cerrar modal -->
+                <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close" style="z-index: 10;"></button>
+
+                <div class="modal-body p-0">
+                    <div class="text-center mb-4 pt-2">
+                        <h2 class="fw-bold mb-2 text-dark" style="letter-spacing: -1px; font-family: 'Space Grotesk', sans-serif;">INICIAR SESIÓN</h2>
+                        <p class="text-muted small fw-bold text-uppercase" style="letter-spacing: 2px;">Accede a tu cuenta</p>
+                    </div>
+
+                    <button class="btn btn-outline-dark w-100 py-2 mb-4 d-flex align-items-center justify-content-center gap-2 fw-bold" style="border-radius: 0;">
+                        <i class="fab fa-google"></i> Continuar con Google
+                    </button>
+
+                    <div class="d-flex align-items-center mb-4">
+                        <hr class="flex-grow-1 text-muted opacity-25">
+                        <span class="mx-3 text-muted small fw-bold text-uppercase">OR</span>
+                        <hr class="flex-grow-1 text-muted opacity-25">
+                    </div>
+
+                    <form action="dashboard.html" method="GET" id="loginForm">
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-uppercase d-block mb-1 text-muted">Correo Electrónico</label>
+                            <input type="email" id="loginEmail" class="form-control custom-input" placeholder="name@workshop.com" required>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between align-items-end mb-1">
+                                <label class="form-label small fw-bold text-uppercase mb-0 text-muted">Contraseña</label>
+                                <a href="#" class="text-muted small text-decoration-none" style="font-size: 0.75rem;">¿Olvidaste la contraseña?</a>
+                            </div>
+                            <input type="password" class="form-control custom-input" placeholder="••••••••" required>
+                        </div>
+
+                        <div class="text-center mt-5">
+                            <button type="submit" class="btn text-dark fw-bold border-0 bg-transparent py-2 w-100 access-btn">
+                                Entrar a AutoSync
+                            </button>
+                        </div>
+                        <div class="text-center mt-3">
+                            <a href="#" id="empleadoLoginToggle" class="text-muted small text-decoration-none fw-bold"><i class="fas fa-lock me-1"></i>¿Eres empleado de AutoSync? Ingresa aquí</a>
+                        </div>
+                        <div class="text-center mt-4">
+                            <a href="#" class="text-primary small text-decoration-none fw-bold" data-bs-toggle="modal" data-bs-target="#registerModal" data-bs-dismiss="modal">¿No tienes cuenta? Regístrate aquí</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================
+         REGISTER MODAL (Clon Elegante)
+         ============================================ -->
+    <div class="modal fade custom-modal" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content modal-login-wrapper p-4 p-md-5">
+                
+                <div class="corner-bracket top-left"></div>
+                <div class="corner-bracket top-right"></div>
+                <div class="corner-bracket bottom-left"></div>
+                <div class="corner-bracket bottom-right"></div>
+                
+                <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close" style="z-index: 10;"></button>
+
+                <div class="modal-body p-0">
+                    <div class="text-center mb-4 pt-2">
+                        <h2 class="fw-bold mb-2 text-primary" style="letter-spacing: -1px; font-family: 'Space Grotesk', sans-serif;">CREAR CUENTA</h2>
+                        <p class="text-muted small fw-bold text-uppercase" style="letter-spacing: 2px;">Únete a AutoSync</p>
+                    </div>
+
+                    <form id="registerForm">
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-uppercase d-block mb-1 text-muted">Nombre Completo</label>
+                            <input type="text" id="regNombre" class="form-control custom-input" placeholder="Tu nombre" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-uppercase d-block mb-1 text-muted">Correo Electrónico</label>
+                            <input type="email" id="regEmail" class="form-control custom-input" placeholder="name@ejemplo.com" required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label small fw-bold text-uppercase d-block mb-1 text-muted">Contraseña</label>
+                            <input type="password" id="regPassword" class="form-control custom-input" placeholder="••••••••" required>
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-primary-custom fw-bold border-0 py-2 w-100 shadow-sm rounded-pill">
+                                Registrarse Ahora
+                            </button>
+                        </div>
+                        <div class="text-center mt-4">
+                            <a href="#" class="text-muted small text-decoration-none fw-bold" data-bs-toggle="modal" data-bs-target="#loginModal" data-bs-dismiss="modal"><i class="fas fa-arrow-left me-1"></i> Volver a Iniciar Sesión</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================
+         SCRIPTS
+         ============================================ -->
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script src="js/main.js"></script>
+    <script src="js/api-index.js"></script>
+</body>
+</html>

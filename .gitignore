@@ -1,0 +1,11 @@
+.env
+.antigravity/
+.agent/
+srccc/
+.venv/
+ARCHITECTURE.md
+CHANGES_SUMARY.md
+OAUTH_SETUP.md
+QUICK_START.md
+README_OAUTH.md
+INDEX.md

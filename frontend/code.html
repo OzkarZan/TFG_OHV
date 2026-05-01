@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AutoSync | Gestión de Precisión para Talleres Modernos</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800;900&amp;family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary-fixed": "#d0e4ff",
+                    "surface": "#f7f9fc",
+                    "error": "#ba1a1a",
+                    "secondary-fixed-dim": "#b8c9d3",
+                    "surface-container-high": "#e6e8eb",
+                    "surface-bright": "#f7f9fc",
+                    "surface-container-low": "#f2f4f7",
+                    "on-primary-container": "#003459",
+                    "on-secondary": "#ffffff",
+                    "surface-tint": "#0062a0",
+                    "surface-container": "#eceef1",
+                    "tertiary-fixed-dim": "#fbbb4c",
+                    "on-surface-variant": "#414750",
+                    "on-primary-fixed-variant": "#00497a",
+                    "tertiary": "#7f5700",
+                    "on-primary-fixed": "#001d35",
+                    "error-container": "#ffdad6",
+                    "surface-dim": "#d8dadd",
+                    "on-tertiary-container": "#452e00",
+                    "on-background": "#191c1e",
+                    "background": "#f7f9fc",
+                    "on-error-container": "#93000a",
+                    "primary-fixed-dim": "#9ccaff",
+                    "on-secondary-container": "#55656d",
+                    "secondary": "#506169",
+                    "surface-container-highest": "#e0e3e6",
+                    "on-surface": "#191c1e",
+                    "inverse-on-surface": "#eff1f4",
+                    "primary": "#0062a0",
+                    "primary-container": "#5a9fe2",
+                    "on-tertiary-fixed-variant": "#604100",
+                    "outline-variant": "#c1c7d2",
+                    "inverse-surface": "#2d3133",
+                    "on-tertiary": "#ffffff",
+                    "secondary-container": "#d1e2ec",
+                    "inverse-primary": "#9ccaff",
+                    "tertiary-container": "#c99022",
+                    "on-error": "#ffffff",
+                    "on-tertiary-fixed": "#281900",
+                    "on-secondary-fixed": "#0d1e25",
+                    "on-secondary-fixed-variant": "#394951",
+                    "secondary-fixed": "#d4e5ef",
+                    "tertiary-fixed": "#ffdead",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary": "#ffffff",
+                    "outline": "#717881",
+                    "surface-variant": "#e0e3e6"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "fontFamily": {
+                    "headline": ["Space Grotesk", "sans-serif"],
+                    "body": ["Manrope", "sans-serif"],
+                    "label": ["Manrope", "sans-serif"]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .hero-gradient {
+            background: linear-gradient(135deg, #0062a0 0%, #5a9fe2 100%);
+        }
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface">
+<!-- TopNavBar -->
+<header class="fixed top-4 left-1/2 -translate-x-1/2 w-[95%] max-w-7xl rounded-xl glass-nav shadow-[0px_24px_48px_rgba(25,28,30,0.06)] flex justify-between items-center px-8 py-4 z-50">
+<div class="flex items-center gap-2"><img alt="AutoSync Logo" class="h-10 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/ADBb0ugRlPSEpH_s709GWHoE4rVaBJe1hhqenGEudouqijwnLql8N1xZ0fOXNne9pU39YXxD7fPL2uFKMIDdo5vKQUTiXYKK2WfcWExZEfs4GAv5WJRUzNBc-GQD8wA5e4NKGi4rq6yRC3x0IftepiKAxZCoVP-JjpoRhhD4OrStWbFPqruI7ZoLZtDvvB-kTOzfeNwZxEXnfNAROzkZ1pYd9rIxepK2qeIueknwXCLkAaR3UfTTJVd4RbBZowlxB1MDM3tbHHxMPqQn2A"/></div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-slate-600 font-medium hover:text-blue-500 transition-colors duration-200" href="#">Sobre nosotros</a>
+<a class="text-slate-600 font-medium hover:text-blue-500 transition-colors duration-200" href="#">Contacto</a>
+<a class="text-slate-600 font-medium hover:text-blue-500 transition-colors duration-200" href="#">Servicios</a>
+</nav>
+<div class="flex items-center">
+<button class="bg-primary hover:scale-95 transition-transform text-on-primary px-6 py-2.5 rounded-lg font-bold">Iniciar sesión</button>
+</div>
+</header>
+<main>
+<!-- Hero Section -->
+<section class="pt-40 pb-24 px-8 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+<div>
+<h1 class="font-headline font-bold text-6xl md:text-7xl leading-[1.1] text-on-surface mb-6">GESTIÓN DE PRECISIÓN</h1>
+<p class="text-body-lg text-on-surface-variant text-xl leading-relaxed mb-10 max-w-xl">
+                    Revoluciona el flujo de trabajo de tu taller con automatización avanzada. Desde el ingreso hasta la entrega, sincroniza cada reparación con precisión milimétrica.
+                </p>
+<div class="flex flex-col sm:flex-row gap-4 mb-12">
+<button class="hero-gradient text-on-primary px-8 py-4 rounded-lg font-bold text-lg shadow-lg hover:opacity-90 transition-opacity">Reservar en línea</button>
+<button class="border-2 border-primary text-primary px-8 py-4 rounded-lg font-bold text-lg hover:bg-primary/5 transition-colors">Consultar estado de la reparación</button>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-8 pt-8 border-t border-outline-variant/15">
+<div>
+<p class="font-headline font-bold text-3xl text-primary">500+</p>
+<p class="text-sm text-on-surface-variant uppercase tracking-wider font-semibold">Talleres Sincronizados</p>
+</div>
+<div>
+<p class="font-headline font-bold text-3xl text-primary">98%</p>
+<p class="text-sm text-on-surface-variant uppercase tracking-wider font-semibold">Precisión en puntualidad</p>
+</div>
+<div>
+<p class="font-headline font-bold text-3xl text-primary">24/7</p>
+<p class="text-sm text-on-surface-variant uppercase tracking-wider font-semibold">Soporte automatizado</p>
+</div>
+</div>
+</div>
+<div class="relative">
+<div class="absolute -inset-4 bg-primary-container/20 rounded-[2rem] blur-3xl"></div>
+<div class="relative bg-surface-container-lowest p-4 rounded-[2rem] shadow-2xl">
+<img class="rounded-[1.5rem] w-full h-auto object-cover aspect-[4/3]" data-alt="High-tech automotive workshop with pristine white floors, modern diagnostic screens, and professional mechanics in organized workspace, clinical lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCqcVpALrxo_IXZIeIPult3-ZARQ9nBND3uiXtf-v-0rUua7skSAjp1_IrNU6EAT4V7l9eg1gB2EbsRKatFtsKs9rm8EVw_hnPHOIolEupeTJbPNBGQIQMdExeI2EWxbcqLRgw57vbLIJD87on8f7xkoaDYPoAoHpmXMwhBFAOo9-H7IK8RBXMYvM6JqJtbqBiGWtNmxwul3NvULWZAvw3J-7DhC06qn2VMnJtjLnaqpXSQpukXiu6jdAn1tm8bmB0TywTJzvM53WU"/>
+</div>
+</div>
+</section>
+<!-- Features - Reparaciones en Tiempo Real -->
+<section class="py-24 bg-surface-container-low">
+<div class="max-w-7xl mx-auto px-8 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+<div class="order-2 lg:order-1">
+<div class="bg-surface p-4 rounded-3xl shadow-xl">
+<img class="rounded-2xl w-full" data-alt="Modern UI dashboard of an auto management app showing real-time car repair progress bars and digital diagnostic data charts" src="https://lh3.googleusercontent.com/aida-public/AB6AXuADL7HnCsYZ3ywEi2g2kKGknecqVLmuQGKn-MybcCZhrAuxKk-zfjRiaZJnKecrnm_k8nq3o0l8h2WwXhOHS0wVJrzUBnkWONqIK8GimLdw4nHY8hvUudBjWbf9FZZaGNSFAb2ktBBVxmWvIYrZNziAm3V8EtioOm7eNP-Oeo-ZEOcMJXASOBSmSfivV2wrLXKsw-Fgn5mGck9UCMgohriEKfhvTF7u0ebcZtc_Hpgtk9hcUbB3rKFpn0ZGnmx_Koo01s-skMcEVIg"/>
+</div>
+</div>
+<div class="order-1 lg:order-2">
+<span class="inline-block py-1 px-3 bg-primary/10 text-primary rounded-full text-xs font-bold tracking-widest uppercase mb-4">Eficiencia Total</span>
+<h2 class="font-headline font-bold text-4xl mb-6">REPARACIONES EN TIEMPO REAL</h2>
+<ul class="space-y-6">
+<li class="flex items-start gap-4">
+<div class="bg-primary text-on-primary rounded-full p-1 mt-1">
+<span class="material-symbols-outlined text-sm leading-none" data-icon="check">check</span>
+</div>
+<div>
+<p class="font-bold text-lg">Seguimiento automatizado</p>
+<p class="text-on-surface-variant">Monitoriza cada etapa del proceso técnico sin intervención manual.</p>
+</div>
+</li>
+<li class="flex items-start gap-4">
+<div class="bg-primary text-on-primary rounded-full p-1 mt-1">
+<span class="material-symbols-outlined text-sm leading-none" data-icon="check">check</span>
+</div>
+<div>
+<p class="font-bold text-lg">Carga instantánea de evidencias</p>
+<p class="text-on-surface-variant">Sube fotos y videos del diagnóstico directamente desde la tablet del mecánico.</p>
+</div>
+</li>
+<li class="flex items-start gap-4">
+<div class="bg-primary text-on-primary rounded-full p-1 mt-1">
+<span class="material-symbols-outlined text-sm leading-none" data-icon="check">check</span>
+</div>
+<div>
+<p class="font-bold text-lg">Historial clínico digital</p>
+<p class="text-on-surface-variant">Acceso completo a la hoja de vida del vehículo en segundos.</p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</section>
+<!-- Features - Notificaciones Automatizadas -->
+<section class="py-24 bg-surface">
+<div class="max-w-7xl mx-auto px-8 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+<div>
+<span class="inline-block py-1 px-3 bg-tertiary/10 text-tertiary rounded-full text-xs font-bold tracking-widest uppercase mb-4">Comunicación 360</span>
+<h2 class="font-headline font-bold text-4xl mb-6">NOTIFICACIONES AUTOMATIZADAS</h2>
+<ul class="space-y-6">
+<li class="flex items-start gap-4">
+<div class="bg-tertiary text-on-tertiary rounded-full p-1 mt-1">
+<span class="material-symbols-outlined text-sm leading-none" data-icon="notifications">notifications</span>
+</div>
+<div>
+<p class="font-bold text-lg">Actualizaciones proactivas ETA</p>
+<p class="text-on-surface-variant">Informa automáticamente al cliente sobre la hora estimada de entrega.</p>
+</div>
+</li>
+<li class="flex items-start gap-4">
+<div class="bg-tertiary text-on-tertiary rounded-full p-1 mt-1">
+<span class="material-symbols-outlined text-sm leading-none" data-icon="approval">approval</span>
+</div>
+<div>
+<p class="font-bold text-lg">Solicitudes de aprobación</p>
+<p class="text-on-surface-variant">El cliente autoriza presupuestos adicionales con un solo clic desde su móvil.</p>
+</div>
+</li>
+<li class="flex items-start gap-4">
+<div class="bg-tertiary text-on-tertiary rounded-full p-1 mt-1">
+<span class="material-symbols-outlined text-sm leading-none" data-icon="campaign">campaign</span>
+</div>
+<div>
+<p class="font-bold text-lg">Recordatorios de mantenimiento</p>
+<p class="text-on-surface-variant">Fideliza enviando alertas preventivas basadas en el uso del vehículo.</p>
+</div>
+</li>
+</ul>
+</div>
+<div>
+<div class="relative">
+<div class="absolute -right-4 -bottom-4 w-full h-full bg-tertiary/5 rounded-3xl -z-10"></div>
+<img class="rounded-3xl shadow-2xl w-full" data-alt="Smartphone screen showing professional clean push notifications from a workshop app about car repair status and payment approval" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCpdCnolt6N1XXXoJHemm7DUOYN2FxuLFaSXDfYEtoYp6CLQcl5tT9QWQwhhUWyfAD34vqOkWhqFrd4BR_i3_UwDFF5ghXtDax_dHWhbyIjbeNO4ruloxElRD3TRz5lRQ8kKPycNENzs5-1K8kxjN1xbHwnNlpYyOUCPLl9cEQaz1ERkRY3Glb1QRwZB71t29C1w2N11tthrhdkClxiqsYMCaBQ-Tc4-3CNbqgGyXPwYXE3qxrRL9bW9c3j-PDJwYNlil8gddUj_ps"/>
+</div>
+</div>
+</div>
+</section>
+<!-- Features - Control de Stock Inteligente -->
+<section class="py-24 bg-surface-container-low">
+<div class="max-w-7xl mx-auto px-8 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+<div class="order-2 lg:order-1">
+<div class="bg-white p-8 rounded-[2rem] shadow-lg border border-outline-variant/10">
+<img class="rounded-xl w-full" data-alt="Clean data visualization interface showing inventory levels of automotive parts with blue bar charts and 3D wireframe models of components" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCa9j92wkOfsZoJ-SyekOSfaMu_hN0N0luL_jDaXrJbLXqDbvfPdvEZkijgLpTX6LPLQ6oteih96bjcH0BbQ7k3HrzqtEfHY6JPg456WzlaAFzt5mgqS8kbwSwFxT6jgV7Nac70nd8l7B-kmMCC4O1g2wuVhvY6bIfoQ9bJHz9e9vU5njZVZW-ivDx-N5UXLiEXpWa3vBlGbiisakTGJQjr4hezxu727QOAfjDOOvOFDqzNNyy9GstlG-XS5MU3OQKUC5pMHoYgLBc"/>
+</div>
+</div>
+<div class="order-1 lg:order-2">
+<span class="inline-block py-1 px-3 bg-primary/10 text-primary rounded-full text-xs font-bold tracking-widest uppercase mb-4">Inventario Maestro</span>
+<h2 class="font-headline font-bold text-4xl mb-6">CONTROL DE STOCK INTELIGENTE</h2>
+<ul class="space-y-6">
+<li class="flex items-start gap-4">
+<div class="bg-primary-container text-on-primary-container rounded-full p-1 mt-1">
+<span class="material-symbols-outlined text-sm leading-none" data-icon="barcode_scanner">barcode_scanner</span>
+</div>
+<div>
+<p class="font-bold text-lg">Escaneo e inventario</p>
+<p class="text-on-surface-variant">Controla entradas y salidas de repuestos mediante códigos QR y barcodes.</p>
+</div>
+</li>
+<li class="flex items-start gap-4">
+<div class="bg-primary-container text-on-primary-container rounded-full p-1 mt-1">
+<span class="material-symbols-outlined text-sm leading-none" data-icon="analytics">analytics</span>
+</div>
+<div>
+<p class="font-bold text-lg">Análisis de rendimiento</p>
+<p class="text-on-surface-variant">Identifica los repuestos de mayor rotación para optimizar tus compras.</p>
+</div>
+</li>
+<li class="flex items-start gap-4">
+<div class="bg-primary-container text-on-primary-container rounded-full p-1 mt-1">
+<span class="material-symbols-outlined text-sm leading-none" data-icon="warning">warning</span>
+</div>
+<div>
+<p class="font-bold text-lg">Alertas de Stock Bajo</p>
+<p class="text-on-surface-variant">Nunca detengas una reparación por falta de piezas críticas.</p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</section>
+<!-- CTA Section -->
+<section class="py-24 px-8">
+<div class="max-w-7xl mx-auto rounded-[3rem] hero-gradient p-12 md:p-20 text-center text-on-primary relative overflow-hidden shadow-2xl">
+<div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+<div class="absolute bottom-0 left-0 w-64 h-64 bg-black/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
+<h2 class="font-headline font-bold text-4xl md:text-5xl mb-6 relative z-10">¿LISTO PARA AUTOMATIZAR TU TALLER?</h2>
+<p class="text-xl opacity-90 mb-10 max-w-2xl mx-auto relative z-10">Únete a la red de talleres más eficientes del país y transforma la experiencia de tus clientes hoy mismo.</p>
+<div class="flex flex-col sm:flex-row justify-center gap-6 relative z-10">
+<button class="bg-white text-primary px-10 py-4 rounded-lg font-bold text-lg shadow-xl hover:bg-surface transition-colors">Empezar ahora</button>
+<button class="border-2 border-white/40 text-white px-10 py-4 rounded-lg font-bold text-lg hover:bg-white/10 transition-colors">Contactar a ventas</button>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-slate-50 dark:bg-slate-950 border-t border-slate-200/15">
+<div class="w-full py-12 px-8 max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+<div class="flex flex-col gap-4">
+<div class="flex items-center gap-2"><img alt="AutoSync Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/ADBb0ugRlPSEpH_s709GWHoE4rVaBJe1hhqenGEudouqijwnLql8N1xZ0fOXNne9pU39YXxD7fPL2uFKMIDdo5vKQUTiXYKK2WfcWExZEfs4GAv5WJRUzNBc-GQD8wA5e4NKGi4rq6yRC3x0IftepiKAxZCoVP-JjpoRhhD4OrStWbFPqruI7ZoLZtDvvB-kTOzfeNwZxEXnfNAROzkZ1pYd9rIxepK2qeIueknwXCLkAaR3UfTTJVd4RbBZowlxB1MDM3tbHHxMPqQn2A"/></div>
+<p class="font-body text-sm text-slate-500 max-w-xs">© 2024 AutoSync. Gestión de Precisión para Talleres Modernos.</p>
+</div>
+<div class="flex flex-wrap justify-center gap-8 text-sm font-body text-slate-500">
+<a class="hover:underline transition-all" href="#">Privacidad</a>
+<a class="hover:underline transition-all" href="#">Términos</a>
+<a class="hover:underline transition-all" href="#">Soporte</a>
+<a class="hover:underline transition-all" href="#">API</a>
+</div>
+<div class="flex gap-4">
+<a class="text-slate-400 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">share</span>
+</a>
+<a class="text-slate-400 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">language</span>
+</a>
+</div>
+</div>
+</footer>
+<!-- Chat Widget -->
+<div class="fixed bottom-8 right-8 z-[100]">
+<button class="bg-primary text-on-primary w-16 h-16 rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-3xl" data-weight="fill" style="font-variation-settings: 'FILL' 1;">smart_toy</span>
+</button>
+<div class="absolute bottom-20 right-0 bg-white p-4 rounded-2xl shadow-xl border border-outline-variant/15 w-64 hidden md:block">
+<p class="font-bold text-sm mb-1">Bot de estado 24/7</p>
+<p class="text-xs text-on-surface-variant">Hola, ¿quieres saber el estado de tu vehículo?</p>
+</div>
+</div>
+</body></html>

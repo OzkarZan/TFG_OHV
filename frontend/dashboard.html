@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - AutoSync</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="./css/styles.css">
+</head>
+<body>
+    <div class="d-flex" id="wrapper">
+        <nav id="sidebar" class="bg-dark text-white d-flex flex-column p-3 vh-100 position-fixed shadow">
+            <a href="index.html" class="d-flex align-items-center mb-4 me-md-auto text-white text-decoration-none gap-2">
+                <i class="fas fa-cogs fs-5"></i>
+                <span class="fs-5 fw-bold">AutoSync</span>
+            </a>
+            <ul class="nav nav-pills flex-column mb-auto">
+                <li class="nav-item mb-1">
+                    <a href="#" id="menuDashboard" class="nav-link active" aria-current="page">
+                        <i class="fas fa-tachometer-alt fa-fw me-2"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item mb-1">
+                    <a href="#" class="nav-link sidebar-link">
+                        <i class="fas fa-calendar-alt fa-fw me-2"></i> Calendario
+                    </a>
+                </li>
+                <li class="nav-item mb-1">
+                    <a href="#" id="menuInventario" class="nav-link sidebar-link">
+                        <i class="fas fa-boxes fa-fw me-2"></i> Inventario/Stock
+                    </a>
+                </li>
+                <li class="nav-item mb-1">
+                    <a href="#" class="nav-link sidebar-link">
+                        <i class="fas fa-tools fa-fw me-2"></i> Reparaciones
+                    </a>
+                </li>
+                <li class="nav-item mb-1">
+                    <a href="#" class="nav-link sidebar-link">
+                        <i class="fas fa-users fa-fw me-2"></i> Clientes
+                    </a>
+                </li>
+            </ul>
+            <hr class="border-secondary">
+            <div>
+                <a href="index.html" class="nav-link sidebar-link">
+                    <i class="fas fa-sign-out-alt fa-fw me-2 text-danger"></i> Cerrar Sesión
+                </a>
+            </div>
+        </nav>
+
+        <div id="page-content-wrapper" class="flex-grow-1 bg-light">
+            <header class="d-flex justify-content-between align-items-center py-3 px-4 bg-white border-bottom shadow-sm">
+                <h4 class="mb-0 fw-bold text-dark">VISTA GENERAL DEL TALLER</h4>
+                <div class="d-flex align-items-center gap-4">
+                    <div class="d-flex align-items-center">
+                        <img src="https://ui-avatars.com/api/?name=Admin+User&background=0055d4&color=fff" alt="User" class="rounded-circle me-2" width="36" height="36">
+                        <strong class="d-none d-md-inline">Administrador</strong>
+                    </div>
+                </div>
+            </header>
+
+            <div class="container-fluid py-4 px-4">
+                
+                <!-- KPI Widgets (Comunes) -->
+                <div class="row g-3 mb-4">
+                    <div class="col-xl-3 col-sm-6">
+                        <div class="card border-0 shadow-sm custom-stat-card border-start border-primary border-4 h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="text-muted fw-bold mb-1">Citas de Hoy</h6>
+                                        <h3 class="fw-bold mb-0">12</h3>
+                                    </div>
+                                    <div class="icon-shape bg-primary text-white rounded p-3 shadow-sm">
+                                        <i class="fas fa-calendar-check fs-4"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== VISTA DASHBOARD (Inicial) ==================== -->
+                <div id="viewDashboard" class="row g-4 d-flex">
+                    <div class="col-lg-9">
+                        <div class="card border-0 shadow-sm custom-card h-100">
+                            <div class="card-header bg-white border-bottom py-3">
+                                <h5 class="fw-bold mb-0"><i class="fas fa-list-ul me-2 text-primary"></i>Cola de Trabajos</h5>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th class="ps-4">Hora de llegada</th>
+                                                <th>Cliente / Vehículo</th>
+                                                <th>Servicio solicitado</th>
+                                                <th>Estado</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td class="ps-4 fw-bold text-dark">08:00 AM</td>
+                                                <td>
+                                                    <div class="fw-bold">Juan Pérez</div>
+                                                    <div class="small text-muted">1234 ABC - Ford Focus</div>
+                                                </td>
+                                                <td>Revisión General</td>
+                                                <td><span class="badge bg-info text-dark p-2">En Taller</span></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="card border-0 shadow-sm custom-card h-100">
+                            <div class="card-header bg-white border-bottom py-3">
+                                <h5 class="fw-bold mb-0"><i class="fas fa-bolt me-2 text-warning"></i>Acciones Rápidas</h5>
+                            </div>
+                            <div class="card-body d-flex flex-column gap-3 p-4">
+                                <button class="btn btn-primary d-flex align-items-center py-2 shadow-sm">
+                                    <i class="fas fa-plus-circle fa-fw me-2"></i> Crear nueva reparación
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== VISTA INVENTARIO (SPA) ==================== -->
+                <div id="viewInventario" class="row g-4 d-none">
+                    <div class="col-lg-12">
+                        <div class="card border-0 shadow-sm custom-card h-100">
+                            <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+                                <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-boxes me-2 text-primary"></i>Gestión de Inventario (Base de Datos Real)</h5>
+                                <button class="btn btn-primary d-flex align-items-center py-2 shadow-sm rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#addRepuestoModal">
+                                    <i class="fas fa-plus fa-fw me-2"></i> Añadir Modelo de Pieza
+                                </button>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle mb-0 text-center">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th class="ps-4 text-start">ID #</th>
+                                                <th class="text-start">Nombre de Pieza</th>
+                                                <th>Stock Actual</th>
+                                                <th>Precio Unitario</th>
+                                                <th class="text-end pe-4">Acciones Seguras</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="invTableBody">
+                                            <!-- Se Inyecta via JS (CRUD) -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div> <!-- final container interno -->
+        </div>
+    </div> <!-- final wrap -->
+
+    <!-- Modal Añadir Repuesto -->
+    <div class="modal fade custom-modal" id="addRepuestoModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-4 border-0 shadow-lg" style="border-radius:15px;">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-box-open text-primary me-2"></i>Añadir Repuesto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formRepuesto" class="mt-3">
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Nombre de la pieza</label>
+                            <input type="text" id="repNombre" class="form-control custom-input" required>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label small fw-bold text-uppercase text-muted">Precio Unitario (€)</label>
+                                <input type="number" step="0.01" id="repPrecio" class="form-control custom-input" required>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label small fw-bold text-uppercase text-muted">Stock actual</label>
+                                <input type="number" id="repStock" class="form-control custom-input" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary-custom w-100 py-3 shadow-sm rounded-pill fw-bold">GUARDAR</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Editar Repuesto -->
+    <div class="modal fade custom-modal" id="editRepuestoModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-4 border-0 shadow-lg" style="border-radius:15px; border-top: 5px solid #0055d4 !important;">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-edit text-primary me-2"></i>Editar Repuesto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formEditRepuesto" class="mt-3">
+                        <input type="hidden" id="editRepId">
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-uppercase text-muted">Nombre de la pieza</label>
+                            <input type="text" id="editRepNombre" class="form-control custom-input" required>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label small fw-bold text-uppercase text-muted">Precio Unitario (€)</label>
+                                <input type="number" step="0.01" id="editRepPrecio" class="form-control custom-input" required>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label small fw-bold text-uppercase text-muted">Modificar Stock</label>
+                                <input type="number" id="editRepStock" class="form-control custom-input" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 py-3 shadow-sm rounded-pill fw-bold">ACTUALIZAR REGISTRO</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="js/api-dashboard.js"></script>
+</body>
+</html>
