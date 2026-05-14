@@ -17,6 +17,10 @@
 
     <title>AutoSync - Gestión de Precisión para Talleres Modernos</title>
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="img/logo.png">
+    <link rel="apple-touch-icon" href="img/logo.png">
+
     <!-- Bootstrap CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
 
@@ -37,8 +41,8 @@
         <nav class="navbar navbar-expand-lg navbar-custom">
             <div class="container-lg">
                 <!-- Logo / Brand -->
-                <a class="navbar-brand" href="#home">
-                    <span class="brand-text">AutoSync</span>
+                <a class="navbar-brand d-flex align-items-center gap-2" href="#home">
+                    <img src="img/logo.png" alt="AutoSync" style="height:38px; width:auto;">
                 </a>
 
                 <!-- Toggle Button (Mobile) -->
@@ -404,17 +408,62 @@
     <!-- ============================================
          FOOTER
          ============================================ -->
+    <!-- ============================================
+         SECCIÓN PRIVACIDAD
+         ============================================ -->
+    <section id="privacidad" class="py-5" style="background:var(--surface-container-lowest);">
+        <div class="container-lg" style="max-width:800px;">
+            <div class="section-header text-center mb-4">
+                <span class="section-badge">LEGAL</span>
+                <h2 class="section-title">POLÍTICA DE PRIVACIDAD</h2>
+            </div>
+            <div class="text-muted" style="line-height:1.8;">
+                <p><strong class="text-dark">Responsable del tratamiento:</strong> AutoSync (Proyecto TFG — IES Enrique Tierno Galván, Madrid).</p>
+                <p><strong class="text-dark">Datos que recogemos:</strong> nombre completo, dirección de correo electrónico y datos del vehículo necesarios para la gestión de reparaciones y citas.</p>
+                <p><strong class="text-dark">Finalidad:</strong> gestionar el registro de usuarios, la comunicación sobre el estado de reparaciones, la generación de presupuestos y la atención al cliente.</p>
+                <p><strong class="text-dark">Base legal:</strong> ejecución de un contrato de servicio y consentimiento expreso del usuario al registrarse en la plataforma.</p>
+                <p><strong class="text-dark">Conservación:</strong> los datos se conservan mientras la cuenta esté activa. Una vez eliminada, los datos se suprimen en un plazo máximo de 30 días, salvo obligación legal de conservación.</p>
+                <p><strong class="text-dark">Derechos:</strong> puedes ejercer tus derechos de acceso, rectificación, supresión, oposición y portabilidad escribiendo a <a href="mailto:autosyncohv@gmail.com">autosyncohv@gmail.com</a>.</p>
+                <p><strong class="text-dark">Seguridad:</strong> los datos se almacenan en servidores protegidos. Las contraseñas se guardan cifradas con bcrypt y nunca en texto plano.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         SECCIÓN TÉRMINOS
+         ============================================ -->
+    <section id="terminos" class="py-5" style="background:#f0f4f8;">
+        <div class="container-lg" style="max-width:800px;">
+            <div class="section-header text-center mb-4">
+                <span class="section-badge">LEGAL</span>
+                <h2 class="section-title">TÉRMINOS DE USO</h2>
+            </div>
+            <div class="text-muted" style="line-height:1.8;">
+                <p><strong class="text-dark">1. Aceptación:</strong> El uso de AutoSync implica la aceptación de estos términos. Si no estás de acuerdo, debes abstenerte de utilizar la plataforma.</p>
+                <p><strong class="text-dark">2. Uso permitido:</strong> AutoSync es una plataforma de gestión de talleres mecánicos. Queda prohibido su uso para fines ilícitos, fraudulentos o contrarios a estos términos.</p>
+                <p><strong class="text-dark">3. Cuentas:</strong> Eres responsable de mantener la confidencialidad de tus credenciales. AutoSync no se hace responsable de accesos no autorizados derivados de una gestión negligente de tu contraseña.</p>
+                <p><strong class="text-dark">4. Datos del vehículo:</strong> La información introducida en la plataforma es responsabilidad del usuario. AutoSync actúa como procesador de datos y no verifica la veracidad de la información introducida.</p>
+                <p><strong class="text-dark">5. Disponibilidad:</strong> AutoSync se esfuerza por mantener el servicio disponible 24/7, pero no garantiza la ausencia de interrupciones por mantenimiento o causas técnicas.</p>
+                <p><strong class="text-dark">6. Propiedad intelectual:</strong> El código, diseño y contenidos de AutoSync son propiedad de sus autores. Queda prohibida su reproducción total o parcial sin autorización expresa.</p>
+                <p><strong class="text-dark">7. Modificaciones:</strong> AutoSync se reserva el derecho de modificar estos términos. Los cambios se comunicarán por email con al menos 15 días de antelación.</p>
+                <p><strong class="text-dark">8. Contacto:</strong> Para cualquier consulta legal escríbenos a <a href="mailto:autosyncohv@gmail.com">autosyncohv@gmail.com</a>.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         FOOTER
+         ============================================ -->
     <footer class="footer-section">
         <div class="container-lg">
             <div class="footer-content">
-                <div class="footer-main">
-                    <p class="footer-copyright">© 2024 AutoSync. Gestión de Precisión para Talleres Modernos.</p>
+                <div class="footer-main d-flex align-items-center gap-3">
+                    <img src="img/logo.png" alt="AutoSync" style="height:32px; width:auto; opacity:.85;">
+                    <p class="footer-copyright mb-0">© 2025 AutoSync. Gestión de Precisión para Talleres Modernos.</p>
                 </div>
                 <div class="footer-links">
                     <a href="#privacidad" class="footer-link">Privacidad</a>
                     <a href="#terminos" class="footer-link">Términos</a>
-                    <a href="#soporte" class="footer-link">Soporte</a>
-                    <a href="#api" class="footer-link">API</a>
                 </div>
             </div>
         </div>
