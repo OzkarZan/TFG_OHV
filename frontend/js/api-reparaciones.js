@@ -41,8 +41,8 @@ document.addEventListener('DOMContentLoaded', () => {
                             <td><span class="badge ${badgePresupuesto} p-2">${rep.estado_presupuesto}</span></td>
                             <td><span class="badge ${badgeEstado} p-2">${rep.estado}</span></td>
                             <td class="text-end pe-4">
-                                <button class="btn btn-sm btn-outline-success rounded-circle shadow-sm me-1" 
-                                        onclick="crearYDescargarPresupuesto(${rep.id_reparacion})"
+                                <button class="btn btn-sm btn-outline-success rounded-circle shadow-sm me-1"
+                                        onclick="abrirModalPresupuesto(${rep.id_reparacion})"
                                         title="Generar Presupuesto PDF">
                                     <i class="fas fa-file-pdf"></i>
                                 </button>
@@ -62,18 +62,111 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    window.abrirModalReparacion = function(id = '', modelo = '', matricula = '', descripcion = '', estadoPres = 'Pendiente', estadoRep = 'En Proceso') {
+    const repClienteSelect = document.getElementById('repCliente');
+    const repVehiculoSelect = document.getElementById('repVehiculo');
+    const repMatriculaVal = document.getElementById('repMatriculaVal');
+    const repModeloVal = document.getElementById('repModeloVal');
+
+    async function loadClientesForRep() {
+        if (!repClienteSelect) return;
+        try {
+            const res = await fetch('/api/clientes', { credentials: 'include' });
+            if (res.ok) {
+                const clientes = await res.json();
+                repClienteSelect.innerHTML = '<option value="">Seleccione un cliente</option>';
+                clientes.forEach(cli => {
+                    const option = document.createElement('option');
+                    option.value = cli.id_cliente;
+                    option.textContent = cli.nombre_completo;
+                    repClienteSelect.appendChild(option);
+                });
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    async function loadVehiculosForRep(id_cliente) {
+        if (!repVehiculoSelect) return;
+        repVehiculoSelect.innerHTML = '<option value="">Cargando...</option>';
+        repVehiculoSelect.disabled = true;
+
+        if (!id_cliente) {
+            repVehiculoSelect.innerHTML = '<option value="">Seleccione primero un cliente</option>';
+            return;
+        }
+
+        try {
+            const res = await fetch(`/api/vehiculos?id_cliente=${id_cliente}`, { credentials: 'include' });
+            if (res.ok) {
+                const vehiculos = await res.json();
+                if (vehiculos.length === 0) {
+                    repVehiculoSelect.innerHTML = '<option value="">Este cliente no tiene vehículos</option>';
+                    return;
+                }
+                
+                repVehiculoSelect.innerHTML = '<option value="">Seleccione un vehículo</option>';
+                vehiculos.forEach(veh => {
+                    const option = document.createElement('option');
+                    option.value = veh.matricula;
+                    option.dataset.modelo = veh.modelo;
+                    option.textContent = `${veh.matricula} - ${veh.modelo} ${veh.marca || ''}`;
+                    repVehiculoSelect.appendChild(option);
+                });
+                repVehiculoSelect.disabled = false;
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    if (repClienteSelect) {
+        repClienteSelect.addEventListener('change', (e) => {
+            loadVehiculosForRep(e.target.value);
+        });
+    }
+
+    if (repVehiculoSelect) {
+        repVehiculoSelect.addEventListener('change', (e) => {
+            const selectedOption = e.target.options[e.target.selectedIndex];
+            if (selectedOption && selectedOption.value) {
+                repMatriculaVal.value = selectedOption.value;
+                repModeloVal.value = selectedOption.dataset.modelo;
+            } else {
+                repMatriculaVal.value = '';
+                repModeloVal.value = '';
+            }
+        });
+    }
+
+    window.abrirModalReparacion = async function(id = '', modelo = '', matricula = '', descripcion = '', estadoPres = 'Pendiente', estadoRep = 'En Proceso') {
         document.getElementById('repId').value = id;
-        document.getElementById('repModelo').value = modelo;
-        document.getElementById('repMatricula').value = matricula;
         document.getElementById('repDescripcion').value = descripcion;
         document.getElementById('repEstadoPresupuesto').value = estadoPres;
         document.getElementById('repEstado').value = estadoRep;
 
         if (id) {
             btnDeleteRep.classList.remove('d-none');
+            // En modo edición es complejo repoblar los selects sin saber el id_cliente, 
+            // así que para simplificar forzamos el vehículo si ya está seteado.
+            repMatriculaVal.value = matricula;
+            repModeloVal.value = modelo;
+            
+            if (repClienteSelect) repClienteSelect.innerHTML = `<option value="">Edición (Seleccione cliente si desea cambiar vehículo)</option>`;
+            if (repVehiculoSelect) {
+                repVehiculoSelect.innerHTML = `<option value="${matricula}" data-modelo="${modelo}" selected>${matricula} - ${modelo} (Actual)</option>`;
+                repVehiculoSelect.disabled = false;
+            }
+            await loadClientesForRep(); // Cargar detrás para permitir cambio
         } else {
             btnDeleteRep.classList.add('d-none');
+            repMatriculaVal.value = '';
+            repModeloVal.value = '';
+            await loadClientesForRep();
+            if (repVehiculoSelect) {
+                repVehiculoSelect.innerHTML = '<option value="">Seleccione primero un cliente</option>';
+                repVehiculoSelect.disabled = true;
+            }
         }
 
         modalInstance.show();
@@ -84,9 +177,17 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             
             const id = document.getElementById('repId').value;
+            const matricula = repMatriculaVal.value;
+            const modelo = repModeloVal.value;
+
+            if (!matricula || !modelo) {
+                alert("Debe seleccionar un vehículo.");
+                return;
+            }
+
             const payload = {
-                modelo_auto: document.getElementById('repModelo').value,
-                matricula: document.getElementById('repMatricula').value,
+                modelo_auto: modelo,
+                matricula: matricula,
                 descripcion_motivo: document.getElementById('repDescripcion').value,
                 estado_presupuesto: document.getElementById('repEstadoPresupuesto').value,
                 estado: document.getElementById('repEstado').value
@@ -143,27 +244,65 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    window.crearYDescargarPresupuesto = async function(id_reparacion) {
-        try {
-            // Generar Presupuesto si no existe (Demo Data: 100 y 50)
-            const payload = {
-                id_reparacion: id_reparacion,
-                total_piezas: Math.floor(Math.random() * 500) + 50,
-                total_mano_obra: Math.floor(Math.random() * 300) + 50
-            };
-            
-            await fetch('/api/presupuestos', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-                body: JSON.stringify(payload)
-            });
+    // ── Modal de Presupuesto ────────────────────────────────────────────────────
+    const presModal       = new bootstrap.Modal(document.getElementById('presupuestoModal'));
+    const formPresupuesto = document.getElementById('formPresupuesto');
+    const presPiezas      = document.getElementById('presTotalPiezas');
+    const presManoObra    = document.getElementById('presTotalManoObra');
+    const presGranTotal   = document.getElementById('presGranTotal');
+    const presRepId       = document.getElementById('presRepId');
+    const presIdInput     = document.getElementById('presIdReparacion');
 
-            // Descargar el PDF generado
-            window.open(`/api/presupuestos/generar_pdf?id_reparacion=${id_reparacion}`, '_blank');
-        } catch(e) {
-            console.error('Error generando presupuesto:', e);
-            alert('Error al generar el PDF del presupuesto.');
-        }
+    function actualizarTotal() {
+        const t = (parseFloat(presPiezas.value) || 0) + (parseFloat(presManoObra.value) || 0);
+        presGranTotal.textContent = '€ ' + t.toFixed(2);
+    }
+    if (presPiezas)   presPiezas.addEventListener('input', actualizarTotal);
+    if (presManoObra) presManoObra.addEventListener('input', actualizarTotal);
+
+    window.abrirModalPresupuesto = function(id_reparacion) {
+        presRepId.textContent   = '#' + id_reparacion;
+        presIdInput.value       = id_reparacion;
+        presPiezas.value        = '';
+        presManoObra.value      = '';
+        presGranTotal.textContent = '€ 0.00';
+        presModal.show();
     };
+
+    if (formPresupuesto) {
+        formPresupuesto.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = formPresupuesto.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Guardando...';
+
+            const id_reparacion  = parseInt(presIdInput.value);
+            const total_piezas   = parseFloat(presPiezas.value)    || 0;
+            const total_mano_obra = parseFloat(presManoObra.value) || 0;
+
+            try {
+                const res = await fetch('/api/presupuestos', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ id_reparacion, total_piezas, total_mano_obra })
+                });
+
+                if (res.ok || res.status === 503) {
+                    // 503 puede ser "ya existe" — intentamos descargar igualmente
+                    presModal.hide();
+                    window.open(`/api/presupuestos?id_reparacion=${id_reparacion}`, '_blank');
+                } else {
+                    const data = await res.json();
+                    alert('Error: ' + (data.message || 'No se pudo guardar el presupuesto.'));
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Error de conexión al guardar el presupuesto.');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-save me-1"></i> Guardar y descargar PDF';
+            }
+        });
+    }
 });
