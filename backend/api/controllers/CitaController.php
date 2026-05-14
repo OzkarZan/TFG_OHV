@@ -58,14 +58,14 @@ class CitaController {
     private function create() {
         $data = json_decode(file_get_contents("php://input"));
 
-        if (!empty($data->fecha_hora) && !empty($data->motivo)) {
+        if (!empty($data->fecha_hora) && !empty($data->motivo) && !empty($data->id_cliente) && !empty($data->id_vehiculo)) {
             $this->cita->fecha_hora = $data->fecha_hora;
             $this->cita->motivo = $data->motivo;
             $this->cita->estado = $data->estado ?? 'Pendiente';
             $this->cita->prioridad = $data->prioridad ?? 'Media';
             $this->cita->es_emergencia = $data->es_emergencia ?? 0;
-            $this->cita->id_cliente = $data->id_cliente ?? null;
-            $this->cita->id_vehiculo = $data->id_vehiculo ?? null;
+            $this->cita->id_cliente = $data->id_cliente;
+            $this->cita->id_vehiculo = $data->id_vehiculo;
             $this->cita->id_taller = $data->id_taller ?? null;
 
             if ($this->cita->create()) {
@@ -77,7 +77,7 @@ class CitaController {
             }
         } else {
             http_response_code(400);
-            echo json_encode(["message" => "Datos incompletos."]);
+            echo json_encode(["message" => "Datos incompletos. Cliente y Vehículo son obligatorios."]);
         }
     }
 
@@ -86,22 +86,25 @@ class CitaController {
 
         if (!empty($data->id_cita)) {
             $this->cita->id_cita = $data->id_cita;
-            $this->cita->fecha_hora = $data->fecha_hora;
-            $this->cita->motivo = $data->motivo;
-            $this->cita->estado = $data->estado ?? 'Pendiente';
-            $this->cita->prioridad = $data->prioridad ?? 'Media';
-            $this->cita->es_emergencia = $data->es_emergencia ?? 0;
+            $this->cita->fecha_hora = $data->fecha_hora ?? null;
+            $this->cita->motivo = $data->motivo ?? null;
+            $this->cita->estado = $data->estado ?? null;
+            $this->cita->prioridad = $data->prioridad ?? null;
+            $this->cita->es_emergencia = $data->es_emergencia ?? null;
+            $this->cita->id_cliente = $data->id_cliente ?? null;
+            $this->cita->id_vehiculo = $data->id_vehiculo ?? null;
+            $this->cita->id_taller = $data->id_taller ?? null;
 
             if ($this->cita->update()) {
                 http_response_code(200);
-                echo json_encode(["message" => "Cita actualizada con éxito."]);
+                echo json_encode(["message" => "Cita actualizada."]);
             } else {
                 http_response_code(503);
-                echo json_encode(["message" => "No se pudo actualizar la cita."]);
+                echo json_encode(["message" => "No se pudo actualizar."]);
             }
         } else {
             http_response_code(400);
-            echo json_encode(["message" => "Falta ID de cita."]);
+            echo json_encode(["message" => "Falta ID."]);
         }
     }
 

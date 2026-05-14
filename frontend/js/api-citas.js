@@ -43,7 +43,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 fecha_hora: info.event.startStr.slice(0, 16),
                 motivo: info.event.extendedProps.motivo,
                 estado: info.event.extendedProps.estado,
-                prioridad: info.event.extendedProps.prioridad
+                prioridad: info.event.extendedProps.prioridad,
+                id_cliente: info.event.extendedProps.id_cliente,
+                id_vehiculo: info.event.extendedProps.id_vehiculo
             });
         }
     });
@@ -67,13 +69,39 @@ document.addEventListener('DOMContentLoaded', async () => {
                     extendedProps: {
                         motivo: cita.motivo,
                         estado: cita.estado,
-                        prioridad: cita.prioridad
+                        prioridad: cita.prioridad,
+                        id_cliente: cita.id_cliente,
+                        id_vehiculo: cita.id_vehiculo
                     }
                 };
             });
             successCallback(events);
         } catch (e) {
             failureCallback(e);
+        }
+    }
+
+    async function loadClientesForSelect(selectedId = null) {
+        const select = document.getElementById('citaCliente');
+        if (!select) return;
+        
+        try {
+            const res = await fetch('/api/clientes', { credentials: 'include' });
+            if (res.ok) {
+                const clientes = await res.json();
+                select.innerHTML = '<option value="">Seleccione un cliente (opcional)</option>';
+                clientes.forEach(cli => {
+                    const option = document.createElement('option');
+                    option.value = cli.id_cliente;
+                    option.textContent = cli.nombre_completo + (cli.telefono ? ` - ${cli.telefono}` : '');
+                    if (selectedId && cli.id_cliente == selectedId) {
+                        option.selected = true;
+                    }
+                    select.appendChild(option);
+                });
+            }
+        } catch (e) {
+            console.error("Error cargando clientes para el select", e);
         }
     }
 
@@ -84,6 +112,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('citaEstado').value = cita.estado || 'Pendiente';
         document.getElementById('citaPrioridad').value = cita.prioridad || 'Media';
         
+        loadClientesForSelect(cita.id_cliente);
+        if (cita.id_cliente) {
+            loadVehiculosForSelect(cita.id_cliente, cita.id_vehiculo);
+        } else {
+            document.getElementById('citaVehiculo').innerHTML = '<option value="">Seleccione primero un cliente</option>';
+            document.getElementById('citaVehiculo').disabled = true;
+        }
         if (cita.id_cita) {
             btnDeleteCita.classList.remove('d-none');
         } else {
@@ -93,15 +128,70 @@ document.addEventListener('DOMContentLoaded', async () => {
         citaModal.show();
     }
 
+    const citaClienteSelect = document.getElementById('citaCliente');
+    const citaVehiculoSelect = document.getElementById('citaVehiculo');
+
+    async function loadVehiculosForSelect(id_cliente, selectedId = null) {
+        if (!citaVehiculoSelect) return;
+        citaVehiculoSelect.innerHTML = '<option value="">Cargando...</option>';
+        citaVehiculoSelect.disabled = true;
+
+        if (!id_cliente) {
+            citaVehiculoSelect.innerHTML = '<option value="">Seleccione primero un cliente</option>';
+            return;
+        }
+
+        try {
+            const res = await fetch(`/api/vehiculos?id_cliente=${id_cliente}`, { credentials: 'include' });
+            if (res.ok) {
+                const vehiculos = await res.json();
+                if (vehiculos.length === 0) {
+                    citaVehiculoSelect.innerHTML = '<option value="">Este cliente no tiene vehículos</option>';
+                    return;
+                }
+                
+                citaVehiculoSelect.innerHTML = '<option value="">Seleccione un vehículo</option>';
+                vehiculos.forEach(veh => {
+                    const option = document.createElement('option');
+                    option.value = veh.id_vehiculo;
+                    option.textContent = `${veh.matricula} - ${veh.modelo} ${veh.marca || ''}`;
+                    if (selectedId && veh.id_vehiculo == selectedId) {
+                        option.selected = true;
+                    }
+                    citaVehiculoSelect.appendChild(option);
+                });
+                citaVehiculoSelect.disabled = false;
+            }
+        } catch (e) {
+            console.error("Error cargando vehículos", e);
+            citaVehiculoSelect.innerHTML = '<option value="">Error al cargar</option>';
+        }
+    }
+
+    if (citaClienteSelect) {
+        citaClienteSelect.addEventListener('change', (e) => {
+            loadVehiculosForSelect(e.target.value);
+        });
+    }
+
     formCita.addEventListener('submit', async (e) => {
         e.preventDefault();
         
         const id_cita = document.getElementById('citaId').value;
+        const id_vehiculo = citaVehiculoSelect.value;
+        
+        if (!id_vehiculo) {
+            alert("Debe seleccionar un vehículo para la cita.");
+            return;
+        }
+
         const payload = {
             fecha_hora: document.getElementById('citaFechaHora').value,
             motivo: document.getElementById('citaMotivo').value,
             estado: document.getElementById('citaEstado').value,
-            prioridad: document.getElementById('citaPrioridad').value
+            prioridad: document.getElementById('citaPrioridad').value,
+            id_cliente: citaClienteSelect.value,
+            id_vehiculo: id_vehiculo
         };
 
         const method = id_cita ? 'PUT' : 'POST';

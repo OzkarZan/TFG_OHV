@@ -125,3 +125,12 @@ CREATE TABLE `REPARACION_REPUESTOS` (
   FOREIGN KEY (`id_reparacion`) REFERENCES `REPARACIONES` (`id_reparacion`),
   FOREIGN KEY (`id_repuesto`) REFERENCES `REPUESTOS` (`id_repuesto`)
 );
+
+CREATE TABLE `RESET_TOKENS` (
+  `id` int PRIMARY KEY AUTO_INCREMENT,
+  `id_usuario` int NOT NULL,
+  `token` varchar(64) UNIQUE NOT NULL,
+  `expira_en` datetime NOT NULL,
+  `usado` boolean DEFAULT false,
+  FOREIGN KEY (`id_usuario`) REFERENCES `USUARIOS` (`id_usuario`) ON DELETE CASCADE
+);

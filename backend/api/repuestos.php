@@ -10,6 +10,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit();
 }
 
+// Sesión y autenticación
+ini_set('session.cookie_httponly', 1);
+ini_set('session.use_strict_mode', 1);
+session_start();
+
+if (!isset($_SESSION['id_usuario'])) {
+    http_response_code(401);
+    echo json_encode(["message" => "No autorizado."]);
+    exit;
+}
+
 include_once '../config/config.php';
 
 $database = new Database();

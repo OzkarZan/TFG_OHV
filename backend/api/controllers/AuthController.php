@@ -70,6 +70,16 @@ class AuthController {
             }
 
             if ($this->user->create()) {
+                if ($this->user->rol === 'cliente') {
+                    require_once 'models/Cliente.php';
+                    $cliente = new Cliente($this->db);
+                    $cliente->id_usuario = $this->user->id_usuario;
+                    // Los administradores podrían enviar teléfono y dirección, si no, se guardan vacíos
+                    $cliente->telefono = $data->telefono ?? null;
+                    $cliente->direccion = $data->direccion ?? null;
+                    $cliente->create();
+                }
+
                 // Enviar Correo de bienvenida
                 require_once 'helpers/MailHelper.php';
                 $mail = new MailHelper();
@@ -97,6 +107,73 @@ class AuthController {
         session_destroy();
         http_response_code(200);
         echo json_encode(["message" => "Sesión cerrada correctamente."]);
+    }
+
+    public function forgotPassword() {
+        $data = json_decode(file_get_contents("php://input"));
+        if (empty($data->email)) {
+            http_response_code(400);
+            echo json_encode(["message" => "Email requerido."]);
+            return;
+        }
+
+        $this->user->email = $data->email;
+        if (!$this->user->emailExists()) {
+            // No revelar si el email existe o no
+            http_response_code(200);
+            echo json_encode(["message" => "Si el correo existe recibirás un enlace para restablecer tu contraseña."]);
+            return;
+        }
+
+        $token   = bin2hex(random_bytes(32));
+        $expira  = date('Y-m-d H:i:s', strtotime('+1 hour'));
+
+        $stmt = $this->db->prepare(
+            "INSERT INTO RESET_TOKENS (id_usuario, token, expira_en) VALUES (?, ?, ?)"
+        );
+        $stmt->execute([$this->user->id_usuario, $token, $expira]);
+
+        require_once 'helpers/MailHelper.php';
+        $mail = new MailHelper();
+        $mail->sendPasswordReset($this->user->email, $this->user->nombre_completo, $token);
+
+        http_response_code(200);
+        echo json_encode(["message" => "Si el correo existe recibirás un enlace para restablecer tu contraseña."]);
+    }
+
+    public function resetPassword() {
+        $data = json_decode(file_get_contents("php://input"));
+        if (empty($data->token) || empty($data->password)) {
+            http_response_code(400);
+            echo json_encode(["message" => "Token y nueva contraseña son requeridos."]);
+            return;
+        }
+
+        $stmt = $this->db->prepare(
+            "SELECT id_usuario FROM RESET_TOKENS
+             WHERE token = ? AND expira_en > NOW() AND usado = 0"
+        );
+        $stmt->execute([$data->token]);
+
+        if ($stmt->rowCount() === 0) {
+            http_response_code(400);
+            echo json_encode(["message" => "Token inválido o expirado."]);
+            return;
+        }
+
+        $row  = $stmt->fetch(PDO::FETCH_ASSOC);
+        $hash = password_hash($data->password, PASSWORD_BCRYPT);
+
+        $this->db->prepare(
+            "UPDATE USUARIOS SET password_hash = ? WHERE id_usuario = ?"
+        )->execute([$hash, $row['id_usuario']]);
+
+        $this->db->prepare(
+            "UPDATE RESET_TOKENS SET usado = 1 WHERE token = ?"
+        )->execute([$data->token]);
+
+        http_response_code(200);
+        echo json_encode(["message" => "Contraseña actualizada correctamente."]);
     }
 
     public function me() {
