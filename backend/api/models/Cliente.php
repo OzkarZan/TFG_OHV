@@ -16,13 +16,31 @@ class Cliente {
     }
 
     public function readAll() {
-        $query = "SELECT c.*, u.nombre_completo, u.correo 
+        $query = "SELECT c.*, u.nombre_completo, u.email as correo 
                   FROM " . $this->table_name . " c
                   LEFT JOIN USUARIOS u ON c.id_usuario = u.id_usuario
                   ORDER BY u.nombre_completo ASC";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt;
+    }
+
+    public function create() {
+        $query = "INSERT INTO " . $this->table_name . " (id_usuario, telefono, direccion) VALUES (:id_usuario, :telefono, :direccion)";
+        $stmt = $this->conn->prepare($query);
+
+        $this->telefono = htmlspecialchars(strip_tags($this->telefono ?? ''));
+        $this->direccion = htmlspecialchars(strip_tags($this->direccion ?? ''));
+
+        $stmt->bindParam(":id_usuario", $this->id_usuario);
+        $stmt->bindParam(":telefono", $this->telefono);
+        $stmt->bindParam(":direccion", $this->direccion);
+
+        if ($stmt->execute()) {
+            $this->id_cliente = $this->conn->lastInsertId();
+            return true;
+        }
+        return false;
     }
 
     // El cliente se crea automáticamente en el registro, pero podemos actualizar sus datos aquí

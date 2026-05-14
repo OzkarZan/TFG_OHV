@@ -45,7 +45,7 @@
             </ul>
             <hr class="border-secondary">
             <div>
-                <a href="index.html" class="nav-link sidebar-link">
+                <a href="#" id="sidebarLogout" class="nav-link sidebar-link">
                     <i class="fas fa-sign-out-alt fa-fw me-2 text-danger"></i> Cerrar Sesión
                 </a>
             </div>
@@ -123,8 +123,11 @@
                                 <h5 class="fw-bold mb-0"><i class="fas fa-bolt me-2 text-warning"></i>Acciones Rápidas</h5>
                             </div>
                             <div class="card-body d-flex flex-column gap-3 p-4">
-                                <button class="btn btn-primary d-flex align-items-center py-2 shadow-sm">
+                                <button class="btn btn-primary d-flex align-items-center py-2 shadow-sm" data-bs-toggle="modal" data-bs-target="#reparacionModal">
                                     <i class="fas fa-plus-circle fa-fw me-2"></i> Crear nueva reparación
+                                </button>
+                                <button class="btn btn-outline-primary d-flex align-items-center py-2 shadow-sm" data-bs-toggle="modal" data-bs-target="#citaModal">
+                                    <i class="fas fa-calendar-plus fa-fw me-2"></i> Nueva Cita
                                 </button>
                             </div>
                         </div>
@@ -219,6 +222,9 @@
                         <div class="card border-0 shadow-sm custom-card h-100">
                             <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
                                 <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-users me-2 text-primary"></i>Directorio de Clientes</h5>
+                                <button class="btn btn-primary d-flex align-items-center py-2 shadow-sm rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#addClienteModal">
+                                    <i class="fas fa-user-plus fa-fw me-2"></i> Añadir Cliente
+                                </button>
                             </div>
                             <div class="card-body p-0">
                                 <div class="table-responsive">
@@ -321,6 +327,20 @@
                     <form id="formCita" class="mt-3">
                         <input type="hidden" id="citaId">
                         <div class="mb-3">
+                            <label class="form-label small fw-bold text-muted">Cliente</label>
+                            <select id="citaCliente" class="form-select custom-input" required>
+                                <option value="">Seleccione un cliente</option>
+                                <!-- Se inyecta por JS -->
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-muted">Vehículo (Obligatorio)</label>
+                            <select id="citaVehiculo" class="form-select custom-input" required disabled>
+                                <option value="">Seleccione primero un cliente</option>
+                                <!-- Se inyecta por JS -->
+                            </select>
+                        </div>
+                        <div class="mb-3">
                             <label class="form-label small fw-bold text-muted">Fecha y Hora</label>
                             <input type="datetime-local" id="citaFechaHora" class="form-control custom-input" required>
                         </div>
@@ -369,12 +389,20 @@
                         <input type="hidden" id="repId">
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label small fw-bold text-muted">Modelo del Auto</label>
-                                <input type="text" id="repModelo" class="form-control custom-input" required>
+                                <label class="form-label small fw-bold text-muted">Cliente</label>
+                                <select id="repCliente" class="form-select custom-input" required>
+                                    <option value="">Seleccione un cliente</option>
+                                    <!-- Se inyecta por JS -->
+                                </select>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label class="form-label small fw-bold text-muted">Matrícula</label>
-                                <input type="text" id="repMatricula" class="form-control custom-input" required>
+                                <label class="form-label small fw-bold text-muted">Vehículo (Obligatorio)</label>
+                                <select id="repVehiculo" class="form-select custom-input" required disabled>
+                                    <option value="">Seleccione primero un cliente</option>
+                                    <!-- Se inyecta por JS -->
+                                </select>
+                                <input type="hidden" id="repMatriculaVal">
+                                <input type="hidden" id="repModeloVal">
                             </div>
                         </div>
                         <div class="mb-3">
@@ -403,6 +431,93 @@
                             <button type="submit" class="btn btn-primary-custom flex-grow-1 py-2 shadow-sm rounded-pill fw-bold">Guardar</button>
                             <button type="button" id="btnDeleteRep" class="btn btn-danger py-2 shadow-sm rounded-pill fw-bold d-none"><i class="fas fa-trash"></i></button>
                         </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Añadir Cliente -->
+    <div class="modal fade custom-modal" id="addClienteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-4 border-0 shadow-lg" style="border-radius:15px;">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-user-plus text-primary me-2"></i>Añadir Cliente</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formAddCliente" class="mt-3">
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-muted">Nombre Completo</label>
+                            <input type="text" id="addCliNombre" class="form-control custom-input" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-muted">Correo Electrónico</label>
+                            <input type="email" id="addCliCorreo" class="form-control custom-input" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-muted">Teléfono</label>
+                            <input type="text" id="addCliTelefono" class="form-control custom-input">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-muted">Dirección</label>
+                            <textarea id="addCliDireccion" class="form-control custom-input" rows="2"></textarea>
+                        </div>
+                        <hr>
+                        <h6 class="fw-bold text-dark mb-3"><i class="fas fa-car text-primary me-2"></i>Datos del Vehículo (Obligatorio)</h6>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label small fw-bold text-muted">Matrícula</label>
+                                <input type="text" id="addCliMatricula" class="form-control custom-input" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label small fw-bold text-muted">Modelo</label>
+                                <input type="text" id="addCliModelo" class="form-control custom-input" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label small fw-bold text-muted">Marca</label>
+                                <input type="text" id="addCliMarca" class="form-control custom-input">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label small fw-bold text-muted">Año</label>
+                                <input type="number" id="addCliAnio" class="form-control custom-input">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary-custom w-100 py-3 shadow-sm rounded-pill fw-bold">Guardar Cliente</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Presupuesto -->
+    <div class="modal fade custom-modal" id="presupuestoModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-4 border-0 shadow-lg" style="border-radius:15px;">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-file-invoice-dollar text-success me-2"></i>Crear Presupuesto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted small mb-3">Reparación ID: <strong id="presRepId"></strong></p>
+                    <form id="formPresupuesto" class="mt-1">
+                        <input type="hidden" id="presIdReparacion">
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-muted text-uppercase">Total Repuestos / Piezas (€)</label>
+                            <input type="number" step="0.01" min="0" id="presTotalPiezas" class="form-control custom-input" placeholder="0.00" required>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label small fw-bold text-muted text-uppercase">Total Mano de Obra (€)</label>
+                            <input type="number" step="0.01" min="0" id="presTotalManoObra" class="form-control custom-input" placeholder="0.00" required>
+                        </div>
+                        <div class="alert alert-light border small py-2">
+                            Gran Total: <strong id="presGranTotal">€ 0.00</strong>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100 py-2 rounded-pill fw-bold shadow-sm mt-2">
+                            <i class="fas fa-save me-1"></i> Guardar y descargar PDF
+                        </button>
                     </form>
                 </div>
             </div>
@@ -445,5 +560,12 @@
     <script src="js/api-citas.js?v=2"></script>
     <script src="js/api-reparaciones.js?v=2"></script>
     <script src="js/api-clientes.js?v=1"></script>
+    <script>
+    document.getElementById('sidebarLogout').addEventListener('click', async (e) => {
+        e.preventDefault();
+        await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+        window.location.href = 'index.html';
+    });
+    </script>
 </body>
 </html>

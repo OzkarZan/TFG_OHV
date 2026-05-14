@@ -3,44 +3,278 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Área de Cliente - AutoSync</title>
-    <!-- Mismas fuentes y estilos de index.html -->
+    <title>Mi Área - AutoSync</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./css/styles.css">
+    <style>
+        body { background: #f4f6f9; font-family: 'Manrope', sans-serif; }
+        .client-navbar { background: #fff; border-bottom: 1px solid #e8ecf0; }
+        .brand { font-family: 'Space Grotesk', sans-serif; font-weight: 700; color: #0062a0; }
+        .tab-btn { border: none; background: none; padding: 10px 20px; font-weight: 600; color: #6c757d; border-bottom: 3px solid transparent; transition: all .2s; cursor: pointer; }
+        .tab-btn.active { color: #0062a0; border-bottom-color: #0062a0; }
+        .tab-pane { display: none; }
+        .tab-pane.active { display: block; }
+        .estado-badge { font-size: .78rem; padding: 4px 10px; border-radius: 20px; font-weight: 600; }
+        .estado-En\ Proceso    { background: #d0eaff; color: #0062a0; }
+        .estado-Esperando\ Piezas { background: #fff3cd; color: #856404; }
+        .estado-Finalizada     { background: #d1f5e0; color: #1a6b3c; }
+        .estado-Pendiente      { background: #f0f0f0; color: #555; }
+        .estado-Confirmada     { background: #d1f5e0; color: #1a6b3c; }
+        .estado-Cancelada      { background: #fde8e8; color: #c0392b; }
+        .card-rep { border-left: 4px solid #0062a0; }
+        .card-rep.finalizada { border-left-color: #1a6b3c; }
+        .vehicle-pill { background: #e8f0fe; color: #0062a0; border-radius: 20px; padding: 4px 14px; font-size: .85rem; font-weight: 600; display: inline-block; }
+        .empty-state { text-align: center; padding: 48px 0; color: #aaa; }
+        .empty-state i { font-size: 3rem; margin-bottom: 16px; }
+    </style>
 </head>
-<body class="bg-light d-flex flex-column min-vh-100">
-    
-    <!-- Navbar simple para el cliente -->
-    <nav class="navbar navbar-light bg-white border-bottom shadow-sm py-3 px-4">
-        <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
-            <span class="fs-5 fw-bold text-primary">AutoSync</span>
+<body>
+
+    <!-- Navbar -->
+    <nav class="client-navbar py-3 px-4 d-flex justify-content-between align-items-center shadow-sm">
+        <a href="index.html" class="text-decoration-none">
+            <span class="brand fs-5">AutoSync</span>
         </a>
         <div class="d-flex align-items-center gap-3">
-            <span class="text-muted fw-bold d-none d-md-inline" id="clientName">Conectado como Cliente</span>
-            <a href="index.html" class="btn btn-outline-danger btn-sm rounded-pill fw-bold px-3">Cerrar Sesión</a>
+            <img id="clientAvatar" src="https://ui-avatars.com/api/?name=C&background=0055d4&color=fff"
+                 alt="Avatar" class="rounded-circle" width="36" height="36">
+            <span class="fw-bold text-dark d-none d-md-inline" id="clientName">Cargando...</span>
+            <button id="btnLogout" class="btn btn-outline-danger btn-sm rounded-pill fw-bold px-3">
+                <i class="fas fa-sign-out-alt me-1"></i> Salir
+            </button>
         </div>
     </nav>
 
-    <!-- Contenido principal centrado -->
-    <main class="flex-grow-1 d-flex justify-content-center align-items-center p-4">
-        <div class="text-center">
-            <i class="fas fa-tools fs-1 text-primary mb-4" style="opacity: 0.8;"></i>
-            <h1 class="fw-bold" style="font-family: 'Space Grotesk', sans-serif;">PANTALLA DE CLIENTE</h1>
-            <h4 class="text-muted mb-4">En Construcción</h4>
-            <p class="text-secondary mx-auto" style="max-width: 500px;">
-                Aquí podrás ver en el futuro el estado de la reparación de tu vehículo en tiempo real. 
-                Actualmente estamos trabajando en esta sección.
-            </p>
-            <a href="index.html" class="btn btn-primary-custom mt-4 px-5 py-2 shadow-sm rounded-pill">Vover al inicio</a>
+    <!-- Hero resumen -->
+    <div class="bg-primary text-white py-4 px-4">
+        <div class="container-lg">
+            <h4 class="fw-bold mb-0">Hola, <span id="heroName">...</span></h4>
+            <p class="mb-0 opacity-75 small">Aquí puedes seguir el estado de tu vehículo en tiempo real.</p>
         </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="bg-white border-bottom px-4">
+        <div class="container-lg d-flex gap-0">
+            <button class="tab-btn active" data-tab="reparaciones"><i class="fas fa-tools me-1"></i> Reparaciones</button>
+            <button class="tab-btn" data-tab="citas"><i class="fas fa-calendar-check me-1"></i> Citas</button>
+            <button class="tab-btn" data-tab="vehiculos"><i class="fas fa-car me-1"></i> Mis vehículos</button>
+            <button class="tab-btn" data-tab="presupuestos"><i class="fas fa-file-invoice-dollar me-1"></i> Presupuestos</button>
+        </div>
+    </div>
+
+    <!-- Contenido -->
+    <main class="container-lg py-4 px-4">
+
+        <!-- Tab Reparaciones -->
+        <div class="tab-pane active" id="tab-reparaciones">
+            <div id="repList">
+                <div class="text-center py-5 text-muted"><div class="spinner-border spinner-border-sm me-2"></div> Cargando...</div>
+            </div>
+        </div>
+
+        <!-- Tab Citas -->
+        <div class="tab-pane" id="tab-citas">
+            <div id="citaList">
+                <div class="text-center py-5 text-muted"><div class="spinner-border spinner-border-sm me-2"></div> Cargando...</div>
+            </div>
+        </div>
+
+        <!-- Tab Vehículos -->
+        <div class="tab-pane" id="tab-vehiculos">
+            <div id="vehList">
+                <div class="text-center py-5 text-muted"><div class="spinner-border spinner-border-sm me-2"></div> Cargando...</div>
+            </div>
+        </div>
+
+        <!-- Tab Presupuestos -->
+        <div class="tab-pane" id="tab-presupuestos">
+            <div id="presList">
+                <div class="text-center py-5 text-muted"><div class="spinner-border spinner-border-sm me-2"></div> Cargando...</div>
+            </div>
+        </div>
+
     </main>
 
-    <!-- Footer base -->
-    <footer class="bg-white border-top py-4 text-center">
-        <p class="text-muted small mb-0 fw-bold">© 2024 AutoSync. Tu taller de confianza.</p>
+    <!-- Footer -->
+    <footer class="text-center py-4 text-muted small border-top bg-white mt-4">
+        © 2024 AutoSync — Gestión de Precisión para Talleres Modernos.
     </footer>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+
+        // ── Auth check ──────────────────────────────────────────────────────────
+        let userData;
+        try {
+            const res = await fetch('/api/auth/me', { credentials: 'include' });
+            if (!res.ok) { window.location.href = 'index.html'; return; }
+            userData = await res.json();
+            if (userData.rol !== 'cliente') { window.location.href = 'dashboard.html'; return; }
+        } catch { window.location.href = 'index.html'; return; }
+
+        document.getElementById('clientName').textContent = userData.nombre_completo;
+        document.getElementById('heroName').textContent   = userData.nombre_completo.split(' ')[0];
+        document.getElementById('clientAvatar').src =
+            `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.nombre_completo)}&background=0055d4&color=fff`;
+
+        // ── Logout ───────────────────────────────────────────────────────────────
+        document.getElementById('btnLogout').addEventListener('click', async () => {
+            await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+            window.location.href = 'index.html';
+        });
+
+        // ── Tabs ─────────────────────────────────────────────────────────────────
+        const tabs = document.querySelectorAll('.tab-btn');
+        tabs.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tabs.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+                document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+            });
+        });
+
+        // ── Cargar datos ─────────────────────────────────────────────────────────
+        let reparaciones = [], citas = [], vehiculos = [];
+
+        try {
+            const res  = await fetch('/api/mi-area', { credentials: 'include' });
+            const data = await res.json();
+            reparaciones = data.reparaciones || [];
+            citas        = data.citas        || [];
+            vehiculos    = data.vehiculos    || [];
+        } catch (e) {
+            console.error('Error cargando datos:', e);
+        }
+
+        renderReparaciones(reparaciones);
+        renderCitas(citas);
+        renderVehiculos(vehiculos);
+        await renderPresupuestos();
+
+        // ── Renders ───────────────────────────────────────────────────────────────
+
+        function badge(estado) {
+            const safe = estado.replace(/[<>&"]/g, '');
+            return `<span class="estado-badge estado-${safe}">${safe}</span>`;
+        }
+
+        function esc(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        }
+
+        function renderReparaciones(list) {
+            const el = document.getElementById('repList');
+            if (list.length === 0) {
+                el.innerHTML = `<div class="empty-state"><i class="fas fa-tools"></i><br>No tienes reparaciones registradas todavía.</div>`;
+                return;
+            }
+            el.innerHTML = list.map(r => `
+                <div class="card border-0 shadow-sm mb-3 card-rep ${r.estado === 'Finalizada' ? 'finalizada' : ''}">
+                    <div class="card-body py-3">
+                        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+                            <div>
+                                <div class="fw-bold text-dark">${esc(r.modelo_auto)} <span class="text-muted fw-normal small">(${esc(r.matricula)})</span></div>
+                                <div class="small text-muted mt-1">${esc(r.descripcion_motivo)}</div>
+                                ${r.diagnostico ? `<div class="small mt-2"><strong>Diagnóstico:</strong> ${esc(r.diagnostico)}</div>` : ''}
+                                ${r.fecha_entrada ? `<div class="small text-muted mt-1"><i class="fas fa-calendar-alt me-1"></i>Entrada: ${r.fecha_entrada}</div>` : ''}
+                                ${r.fecha_salida  ? `<div class="small text-muted"><i class="fas fa-calendar-check me-1 text-success"></i>Salida: ${r.fecha_salida}</div>` : ''}
+                            </div>
+                            <div class="d-flex flex-column align-items-end gap-2">
+                                ${badge(r.estado)}
+                                ${badge(r.estado_presupuesto)}
+                            </div>
+                        </div>
+                    </div>
+                </div>`).join('');
+        }
+
+        function renderCitas(list) {
+            const el = document.getElementById('citaList');
+            if (list.length === 0) {
+                el.innerHTML = `<div class="empty-state"><i class="fas fa-calendar-times"></i><br>No tienes citas programadas.</div>`;
+                return;
+            }
+            el.innerHTML = list.map(c => {
+                const fecha = new Date(c.fecha_hora).toLocaleString('es-ES', { dateStyle: 'long', timeStyle: 'short' });
+                return `
+                <div class="card border-0 shadow-sm mb-3">
+                    <div class="card-body py-3">
+                        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+                            <div>
+                                <div class="fw-bold text-dark">${esc(c.motivo)}</div>
+                                <div class="small text-muted mt-1"><i class="fas fa-clock me-1"></i>${fecha}</div>
+                                ${c.matricula ? `<div class="small text-muted"><i class="fas fa-car me-1"></i>${esc(c.matricula)} — ${esc(c.modelo)} ${esc(c.marca||'')}</div>` : ''}
+                            </div>
+                            <div>${badge(c.estado)}</div>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function renderVehiculos(list) {
+            const el = document.getElementById('vehList');
+            if (list.length === 0) {
+                el.innerHTML = `<div class="empty-state"><i class="fas fa-car"></i><br>No tienes vehículos registrados.</div>`;
+                return;
+            }
+            el.innerHTML = `<div class="row g-3">${list.map(v => `
+                <div class="col-md-6 col-lg-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center gap-3 mb-2">
+                                <div class="bg-primary text-white rounded p-2"><i class="fas fa-car"></i></div>
+                                <div>
+                                    <div class="fw-bold">${esc(v.marca||'')} ${esc(v.modelo)}</div>
+                                    <div class="vehicle-pill mt-1">${esc(v.matricula)}</div>
+                                </div>
+                            </div>
+                            ${v.anio ? `<div class="small text-muted"><i class="fas fa-calendar me-1"></i>Año: ${esc(v.anio)}</div>` : ''}
+                        </div>
+                    </div>
+                </div>`).join('')}</div>`;
+        }
+
+        async function renderPresupuestos() {
+            const el = document.getElementById('presList');
+            try {
+                const res  = await fetch('/api/mi-area/presupuestos', { credentials: 'include' });
+                const list = await res.json();
+                if (!Array.isArray(list) || list.length === 0) {
+                    el.innerHTML = `<div class="empty-state"><i class="fas fa-file-invoice-dollar"></i><br>Aún no tienes presupuestos disponibles.</div>`;
+                    return;
+                }
+                el.innerHTML = list.map(p => `
+                    <div class="card border-0 shadow-sm mb-3">
+                        <div class="card-body py-3">
+                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                <div>
+                                    <div class="fw-bold">${esc(p.modelo_auto)} (${esc(p.matricula)})</div>
+                                    <div class="small text-muted mt-1">
+                                        <i class="fas fa-calendar me-1"></i>${p.fecha_emision}
+                                        &nbsp;·&nbsp; Total: <strong>€${parseFloat(p.gran_total).toFixed(2)}</strong>
+                                    </div>
+                                </div>
+                                <a href="/api/mi-area/presupuestos?id_reparacion=${p.id_reparacion}"
+                                   target="_blank"
+                                   class="btn btn-outline-primary btn-sm rounded-pill fw-bold px-3">
+                                    <i class="fas fa-file-pdf me-1"></i> Descargar PDF
+                                </a>
+                            </div>
+                        </div>
+                    </div>`).join('');
+            } catch (e) {
+                el.innerHTML = '<div class="alert alert-danger">Error al cargar presupuestos.</div>';
+            }
+        }
+
+    });
+    </script>
 </body>
 </html>
