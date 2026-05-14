@@ -34,13 +34,12 @@ jobs:
           BOTPRESS_WEBHOOK_TOKEN=${{ secrets.BOTPRESS_WEBHOOK_TOKEN }}
           ENVEOF
 
-      - name: Desplegar con Docker Compose (zero-downtime)
+      - name: Desplegar con Docker Compose
         run: |
-          # Rebuild backend image with latest code, then rolling-restart each service.
-          # --remove-orphans cleans up services deleted from docker-compose.yml.
-          # Named volume db_data is NOT removed — data is safe.
           docker compose build backend
           docker compose up -d --remove-orphans
+          # Reiniciar nginx para que aplique el nginx.conf actualizado
+          docker compose restart frontend
 
       - name: Limpiar imágenes Docker antiguas
         run: docker image prune -f
