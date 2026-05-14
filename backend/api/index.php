@@ -91,6 +91,10 @@ if (preg_match('/^\/auth\/login$/', $path)) {
     require_once 'controllers/BotpressWebhookController.php';
     $controller = new BotpressWebhookController();
     $controller->handleRequest($method);
+} elseif (preg_match('/^\/contacto$/', $path)) {
+    require_once 'controllers/ContactoController.php';
+    $controller = new ContactoController();
+    $controller->handleRequest($method);
 } else {
     http_response_code(404);
     echo json_encode(["message" => "Endpoint no encontrado"]);
