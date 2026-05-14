@@ -1,8 +1,9 @@
-name: Despligue de pagina al servidor automatico TFG
+name: Deploy AutoSync to production
 
 on:
   push:
     branches:
+      - main
       - master
 
 jobs:
@@ -15,17 +16,31 @@ jobs:
 
       - name: Crear archivo .env desde Secrets
         run: |
-          echo "DB_HOST=${{ secrets.DB_HOST }}" > .env
-          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
-          echo "DB_ROOT_PASSWORD=${{ secrets.DB_ROOT_PASSWORD }}" >> .env
-          echo "DB_USER=${{ secrets.DB_USER }}" >> .env
-          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          cat > .env << 'ENVEOF'
+          APP_ENV=production
+          APP_URL=${{ secrets.APP_URL }}
+          DB_HOST=db
+          DB_NAME=${{ secrets.DB_NAME }}
+          DB_ROOT_PASSWORD=${{ secrets.DB_ROOT_PASSWORD }}
+          DB_USER=${{ secrets.DB_USER }}
+          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          SMTP_HOST=${{ secrets.SMTP_HOST }}
+          SMTP_PORT=${{ secrets.SMTP_PORT }}
+          SMTP_USER=${{ secrets.SMTP_USER }}
+          SMTP_PASS=${{ secrets.SMTP_PASS }}
+          SMTP_ENCRYPTION=${{ secrets.SMTP_ENCRYPTION }}
+          MAIL_FROM=${{ secrets.MAIL_FROM }}
+          MAIL_FROM_NAME=AutoSync
+          BOTPRESS_WEBHOOK_TOKEN=${{ secrets.BOTPRESS_WEBHOOK_TOKEN }}
+          ENVEOF
 
-      - name: Desplegar con Docker Compose
+      - name: Desplegar con Docker Compose (zero-downtime)
         run: |
-          # Bajar servicios actuales, y reconstruir las imagenes
-          docker compose down
-          docker compose up -d --build
+          # Rebuild backend image with latest code, then rolling-restart each service.
+          # --remove-orphans cleans up services deleted from docker-compose.yml.
+          # Named volume db_data is NOT removed — data is safe.
+          docker compose build backend
+          docker compose up -d --remove-orphans
 
       - name: Limpiar imágenes Docker antiguas
         run: docker image prune -f

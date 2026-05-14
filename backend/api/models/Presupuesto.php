@@ -38,16 +38,41 @@ class Presupuesto {
     }
 
     public function readByReparacion() {
-        $query = "SELECT p.*, r.modelo_auto, r.matricula, c.nombre as cliente_nombre 
+        // Busca el cliente a través de la matrícula del vehículo,
+        // sin depender de que la reparación esté vinculada a una cita.
+        $query = "SELECT p.*, r.modelo_auto, r.matricula, u.nombre_completo as cliente_nombre
                   FROM " . $this->table_name . " p
                   LEFT JOIN REPARACIONES r ON p.id_reparacion = r.id_reparacion
-                  LEFT JOIN CITAS cita ON r.id_cita = cita.id_cita
-                  LEFT JOIN CLIENTES cli ON cita.id_cliente = cli.id_cliente
-                  LEFT JOIN USUARIOS c ON cli.id_usuario = c.id_usuario
+                  LEFT JOIN VEHICULOS v ON r.matricula = v.matricula
+                  LEFT JOIN CLIENTES c ON v.id_cliente = c.id_cliente
+                  LEFT JOIN USUARIOS u ON c.id_usuario = u.id_usuario
                   WHERE p.id_reparacion = ? LIMIT 0,1";
-        
+
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(1, $this->id_reparacion);
+        $stmt->execute();
+        return $stmt;
+    }
+
+    public function readAll() {
+        $query = "SELECT p.*, r.matricula, r.modelo_auto
+                  FROM " . $this->table_name . " p
+                  LEFT JOIN REPARACIONES r ON p.id_reparacion = r.id_reparacion
+                  ORDER BY p.fecha_emision DESC";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt;
+    }
+
+    public function readByClienteId($id_cliente) {
+        $query = "SELECT p.*, r.matricula, r.modelo_auto, r.descripcion_motivo
+                  FROM " . $this->table_name . " p
+                  LEFT JOIN REPARACIONES r ON p.id_reparacion = r.id_reparacion
+                  LEFT JOIN VEHICULOS v ON r.matricula = v.matricula
+                  WHERE v.id_cliente = ?
+                  ORDER BY p.fecha_emision DESC";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(1, $id_cliente);
         $stmt->execute();
         return $stmt;
     }

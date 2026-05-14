@@ -1,80 +1,114 @@
 <?php
+require_once __DIR__ . '/../libs/SmtpMailer.php';
 
 class MailHelper
 {
+    private string $from_email;
+    private string $from_name;
+    private SmtpMailer $mailer;
 
-    private string $from_email = "[EMAIL_ADDRESS]"; // HAY QUE CONSEGUIR UN CORREO EMPRESARIAL RECUERDO PARA OSCAR!! 
-    private string $from_name = "AutoSync Support";
+    public function __construct()
+    {
+        $this->from_email = getenv('MAIL_FROM')      ?: 'noreply@autosync.local';
+        $this->from_name  = getenv('MAIL_FROM_NAME') ?: 'AutoSync';
+        $this->mailer     = new SmtpMailer();
+    }
 
     public function sendWelcomeClient(string $to_email, string $to_name): bool
     {
-        $subject = "¡Bienvenido a AutoSync!";
-
-        $body = "
-        <html>
-        <head>
-            <title>Bienvenido a AutoSync</title>
-        </head>
-        <body style='font-family: Arial, sans-serif; color: #333;'>
-            <div style='background-color: #f4f4f4; padding: 20px; text-align: center;'>
-                <h2 style='color: #0062a0;'>AutoSync</h2>
-            </div>
-            <div style='padding: 20px;'>
-                <p>Hola <strong>{$to_name}</strong>,</p>
-                <p>Te damos la bienvenida a AutoSync. Gracias por registrarte en nuestra plataforma.</p>
-                <p>A partir de ahora podrás hacer un seguimiento detallado del estado de tu vehículo y tus reparaciones en tiempo real.</p>
-                <br>
-                <p>Saludos cordiales,<br>El equipo de AutoSync</p>
-            </div>
-        </body>
-        </html>
-        ";
-
-        return $this->sendMail($to_email, $subject, $body);
+        $subject = '¡Bienvenido a AutoSync!';
+        $body    = $this->template(
+            'Bienvenido a AutoSync',
+            "#0062a0",
+            "Hola <strong>{$to_name}</strong>,",
+            "Te damos la bienvenida a AutoSync. Gracias por registrarte en nuestra plataforma.",
+            "A partir de ahora podrás hacer un seguimiento detallado del estado de tu vehículo y tus reparaciones en tiempo real."
+        );
+        return $this->send($to_email, $subject, $body);
     }
 
     public function sendWelcomeEmployee(string $to_email, string $to_name): bool
     {
-        $subject = "Confirmación de Cuenta de Empleado - AutoSync";
-
-        $body = "
-        <html>
-        <head>
-            <title>Cuenta de Empleado Confirmada</title>
-        </head>
-        <body style='font-family: Arial, sans-serif; color: #333;'>
-            <div style='background-color: #0062a0; padding: 20px; text-align: center; color: white;'>
-                <h2>AutoSync Workspace</h2>
-            </div>
-            <div style='padding: 20px;'>
-                <p>Hola <strong>{$to_name}</strong>,</p>
-                <p>Tu registro como empleado ha sido validado exitosamente usando el código de acceso del taller.</p>
-                <h3 style='color: #0062a0;'>Gracias a tu compañía por confiar en AutoSync.</h3>
-                <p>Ya puedes acceder a tu panel de control para gestionar citas, presupuestos y reparaciones.</p>
-                <br>
-                <p>Atentamente,<br>El equipo de AutoSync</p>
-            </div>
-        </body>
-        </html>
-        ";
-
-        return $this->sendMail($to_email, $subject, $body);
+        $subject = 'Confirmación de Cuenta de Empleado - AutoSync';
+        $body    = $this->template(
+            'AutoSync Workspace',
+            "#1a1a2e",
+            "Hola <strong>{$to_name}</strong>,",
+            "Tu registro como empleado ha sido validado exitosamente usando el código de acceso del taller.",
+            "Ya puedes acceder a tu panel de control para gestionar citas, presupuestos y reparaciones."
+        );
+        return $this->send($to_email, $subject, $body);
     }
 
-    private function sendMail(string $to, string $subject, string $body): bool
+    public function sendPasswordReset(string $to_email, string $to_name, string $token): bool
     {
-        $headers = "MIME-Version: 1.0" . "\r\n";
-        $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-        $headers .= "From: {$this->from_name} <{$this->from_email}>" . "\r\n";
+        $app_url = rtrim(getenv('APP_URL') ?: 'http://localhost:8080', '/');
+        $link    = "{$app_url}/reset-password.html?token={$token}";
 
-        // En un entorno de producción, aquí se integraría PHPMailer o SMTP
-        // Por ahora, se usa la función nativa de PHP
-        if (mail($to, $subject, $body, $headers)) {
-            return true;
-        } else {
-            // Simulamos éxito para entorno de desarrollo local (Docker local sin SMTP)
-            error_log("No se pudo enviar correo nativo. (Entorno local o sin SMTP configurado). Destino: $to");
-            return true;
+        $subject = 'Restablecer contraseña - AutoSync';
+        $body    = $this->template(
+            'Restablecer contraseña',
+            "#0062a0",
+            "Hola <strong>{$to_name}</strong>,",
+            "Recibimos una solicitud para restablecer la contraseña de tu cuenta.",
+            "Haz clic en el botón de abajo para crear una nueva contraseña. El enlace caduca en <strong>1 hora</strong>.",
+            $link,
+            'Restablecer contraseña'
+        );
+        return $this->send($to_email, $subject, $body);
+    }
+
+    // ---------- privados ----------
+
+    private function send(string $to, string $subject, string $body): bool
+    {
+        $ok = $this->mailer->send($to, $subject, $body, $this->from_email, $this->from_name);
+        if (!$ok) {
+            error_log("MailHelper: no se pudo enviar email a {$to} (asunto: {$subject})");
         }
+        return $ok;
+    }
+
+    private function template(
+        string $title,
+        string $headerColor,
+        string $greeting,
+        string $line1,
+        string $line2,
+        string $btnUrl = '',
+        string $btnLabel = ''
+    ): string {
+        $btn = $btnUrl ? "
+            <div style='text-align:center;margin-top:24px;'>
+                <a href='{$btnUrl}'
+                   style='background:{$headerColor};color:#fff;padding:12px 28px;
+                          text-decoration:none;border-radius:6px;font-weight:bold;
+                          display:inline-block;'>
+                    {$btnLabel}
+                </a>
+            </div>" : '';
+
+        return "
+        <html>
+        <body style='font-family:Arial,sans-serif;color:#333;background:#f4f4f4;margin:0;padding:0;'>
+          <div style='max-width:580px;margin:32px auto;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.1);'>
+            <div style='background:{$headerColor};padding:24px;text-align:center;'>
+                <h2 style='color:#fff;margin:0;'>{$title}</h2>
+            </div>
+            <div style='padding:28px 32px;'>
+                <p>{$greeting}</p>
+                <p>{$line1}</p>
+                <p>{$line2}</p>
+                {$btn}
+                <br>
+                <p style='color:#888;font-size:13px;'>Si no solicitaste este correo, ignóralo.</p>
+                <p>Saludos,<br><strong>El equipo de AutoSync</strong></p>
+            </div>
+            <div style='background:#f9f9f9;padding:12px;text-align:center;font-size:12px;color:#aaa;'>
+                © " . date('Y') . " AutoSync
+            </div>
+          </div>
+        </body>
+        </html>";
     }
 }

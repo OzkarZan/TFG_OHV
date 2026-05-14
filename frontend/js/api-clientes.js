@@ -90,6 +90,47 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    const formAddCliente = document.getElementById('formAddCliente');
+    if (formAddCliente) {
+        formAddCliente.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const payload = {
+                nombre_completo: document.getElementById('addCliNombre').value,
+                correo: document.getElementById('addCliCorreo').value,
+                telefono: document.getElementById('addCliTelefono').value,
+                direccion: document.getElementById('addCliDireccion').value,
+                matricula: document.getElementById('addCliMatricula').value,
+                modelo: document.getElementById('addCliModelo').value,
+                marca: document.getElementById('addCliMarca').value,
+                anio: document.getElementById('addCliAnio').value
+            };
+
+            try {
+                const res = await fetch('/api/clientes', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify(payload)
+                });
+
+                if (res.ok) {
+                    const addModal = bootstrap.Modal.getInstance(document.getElementById('addClienteModal'));
+                    if (addModal) addModal.hide();
+                    formAddCliente.reset();
+                    await window.cargarClientes();
+                    alert("Cliente creado correctamente.");
+                } else {
+                    const errorData = await res.json();
+                    alert("Error: " + (errorData.message || "No se pudo crear el cliente"));
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Fallo de red al intentar crear el cliente.");
+            }
+        });
+    }
+
     if (btnDeleteCli) {
         btnDeleteCli.addEventListener('click', async () => {
             const id = document.getElementById('cliId').value;
