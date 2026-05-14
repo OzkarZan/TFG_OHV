@@ -58,6 +58,20 @@ class MailHelper
         return $this->send($to_email, $subject, $body);
     }
 
+    public function sendContactForm(string $from_name, string $from_email, string $asunto, string $mensaje): bool
+    {
+        $subject = "[AutoSync Contacto] {$asunto}";
+        $safe_msg = nl2br(htmlspecialchars($mensaje));
+        $body = $this->template(
+            'Nuevo mensaje de contacto',
+            '#0062a0',
+            "Mensaje de <strong>{$from_name}</strong>:",
+            "Email de contacto: <a href='mailto:{$from_email}'>{$from_email}</a>",
+            $safe_msg
+        );
+        return $this->send('autosyncohv@gmail.com', $subject, $body);
+    }
+
     // ---------- privados ----------
 
     private function send(string $to, string $subject, string $body): bool
