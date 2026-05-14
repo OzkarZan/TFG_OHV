@@ -155,4 +155,68 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // ── Botones hero / CTA: si hay sesión redirige, si no abre login ──
+    async function loginOrRedirect() {
+        try {
+            const res = await fetch('/api/auth/me', { credentials: 'include' });
+            if (res.ok) {
+                const data = await res.json();
+                window.location.href = (data.rol === 'admin' || data.rol === 'empleado')
+                    ? 'dashboard.html' : 'client.html';
+            } else {
+                new bootstrap.Modal(document.getElementById('loginModal')).show();
+            }
+        } catch {
+            new bootstrap.Modal(document.getElementById('loginModal')).show();
+        }
+    }
+
+    document.getElementById('btnReservar')?.addEventListener('click', loginOrRedirect);
+    document.getElementById('btnConsultar')?.addEventListener('click', loginOrRedirect);
+    document.getElementById('btnEmpezar')?.addEventListener('click', () => {
+        new bootstrap.Modal(document.getElementById('loginModal')).show();
+    });
+    document.getElementById('btnContactarVentas')?.addEventListener('click', () => {
+        document.getElementById('contacto').scrollIntoView({ behavior: 'smooth' });
+    });
+
+    // ── Formulario de contacto ──
+    const contactForm = document.getElementById('contactForm');
+    if (contactForm) {
+        contactForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnContactoSubmit');
+            const originalLabel = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = 'Enviando...';
+
+            try {
+                const res = await fetch('/api/contacto', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        nombre:  document.getElementById('contactNombre').value,
+                        email:   document.getElementById('contactEmail').value,
+                        asunto:  document.getElementById('contactAsunto').value,
+                        mensaje: document.getElementById('contactMensaje').value
+                    })
+                });
+
+                if (res.ok) {
+                    contactForm.classList.add('d-none');
+                    document.getElementById('contactSuccess').classList.remove('d-none');
+                } else {
+                    const data = await res.json();
+                    alert('Error: ' + (data.message || 'No se pudo enviar el mensaje.'));
+                    btn.disabled = false;
+                    btn.textContent = originalLabel;
+                }
+            } catch {
+                alert('Error de conexión. Escríbenos directamente a autosyncohv@gmail.com');
+                btn.disabled = false;
+                btn.textContent = originalLabel;
+            }
+        });
+    }
 });
