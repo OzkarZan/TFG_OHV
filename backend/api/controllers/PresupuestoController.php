@@ -211,11 +211,11 @@ class PresupuestoController {
         $pdf->Rect(0, 0, 210, 28, 'F');
 
         $pdf->SetY(8);
-        $pdf->SetFont('Arial', 'B', 22);
+        $pdf->SetFont('Helvetica', 'B', 22);
         $pdf->SetTextColor(255, 255, 255);
         $pdf->Cell(0, 10, 'AUTOSYNC', 0, 1, 'C');
 
-        $pdf->SetFont('Arial', '', 10);
+        $pdf->SetFont('Helvetica', '', 10);
         $pdf->SetTextColor(200, 220, 255);
         $pdf->Cell(0, 6, $this->latin('Taller Mecánico'), 0, 1, 'C');
 
@@ -223,7 +223,7 @@ class PresupuestoController {
         $pdf->SetTextColor(0, 0, 0);
 
         // Presupuesto number (top right area)
-        $pdf->SetFont('Arial', 'B', 13);
+        $pdf->SetFont('Helvetica', 'B', 13);
         $pdf->SetTextColor(0, 62, 133);
         $pdf->Cell(0, 8, $this->latin('PRESUPUESTO #' . $id_presupuesto), 0, 1, 'R');
 
@@ -231,7 +231,7 @@ class PresupuestoController {
         $pdf->SetTextColor(50, 50, 50);
 
         // ── Client / Vehicle Info ──
-        $pdf->SetFont('Arial', '', 10);
+        $pdf->SetFont('Helvetica', '', 10);
         $pdf->Ln(2);
 
         $fechaStr = $row['fecha_emision'] ? date('d/m/Y', strtotime($row['fecha_emision'])) : date('d/m/Y');
@@ -267,14 +267,14 @@ class PresupuestoController {
         // ── Line items table header ──
         $pdf->SetFillColor(0, 62, 133);
         $pdf->SetTextColor(255, 255, 255);
-        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->SetFont('Helvetica', 'B', 10);
         $pdf->Cell(130, 8, $this->latin('SERVICIO / DESCRIPCIÓN'), 1, 0, 'C', true);
         $pdf->Cell(20, 8, 'Cant.', 1, 0, 'C', true);
         $pdf->Cell(20, 8, $this->latin('P.Unit'), 1, 0, 'C', true);
         $pdf->Cell(25, 8, 'Importe', 1, 1, 'C', true);
 
         // ── Line items rows ──
-        $pdf->SetFont('Arial', '', 9);
+        $pdf->SetFont('Helvetica', '', 9);
         $fill = false;
         foreach ($detalles as $d) {
             $pdf->SetFillColor($fill ? 245 : 255, $fill ? 245 : 255, $fill ? 245 : 255);
@@ -305,7 +305,7 @@ class PresupuestoController {
         $valW   = 35;
         $xStart = 15 + ($pageW - $labelW - $valW);
 
-        $pdf->SetFont('Arial', '', 10);
+        $pdf->SetFont('Helvetica', '', 10);
         $pdf->SetTextColor(50, 50, 50);
 
         $this->pdfSummaryRow($pdf, $xStart, $labelW, $valW, 'Material / Repuestos:', floatval($row['total_piezas']));
@@ -313,7 +313,7 @@ class PresupuestoController {
         $this->pdfSummaryRow($pdf, $xStart, $labelW, $valW, 'Servicios Terceros:', floatval($row['servicios_terceros'] ?? 0));
 
         // Gran Total
-        $pdf->SetFont('Arial', 'B', 11);
+        $pdf->SetFont('Helvetica', 'B', 11);
         $pdf->SetFillColor(0, 62, 133);
         $pdf->SetTextColor(255, 255, 255);
         $pdf->SetX($xStart);
@@ -323,21 +323,21 @@ class PresupuestoController {
         // ── Notas ──
         if (!empty($row['notas'])) {
             $pdf->Ln(4);
-            $pdf->SetFont('Arial', 'B', 10);
+            $pdf->SetFont('Helvetica', 'B', 10);
             $pdf->SetTextColor(50, 50, 50);
             $pdf->Cell(0, 6, 'Notas:', 0, 1, 'L');
-            $pdf->SetFont('Arial', '', 9);
+            $pdf->SetFont('Helvetica', '', 9);
             $pdf->MultiCell(0, 5, $this->latin($row['notas']), 1, 'L');
         }
 
         // ── Mechanic footer ──
         $pdf->Ln(6);
-        $pdf->SetFont('Arial', '', 10);
+        $pdf->SetFont('Helvetica', '', 10);
         $pdf->SetTextColor(80, 80, 80);
         $mecNombre = $row['mecanico_nombre'] ?? '';
         $pdf->Cell(0, 6, $this->latin('Elaborado por: ' . ($mecNombre ?: 'Taller AutoSync')), 0, 1, 'L');
 
-        $pdf->SetFont('Arial', 'I', 8);
+        $pdf->SetFont('Helvetica', 'I', 8);
         $pdf->SetTextColor(150, 150, 150);
         $pdf->Cell(0, 5, $this->latin('AutoSync - Taller Mecánico'), 0, 1, 'C');
 
@@ -368,44 +368,44 @@ class PresupuestoController {
 
     // Helper: single label+value row
     private function pdfInfoRow($pdf, $label, $value) {
-        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->SetFont('Helvetica', 'B', 10);
         $pdf->Cell(40, 6, $label, 0, 0, 'L');
-        $pdf->SetFont('Arial', '', 10);
+        $pdf->SetFont('Helvetica', '', 10);
         $pdf->Cell(0, 6, $value, 0, 1, 'L');
     }
 
     // Helper: two label+value pairs in one row
     private function pdfTwoCol($pdf, $l1, $v1, $l2, $v2) {
-        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->SetFont('Helvetica', 'B', 10);
         $pdf->Cell(25, 6, $l1, 0, 0, 'L');
-        $pdf->SetFont('Arial', '', 10);
+        $pdf->SetFont('Helvetica', '', 10);
         $pdf->Cell(65, 6, $v1, 0, 0, 'L');
-        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->SetFont('Helvetica', 'B', 10);
         $pdf->Cell(30, 6, $l2, 0, 0, 'L');
-        $pdf->SetFont('Arial', '', 10);
+        $pdf->SetFont('Helvetica', '', 10);
         $pdf->Cell(0, 6, $v2, 0, 1, 'L');
     }
 
     // Helper: three label+value pairs in one row
     private function pdfThreeCol($pdf, $l1, $v1, $l2, $v2, $l3, $v3) {
-        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->SetFont('Helvetica', 'B', 10);
         $pdf->Cell(20, 6, $l1, 0, 0, 'L');
-        $pdf->SetFont('Arial', '', 10);
+        $pdf->SetFont('Helvetica', '', 10);
         $pdf->Cell(40, 6, $v1, 0, 0, 'L');
-        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->SetFont('Helvetica', 'B', 10);
         $pdf->Cell(20, 6, $l2, 0, 0, 'L');
-        $pdf->SetFont('Arial', '', 10);
+        $pdf->SetFont('Helvetica', '', 10);
         $pdf->Cell(40, 6, $v2, 0, 0, 'L');
-        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->SetFont('Helvetica', 'B', 10);
         $pdf->Cell(15, 6, $l3, 0, 0, 'L');
-        $pdf->SetFont('Arial', '', 10);
+        $pdf->SetFont('Helvetica', '', 10);
         $pdf->Cell(0, 6, $v3, 0, 1, 'L');
     }
 
     // Helper: right-aligned summary row
     private function pdfSummaryRow($pdf, $xStart, $labelW, $valW, $label, $amount) {
         $pdf->SetX($xStart);
-        $pdf->SetFont('Arial', '', 10);
+        $pdf->SetFont('Helvetica', '', 10);
         $pdf->Cell($labelW, 7, $this->latin($label), 1, 0, 'R');
         $pdf->Cell($valW,   7, $this->latin(number_format($amount, 2) . ' EUR'), 1, 1, 'R');
     }
@@ -423,21 +423,21 @@ class PresupuestoController {
             $pdf = new FPDF();
             $pdf->AddPage();
 
-            $pdf->SetFont('Arial', 'B', 20);
+            $pdf->SetFont('Helvetica', 'B', 20);
             $pdf->SetTextColor(0, 98, 160);
             $pdf->Cell(0, 10, 'AutoSync', 0, 1, 'C');
 
-            $pdf->SetFont('Arial', '', 12);
+            $pdf->SetFont('Helvetica', '', 12);
             $pdf->SetTextColor(50, 50, 50);
             $pdf->Cell(0, 8, $this->latin('Taller Mecánico de Precisión'), 0, 1, 'C');
             $pdf->Ln(10);
 
-            $pdf->SetFont('Arial', 'B', 16);
+            $pdf->SetFont('Helvetica', 'B', 16);
             $pdf->SetTextColor(0, 0, 0);
             $pdf->Cell(0, 10, 'PRESUPUESTO DE REPARACION', 0, 1, 'C');
             $pdf->Ln(10);
 
-            $pdf->SetFont('Arial', '', 12);
+            $pdf->SetFont('Helvetica', '', 12);
             $pdf->Cell(50, 8, 'Fecha:', 0, 0);
             $pdf->Cell(0, 8, $row['fecha_emision'], 0, 1);
 
@@ -448,19 +448,19 @@ class PresupuestoController {
             $pdf->Cell(0, 8, $this->latin($row['modelo_auto'] . ' (' . $row['matricula'] . ')'), 0, 1);
             $pdf->Ln(10);
 
-            $pdf->SetFont('Arial', 'B', 12);
+            $pdf->SetFont('Helvetica', 'B', 12);
             $pdf->SetFillColor(240, 240, 240);
             $pdf->Cell(140, 10, $this->latin('Descripción'), 1, 0, 'C', true);
             $pdf->Cell(50, 10, 'Importe', 1, 1, 'C', true);
 
-            $pdf->SetFont('Arial', '', 12);
+            $pdf->SetFont('Helvetica', '', 12);
             $pdf->Cell(140, 10, 'Total Repuestos y Piezas', 1, 0, 'L');
             $pdf->Cell(50, 10, $this->latin('EUR ' . number_format($row['total_piezas'], 2)), 1, 1, 'R');
 
             $pdf->Cell(140, 10, 'Total Mano de Obra', 1, 0, 'L');
             $pdf->Cell(50, 10, $this->latin('EUR ' . number_format($row['total_mano_obra'], 2)), 1, 1, 'R');
 
-            $pdf->SetFont('Arial', 'B', 14);
+            $pdf->SetFont('Helvetica', 'B', 14);
             $pdf->Cell(140, 10, 'GRAN TOTAL', 1, 0, 'R');
             $pdf->SetTextColor(0, 128, 0);
             $pdf->Cell(50, 10, $this->latin('EUR ' . number_format($row['gran_total'], 2)), 1, 1, 'R');
