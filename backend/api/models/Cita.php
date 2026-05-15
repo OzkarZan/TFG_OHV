@@ -20,7 +20,16 @@ class Cita {
     }
 
     public function readAll() {
-        $query = "SELECT * FROM " . $this->table_name . " ORDER BY fecha_hora ASC";
+        $query = "SELECT c.*,
+                    u.nombre_completo AS nombre_cliente,
+                    v.matricula       AS matricula,
+                    v.modelo          AS modelo,
+                    v.marca           AS marca
+                  FROM CITAS c
+                  LEFT JOIN CLIENTES cl ON c.id_cliente = cl.id_cliente
+                  LEFT JOIN USUARIOS  u  ON cl.id_usuario = u.id_usuario
+                  LEFT JOIN VEHICULOS v  ON c.id_vehiculo = v.id_vehiculo
+                  ORDER BY c.fecha_hora ASC";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt;
