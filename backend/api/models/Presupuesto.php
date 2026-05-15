@@ -75,16 +75,17 @@ class Presupuesto {
         return false;
     }
 
-    public function addDetalle($id_presupuesto, $tipo, $desc, $qty, $price) {
+    public function addDetalle($id_presupuesto, $tipo, $desc, $qty, $price, $id_repuesto = null) {
         $query = "INSERT INTO PRESUPUESTO_DETALLES
-                  (id_presupuesto, tipo_item, descripcion, cantidad, precio_unitario)
-                  VALUES (:id_presupuesto, :tipo_item, :descripcion, :cantidad, :precio_unitario)";
+                  (id_presupuesto, tipo_item, descripcion, cantidad, precio_unitario, id_repuesto)
+                  VALUES (:id_presupuesto, :tipo_item, :descripcion, :cantidad, :precio_unitario, :id_repuesto)";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":id_presupuesto",  $id_presupuesto);
         $stmt->bindParam(":tipo_item",       $tipo);
         $stmt->bindParam(":descripcion",     $desc);
         $stmt->bindParam(":cantidad",        $qty);
         $stmt->bindParam(":precio_unitario", $price);
+        $stmt->bindParam(":id_repuesto",     $id_repuesto);
         return $stmt->execute();
     }
 
@@ -219,14 +220,22 @@ class Presupuesto {
     }
 
     public function readByClienteId($id_cliente) {
-        $query = "SELECT p.*, r.matricula, r.modelo_auto, r.descripcion_motivo
+        $query = "SELECT p.id_presupuesto, p.fecha_emision, p.gran_total, p.estado,
+                    COALESCE(
+                        (SELECT CONCAT(v2.matricula, ' - ', v2.modelo) FROM VEHICULOS v2 WHERE v2.id_vehiculo = p.id_vehiculo),
+                        (SELECT CONCAT(r2.matricula, ' - ', r2.modelo_auto) FROM REPARACIONES r2 WHERE r2.id_reparacion = p.id_reparacion)
+                    ) as vehiculo_str
                   FROM " . $this->table_name . " p
-                  LEFT JOIN REPARACIONES r ON p.id_reparacion = r.id_reparacion
-                  LEFT JOIN VEHICULOS v ON r.matricula = v.matricula
-                  WHERE v.id_cliente = ?
+                  WHERE p.id_cliente = ?
+                     OR p.id_reparacion IN (
+                         SELECT r.id_reparacion FROM REPARACIONES r
+                         JOIN VEHICULOS v ON r.matricula = v.matricula
+                         WHERE v.id_cliente = ?
+                     )
                   ORDER BY p.fecha_emision DESC";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(1, $id_cliente);
+        $stmt->bindParam(2, $id_cliente);
         $stmt->execute();
         return $stmt;
     }
