@@ -75,16 +75,17 @@ class Presupuesto {
         return false;
     }
 
-    public function addDetalle($id_presupuesto, $tipo, $desc, $qty, $price) {
+    public function addDetalle($id_presupuesto, $tipo, $desc, $qty, $price, $id_repuesto = null) {
         $query = "INSERT INTO PRESUPUESTO_DETALLES
-                  (id_presupuesto, tipo_item, descripcion, cantidad, precio_unitario)
-                  VALUES (:id_presupuesto, :tipo_item, :descripcion, :cantidad, :precio_unitario)";
+                  (id_presupuesto, tipo_item, descripcion, cantidad, precio_unitario, id_repuesto)
+                  VALUES (:id_presupuesto, :tipo_item, :descripcion, :cantidad, :precio_unitario, :id_repuesto)";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":id_presupuesto",  $id_presupuesto);
         $stmt->bindParam(":tipo_item",       $tipo);
         $stmt->bindParam(":descripcion",     $desc);
         $stmt->bindParam(":cantidad",        $qty);
         $stmt->bindParam(":precio_unitario", $price);
+        $stmt->bindParam(":id_repuesto",     $id_repuesto);
         return $stmt->execute();
     }
 

@@ -150,14 +150,39 @@ class PresupuestoController {
         if ($this->presupuesto->createStandalone()) {
             $id_presupuesto = $this->presupuesto->id_presupuesto;
 
-            // Insert line items
+            // Insert line items + handle stock / solicitudes
             foreach ($lineas as $linea) {
-                $tipo  = ($linea->tipo ?? 'Mano de Obra') === 'Repuesto' ? 'Repuesto' : 'Mano de Obra';
-                $desc  = trim($linea->descripcion ?? '');
-                $qty   = floatval($linea->cantidad ?? 1);
-                $price = floatval($linea->precio_unitario ?? 0);
-                if ($desc !== '') {
-                    $this->presupuesto->addDetalle($id_presupuesto, $tipo, $desc, $qty, $price);
+                $tipo        = ($linea->tipo ?? 'Mano de Obra') === 'Repuesto' ? 'Repuesto' : 'Mano de Obra';
+                $desc        = trim($linea->descripcion ?? '');
+                $qty         = floatval($linea->cantidad ?? 1);
+                $price       = floatval($linea->precio_unitario ?? 0);
+                $id_repuesto = !empty($linea->id_repuesto) ? intval($linea->id_repuesto) : null;
+
+                if ($desc === '') continue;
+
+                $this->presupuesto->addDetalle($id_presupuesto, $tipo, $desc, $qty, $price, $id_repuesto);
+
+                if ($tipo === 'Repuesto' && $id_repuesto !== null) {
+                    $stmtPieza = $this->db->prepare(
+                        "SELECT stock_actual, nombre_pieza FROM REPUESTOS WHERE id_repuesto = ?"
+                    );
+                    $stmtPieza->execute([$id_repuesto]);
+                    $pieza = $stmtPieza->fetch(PDO::FETCH_ASSOC);
+
+                    if ($pieza && floatval($pieza['stock_actual']) >= $qty) {
+                        // Hay stock: descontar
+                        $this->db->prepare(
+                            "UPDATE REPUESTOS SET stock_actual = stock_actual - ? WHERE id_repuesto = ?"
+                        )->execute([$qty, $id_repuesto]);
+                    } else {
+                        // Sin stock suficiente: crear solicitud de pedido
+                        $nombre = $pieza ? $pieza['nombre_pieza'] : $desc;
+                        $this->db->prepare(
+                            "INSERT INTO SOLICITUDES_PIEZAS
+                             (id_repuesto, nombre_pieza, cantidad, estado, fecha_solicitud)
+                             VALUES (?, ?, ?, 'Pendiente', CURDATE())"
+                        )->execute([$id_repuesto, $nombre, $qty]);
+                    }
                 }
             }
 
