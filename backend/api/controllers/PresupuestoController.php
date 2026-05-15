@@ -48,13 +48,18 @@ class PresupuestoController {
     }
 
     private function readAllFull() {
-        $stmt = $this->presupuesto->readAllFull();
-        $arr = [];
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            array_push($arr, $row);
+        try {
+            $stmt = $this->presupuesto->readAllFull();
+            $arr = [];
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                array_push($arr, $row);
+            }
+            http_response_code(200);
+            echo json_encode($arr);
+        } catch (Exception $e) {
+            http_response_code(503);
+            echo json_encode(["message" => "Error al consultar presupuestos. Asegúrate de haber ejecutado la migración add_presupuestos_standalone.sql. Detalle: " . $e->getMessage()]);
         }
-        http_response_code(200);
-        echo json_encode($arr);
     }
 
     private function create($data = null) {
