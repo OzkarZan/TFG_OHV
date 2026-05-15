@@ -46,6 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
             menuInventario.classList.remove('sidebar-link');
             viewInventario.classList.remove('d-none');
             if(window.cargarInventario) window.cargarInventario();
+            if(window.cargarSolicitudes) window.cargarSolicitudes();
         });
 
         menuCalendario.addEventListener('click', (e) => {
@@ -300,5 +301,69 @@ document.addEventListener('DOMContentLoaded', () => {
     // Llamar al inicio
     if (viewDashboard && !viewDashboard.classList.contains('d-none')) {
         cargarColaTrabajos();
+    }
+
+    // ===== 4. SOLICITUDES DE PIEZAS =====
+    const SOLICITUDES_URL = '/api/solicitudes.php';
+
+    window.cargarSolicitudes = async function () {
+        const tbody = document.getElementById('solicitudesTableBody');
+        const badge = document.getElementById('solicitudesBadge');
+        if (!tbody) return;
+        try {
+            const res  = await fetch(SOLICITUDES_URL, { credentials: 'include' });
+            const list = await res.json();
+            const pendientes = list.filter(s => s.estado !== 'Recibido').length;
+            if (badge) badge.textContent = pendientes > 0 ? pendientes + ' pendientes' : '';
+
+            if (!list.length) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-3">No hay solicitudes registradas.</td></tr>';
+                return;
+            }
+
+            const estadoMap = { Pendiente: 'bg-warning text-dark', Pedido: 'bg-info text-dark', Recibido: 'bg-success' };
+            tbody.innerHTML = list.map(s => `
+                <tr class="${s.estado === 'Recibido' ? 'opacity-50' : ''}">
+                    <td class="ps-4 text-start fw-bold">${escSol(s.nombre_pieza)}</td>
+                    <td>${parseFloat(s.cantidad)} uds</td>
+                    <td class="text-muted small">${s.fecha_solicitud || '—'}</td>
+                    <td><span class="badge ${estadoMap[s.estado] || 'bg-secondary'}">${s.estado}</span></td>
+                    <td class="text-end pe-4">
+                        ${s.estado === 'Pendiente' ? `
+                        <button class="btn btn-sm btn-outline-info rounded-pill px-2 me-1"
+                                onclick="window.actualizarSolicitud(${s.id_solicitud},'Pedido',${s.id_repuesto||'null'},${s.cantidad})"
+                                title="Marcar como pedido">
+                            <i class="fas fa-shopping-cart me-1"></i>Pedido
+                        </button>` : ''}
+                        ${s.estado === 'Pedido' ? `
+                        <button class="btn btn-sm btn-outline-success rounded-pill px-2"
+                                onclick="window.actualizarSolicitud(${s.id_solicitud},'Recibido',${s.id_repuesto||'null'},${s.cantidad})"
+                                title="Marcar como recibido y actualizar stock">
+                            <i class="fas fa-check me-1"></i>Recibido
+                        </button>` : ''}
+                    </td>
+                </tr>`).join('');
+        } catch (e) {
+            if (tbody) tbody.innerHTML = '<tr><td colspan="5" class="text-center text-danger py-3">Error cargando solicitudes.</td></tr>';
+        }
+    };
+
+    window.actualizarSolicitud = async function (id, estado, id_repuesto, cantidad) {
+        try {
+            await fetch(SOLICITUDES_URL, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ id_solicitud: id, estado, id_repuesto, cantidad_recibida: cantidad })
+            });
+            await window.cargarSolicitudes();
+            if (estado === 'Recibido' && window.cargarInventario) window.cargarInventario();
+        } catch (e) {
+            alert('Error actualizando solicitud.');
+        }
+    };
+
+    function escSol(str) {
+        return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     }
 });
