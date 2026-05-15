@@ -14,7 +14,7 @@ CREATE TABLE `USUARIOS` (
   `id_usuario` int PRIMARY KEY AUTO_INCREMENT,
   `email` varchar(100) UNIQUE NOT NULL,
   `password_hash` varchar(255) NOT NULL,
-  `rol` ENUM('cliente', 'empleado', 'admin') NOT NULL DEFAULT 'cliente',
+  `rol` ENUM('cliente', 'empleado', 'admin', 'mecanico') NOT NULL DEFAULT 'cliente',
   `nombre_completo` varchar(100) NOT NULL,
   `fecha_registro` datetime DEFAULT CURRENT_TIMESTAMP
 );
@@ -47,6 +47,7 @@ CREATE TABLE `CITAS` (
   `id_cliente` int,
   `id_vehiculo` int,
   `id_taller` int,
+  `id_mecanico` int NULL,
   FOREIGN KEY (`id_cliente`) REFERENCES `CLIENTES` (`id_cliente`),
   FOREIGN KEY (`id_vehiculo`) REFERENCES `VEHICULOS` (`id_vehiculo`),
   FOREIGN KEY (`id_taller`) REFERENCES `TALLER` (`id_taller`)
@@ -87,6 +88,21 @@ CREATE TABLE `MECANICOS` (
   FOREIGN KEY (`id_usuario`) REFERENCES `USUARIOS` (`id_usuario`) ON DELETE CASCADE,
   FOREIGN KEY (`id_taller`) REFERENCES `TALLER` (`id_taller`)
 );
+
+CREATE TABLE `MECANICO_HORARIOS` (
+  `id_horario`  int     PRIMARY KEY AUTO_INCREMENT,
+  `id_mecanico` int     NOT NULL,
+  `dia_semana`  TINYINT NOT NULL COMMENT '1=Lunes … 7=Domingo',
+  `hora_inicio` TIME    NOT NULL,
+  `hora_fin`    TIME    NOT NULL,
+  UNIQUE KEY `uniq_mecanico_dia` (`id_mecanico`, `dia_semana`),
+  FOREIGN KEY (`id_mecanico`) REFERENCES `MECANICOS` (`id_mecanico`) ON DELETE CASCADE
+);
+
+-- Deferred FK: CITAS.id_mecanico → MECANICOS (defined after MECANICOS)
+ALTER TABLE `CITAS`
+  ADD CONSTRAINT `fk_cita_mecanico`
+  FOREIGN KEY (`id_mecanico`) REFERENCES `MECANICOS` (`id_mecanico`) ON DELETE SET NULL;
 
 CREATE TABLE `REPUESTOS` (
   `id_repuesto` int PRIMARY KEY AUTO_INCREMENT,

@@ -3,41 +3,30 @@ const API_URL = '/api/repuestos.php';
 document.addEventListener('DOMContentLoaded', () => {
 
     // ===== 1. GESTIÓN DE VISTAS (SPA - Arquitectura de una sola página) =====
-    const menuDashboard = document.getElementById('menuDashboard');
-    const menuInventario = document.getElementById('menuInventario');
-    const menuCalendario = document.getElementById('menuCalendario');
+    const menuDashboard    = document.getElementById('menuDashboard');
+    const menuInventario   = document.getElementById('menuInventario');
+    const menuCalendario   = document.getElementById('menuCalendario');
     const menuReparaciones = document.getElementById('menuReparaciones');
-    const menuClientes = document.getElementById('menuClientes');
+    const menuClientes     = document.getElementById('menuClientes');
+    const menuMecanicos    = document.getElementById('menuMecanicos');
 
-    const viewDashboard = document.getElementById('viewDashboard');
-    const viewInventario = document.getElementById('viewInventario');
-    const viewCalendario = document.getElementById('viewCalendario');
+    const viewDashboard    = document.getElementById('viewDashboard');
+    const viewInventario   = document.getElementById('viewInventario');
+    const viewCalendario   = document.getElementById('viewCalendario');
     const viewReparaciones = document.getElementById('viewReparaciones');
-    const viewClientes = document.getElementById('viewClientes');
+    const viewClientes     = document.getElementById('viewClientes');
+    const viewMecanicos    = document.getElementById('viewMecanicos');
+
+    const allMenus = [menuDashboard, menuInventario, menuCalendario, menuReparaciones, menuClientes, menuMecanicos];
+    const allViews = [viewDashboard, viewInventario, viewCalendario, viewReparaciones, viewClientes, viewMecanicos];
 
     function hideAllViews() {
-        viewDashboard.classList.add('d-none');
-        viewInventario.classList.add('d-none');
-        viewCalendario.classList.add('d-none');
-        viewReparaciones.classList.add('d-none');
-        viewClientes.classList.add('d-none');
-        
-        menuDashboard.classList.remove('active');
-        menuInventario.classList.remove('active');
-        menuCalendario.classList.remove('active');
-        menuReparaciones.classList.remove('active');
-        menuClientes.classList.remove('active');
-        
-        menuDashboard.classList.add('sidebar-link');
-        menuInventario.classList.add('sidebar-link');
-        menuCalendario.classList.add('sidebar-link');
-        menuReparaciones.classList.add('sidebar-link');
-        menuClientes.classList.add('sidebar-link');
-        
+        allViews.forEach(v => { if (v) v.classList.add('d-none'); });
+        allMenus.forEach(m => { if (m) { m.classList.remove('active'); m.classList.add('sidebar-link'); } });
         viewDashboard.classList.remove('d-flex');
     }
 
-    if (menuDashboard && menuInventario && menuCalendario && menuReparaciones && menuClientes) {
+    if (menuDashboard && menuInventario && menuCalendario && menuReparaciones && menuClientes && menuMecanicos) {
         menuDashboard.addEventListener('click', (e) => {
             e.preventDefault();
             hideAllViews();
@@ -83,7 +72,16 @@ document.addEventListener('DOMContentLoaded', () => {
             menuClientes.classList.add('active');
             menuClientes.classList.remove('sidebar-link');
             viewClientes.classList.remove('d-none');
-            if(window.cargarClientes) window.cargarClientes();
+            if (window.cargarClientes) window.cargarClientes();
+        });
+
+        menuMecanicos.addEventListener('click', (e) => {
+            e.preventDefault();
+            hideAllViews();
+            menuMecanicos.classList.add('active');
+            menuMecanicos.classList.remove('sidebar-link');
+            viewMecanicos.classList.remove('d-none');
+            if (window.cargarMecanicos) window.cargarMecanicos();
         });
     }
 

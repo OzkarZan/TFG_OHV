@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         try {
             const res = await fetch('/api/citas', { credentials: 'include' });
             const data = await res.json();
-            
+
             const events = data.map(cita => {
                 let color = '#0055d4'; // Media
                 if (cita.prioridad === 'Alta') color = '#dc3545';
@@ -71,7 +71,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                         estado: cita.estado,
                         prioridad: cita.prioridad,
                         id_cliente: cita.id_cliente,
-                        id_vehiculo: cita.id_vehiculo
+                        id_vehiculo: cita.id_vehiculo,
+                        id_mecanico: cita.id_mecanico
                     }
                 };
             });
@@ -80,6 +81,56 @@ document.addEventListener('DOMContentLoaded', async () => {
             failureCallback(e);
         }
     }
+
+    // ── Mechanic selector for cita modal ──
+
+    window.cargarMecanicosParaCita = async function (selectedId = null) {
+        const select = document.getElementById('citaMecanico');
+        if (!select) return;
+        try {
+            const res = await fetch('/api/mecanicos', { credentials: 'include' });
+            if (!res.ok) return;
+            const mecanicos = await res.json();
+            select.innerHTML = '<option value="">Sin mecánico asignado</option>';
+            mecanicos.forEach(m => {
+                const opt = document.createElement('option');
+                opt.value = m.id_mecanico;
+                opt.textContent = m.nombre_completo + (m.especialidad ? ` (${m.especialidad})` : '');
+                if (selectedId && m.id_mecanico == selectedId) opt.selected = true;
+                select.appendChild(opt);
+            });
+        } catch (e) {
+            console.error('Error cargando mecánicos para cita', e);
+        }
+    };
+
+    async function checkDisponibilidad() {
+        const id_mecanico = document.getElementById('citaMecanico')?.value;
+        const fecha_hora  = document.getElementById('citaFechaHora')?.value;
+        const indicator   = document.getElementById('citaDisponibilidad');
+        if (!indicator) return;
+
+        if (!id_mecanico || !fecha_hora) {
+            indicator.innerHTML = '';
+            return;
+        }
+
+        indicator.innerHTML = '<span class="text-muted">Comprobando disponibilidad…</span>';
+        try {
+            const res  = await fetch(`/api/mecanicos?action=disponibilidad&id_mecanico=${id_mecanico}&fecha_hora=${encodeURIComponent(fecha_hora)}`, { credentials: 'include' });
+            const data = await res.json();
+            if (data.disponible) {
+                indicator.innerHTML = '<span class="text-success"><i class="fas fa-check-circle me-1"></i>Mecánico disponible</span>';
+            } else {
+                indicator.innerHTML = `<span class="text-danger"><i class="fas fa-times-circle me-1"></i>${data.motivo}</span>`;
+            }
+        } catch (e) {
+            indicator.innerHTML = '';
+        }
+    }
+
+    document.getElementById('citaMecanico')?.addEventListener('change', checkDisponibilidad);
+    document.getElementById('citaFechaHora')?.addEventListener('change', checkDisponibilidad);
 
     async function loadClientesForSelect(selectedId = null) {
         const select = document.getElementById('citaCliente');
@@ -111,7 +162,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('citaMotivo').value = cita.motivo || '';
         document.getElementById('citaEstado').value = cita.estado || 'Pendiente';
         document.getElementById('citaPrioridad').value = cita.prioridad || 'Media';
-        
+        document.getElementById('citaDisponibilidad').innerHTML = '';
+
+        cargarMecanicosParaCita(cita.id_mecanico || null);
         loadClientesForSelect(cita.id_cliente);
         if (cita.id_cliente) {
             loadVehiculosForSelect(cita.id_cliente, cita.id_vehiculo);
@@ -124,7 +177,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         } else {
             btnDeleteCita.classList.add('d-none');
         }
-        
+
         citaModal.show();
     }
 
@@ -185,13 +238,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
 
+        const mecId = document.getElementById('citaMecanico')?.value || null;
         const payload = {
-            fecha_hora: document.getElementById('citaFechaHora').value,
-            motivo: document.getElementById('citaMotivo').value,
-            estado: document.getElementById('citaEstado').value,
-            prioridad: document.getElementById('citaPrioridad').value,
-            id_cliente: citaClienteSelect.value,
-            id_vehiculo: id_vehiculo
+            fecha_hora:  document.getElementById('citaFechaHora').value,
+            motivo:      document.getElementById('citaMotivo').value,
+            estado:      document.getElementById('citaEstado').value,
+            prioridad:   document.getElementById('citaPrioridad').value,
+            id_cliente:  citaClienteSelect.value,
+            id_vehiculo: id_vehiculo,
+            id_mecanico: mecId || null
         };
 
         const method = id_cita ? 'PUT' : 'POST';
