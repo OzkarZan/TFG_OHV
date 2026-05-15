@@ -225,7 +225,7 @@ class PresupuestoController {
         // Presupuesto number (top right area)
         $pdf->SetFont('Helvetica', 'B', 13);
         $pdf->SetTextColor(0, 62, 133);
-        $pdf->Cell(0, 8, $this->latin('PRESUPUESTO #' . $id_presupuesto), 0, 1, 'R');
+        $pdf->Cell(0, 8, $this->latin('Presupuesto De Reparacion'), 0, 1, 'R');
 
         $pdf->SetDrawColor(200, 200, 200);
         $pdf->SetTextColor(50, 50, 50);
