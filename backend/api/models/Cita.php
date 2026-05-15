@@ -13,6 +13,7 @@ class Cita {
     public $id_cliente;
     public $id_vehiculo;
     public $id_taller;
+    public $id_mecanico;
 
     public function __construct($db) {
         $this->conn = $db;
@@ -26,9 +27,9 @@ class Cita {
     }
 
     public function create() {
-        $query = "INSERT INTO " . $this->table_name . " 
-                 (fecha_hora, motivo, estado, prioridad, es_emergencia, id_cliente, id_vehiculo, id_taller) 
-                 VALUES (:fecha_hora, :motivo, :estado, :prioridad, :es_emergencia, :id_cliente, :id_vehiculo, :id_taller)";
+        $query = "INSERT INTO " . $this->table_name . "
+                 (fecha_hora, motivo, estado, prioridad, es_emergencia, id_cliente, id_vehiculo, id_taller, id_mecanico)
+                 VALUES (:fecha_hora, :motivo, :estado, :prioridad, :es_emergencia, :id_cliente, :id_vehiculo, :id_taller, :id_mecanico)";
         $stmt = $this->conn->prepare($query);
 
         $this->motivo = htmlspecialchars(strip_tags($this->motivo));
@@ -43,6 +44,7 @@ class Cita {
         $stmt->bindParam(":id_cliente", $this->id_cliente);
         $stmt->bindParam(":id_vehiculo", $this->id_vehiculo);
         $stmt->bindParam(":id_taller", $this->id_taller);
+        $stmt->bindParam(":id_mecanico", $this->id_mecanico);
 
         if ($stmt->execute()) {
             return true;
@@ -51,8 +53,9 @@ class Cita {
     }
 
     public function update() {
-        $query = "UPDATE " . $this->table_name . " 
-                 SET fecha_hora = :fecha_hora, motivo = :motivo, estado = :estado, prioridad = :prioridad, es_emergencia = :es_emergencia 
+        $query = "UPDATE " . $this->table_name . "
+                 SET fecha_hora = :fecha_hora, motivo = :motivo, estado = :estado, prioridad = :prioridad,
+                     es_emergencia = :es_emergencia, id_mecanico = :id_mecanico
                  WHERE id_cita = :id_cita";
         $stmt = $this->conn->prepare($query);
 
@@ -65,6 +68,7 @@ class Cita {
         $stmt->bindParam(":estado", $this->estado);
         $stmt->bindParam(":prioridad", $this->prioridad);
         $stmt->bindParam(":es_emergencia", $this->es_emergencia);
+        $stmt->bindParam(":id_mecanico", $this->id_mecanico);
         $stmt->bindParam(":id_cita", $this->id_cita);
 
         if ($stmt->execute()) {
