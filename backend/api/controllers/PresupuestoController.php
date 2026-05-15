@@ -200,13 +200,7 @@ class PresupuestoController {
             $detalles = [];
         }
 
-        // Flush any buffered output (e.g. PHP warnings) and override headers
-        if (ob_get_level()) ob_end_clean();
-        header_remove();
-        header('Content-Type: application/pdf');
-        header('Content-Disposition: inline; filename="Presupuesto_' . $id_presupuesto . '.pdf"');
-        header('Cache-Control: private, max-age=0, must-revalidate');
-
+        try {
         $pdf = new FPDF('P', 'mm', 'A4');
         $pdf->SetMargins(15, 15, 15);   // must be BEFORE AddPage
         $pdf->SetAutoPageBreak(true, 15);
@@ -347,8 +341,29 @@ class PresupuestoController {
         $pdf->SetTextColor(150, 150, 150);
         $pdf->Cell(0, 5, $this->latin('AutoSync - Taller Mecánico'), 0, 1, 'C');
 
-        $pdf->Output('I', 'Presupuesto_' . $id_presupuesto . '.pdf');
+        // Get PDF as raw bytes — FPDF does NOT set headers with 'S'
+        $pdfContent = $pdf->Output('S');
+
+        // Flush every output buffer level so nothing contaminates the binary stream
+        while (ob_get_level()) ob_end_clean();
+        header_remove();
+        header('Content-Type: application/pdf');
+        header('Content-Disposition: inline; filename="Presupuesto_' . $id_presupuesto . '.pdf"');
+        header('Content-Length: ' . strlen($pdfContent));
+        header('Cache-Control: private, max-age=0, must-revalidate');
+        header('Pragma: public');
+
+        echo $pdfContent;
         exit;
+
+        } catch (Exception $e) {
+            while (ob_get_level()) ob_end_clean();
+            header_remove();
+            header('Content-Type: application/json');
+            http_response_code(500);
+            echo json_encode(["message" => "Error al generar PDF: " . $e->getMessage()]);
+            exit;
+        }
     }
 
     // Helper: single label+value row
