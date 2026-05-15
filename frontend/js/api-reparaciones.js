@@ -139,6 +139,20 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Cargar clientes automáticamente cuando el modal se abre vía data-bs-toggle
+    document.getElementById('reparacionModal')?.addEventListener('show.bs.modal', async () => {
+        if (!document.getElementById('repId').value) {
+            await loadClientesForRep();
+            if (repVehiculoSelect) {
+                repVehiculoSelect.innerHTML = '<option value="">Seleccione primero un cliente</option>';
+                repVehiculoSelect.disabled = true;
+            }
+            btnDeleteRep.classList.add('d-none');
+            repMatriculaVal.value = '';
+            repModeloVal.value = '';
+        }
+    });
+
     window.abrirModalReparacion = async function(id = '', modelo = '', matricula = '', descripcion = '', estadoPres = 'Pendiente', estadoRep = 'En Proceso') {
         document.getElementById('repId').value = id;
         document.getElementById('repDescripcion').value = descripcion;
