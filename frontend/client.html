@@ -255,13 +255,13 @@
                         <div class="card-body py-3">
                             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
                                 <div>
-                                    <div class="fw-bold">${esc(p.modelo_auto)} (${esc(p.matricula)})</div>
+                                    <div class="fw-bold">${esc(p.vehiculo_str) || 'Presupuesto de Reparación'}</div>
                                     <div class="small text-muted mt-1">
                                         <i class="fas fa-calendar me-1"></i>${p.fecha_emision}
                                         &nbsp;·&nbsp; Total: <strong>€${parseFloat(p.gran_total).toFixed(2)}</strong>
                                     </div>
                                 </div>
-                                <a href="/api/mi-area/presupuestos?id_reparacion=${p.id_reparacion}"
+                                <a href="/api/presupuestos?id_presupuesto=${p.id_presupuesto}"
                                    target="_blank"
                                    class="btn btn-outline-primary btn-sm rounded-pill fw-bold px-3">
                                     <i class="fas fa-file-pdf me-1"></i> Descargar PDF
