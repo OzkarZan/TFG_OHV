@@ -1,0 +1,46 @@
+name: Run Migrations & Seed Test Data
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_migration:
+        description: 'Run add_solicitudes_piezas migration'
+        required: true
+        default: 'true'
+        type: boolean
+      run_seed:
+        description: 'Run test data seed (mecánicos, clientes, inventario)'
+        required: true
+        default: 'true'
+        type: boolean
+
+jobs:
+  seed:
+    runs-on: self-hosted
+
+    steps:
+      - name: Run migration — SOLICITUDES_PIEZAS
+        if: ${{ inputs.run_migration == 'true' }}
+        run: |
+          docker compose exec -T db mysql \
+            -u${{ secrets.DB_USER }} \
+            -p${{ secrets.DB_PASSWORD }} \
+            ${{ secrets.DB_NAME }} \
+            -e "
+              CREATE TABLE IF NOT EXISTS SOLICITUDES_PIEZAS (
+                id_solicitud    INT PRIMARY KEY AUTO_INCREMENT,
+                id_repuesto     INT NULL,
+                nombre_pieza    VARCHAR(100) NOT NULL,
+                cantidad        DECIMAL(8,2) NOT NULL DEFAULT 1,
+                estado          ENUM('Pendiente','Pedido','Recibido') NOT NULL DEFAULT 'Pendiente',
+                fecha_solicitud DATE NOT NULL,
+                notas           TEXT NULL,
+                FOREIGN KEY (id_repuesto) REFERENCES REPUESTOS(id_repuesto) ON DELETE SET NULL
+              );
+            "
+          echo "✓ Migración SOLICITUDES_PIEZAS completada"
+
+      - name: Run test data seed
+        if: ${{ inputs.run_seed == 'true' }}
+        run: |
+          docker compose exec -T backend php /var/www/html/../../../database/seed_test_data.php
