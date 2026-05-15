@@ -39,5 +39,29 @@ jobs:
           docker compose build backend frontend
           docker compose up -d --remove-orphans
 
+      - name: Ejecutar migraciones de base de datos
+        run: |
+          sleep 5
+          docker compose exec -T db mysql \
+            -u${{ secrets.DB_USER }} \
+            -p${{ secrets.DB_PASSWORD }} \
+            ${{ secrets.DB_NAME }} \
+            -e "
+              CREATE TABLE IF NOT EXISTS SOLICITUDES_PIEZAS (
+                id_solicitud    INT PRIMARY KEY AUTO_INCREMENT,
+                id_repuesto     INT NULL,
+                nombre_pieza    VARCHAR(100) NOT NULL,
+                cantidad        DECIMAL(8,2) NOT NULL DEFAULT 1,
+                estado          ENUM('Pendiente','Pedido','Recibido') NOT NULL DEFAULT 'Pendiente',
+                fecha_solicitud DATE NOT NULL,
+                notas           TEXT NULL,
+                FOREIGN KEY (id_repuesto) REFERENCES REPUESTOS(id_repuesto) ON DELETE SET NULL
+              );
+            "
+
+      - name: Poblar datos de prueba
+        run: |
+          docker compose exec -T backend php /var/www/html/database/seed_test_data.php 2>&1 || true
+
       - name: Limpiar imágenes Docker antiguas
         run: docker image prune -f
