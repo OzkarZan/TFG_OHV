@@ -203,12 +203,16 @@ document.addEventListener('DOMContentLoaded', async () => {
                     return;
                 }
                 
-                citaVehiculoSelect.innerHTML = '<option value="">Seleccione un vehículo</option>';
+                if (vehiculos.length > 1) {
+                    citaVehiculoSelect.innerHTML = '<option value="">Seleccione un vehículo</option>';
+                } else {
+                    citaVehiculoSelect.innerHTML = '';
+                }
                 vehiculos.forEach(veh => {
                     const option = document.createElement('option');
                     option.value = veh.id_vehiculo;
                     option.textContent = `${veh.matricula} - ${veh.modelo} ${veh.marca || ''}`;
-                    if (selectedId && veh.id_vehiculo == selectedId) {
+                    if ((selectedId && veh.id_vehiculo == selectedId) || vehiculos.length === 1) {
                         option.selected = true;
                     }
                     citaVehiculoSelect.appendChild(option);

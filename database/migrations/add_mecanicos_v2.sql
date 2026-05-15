@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS `MECANICO_HORARIOS` (
 
 -- 3. Link appointments to mechanics
 ALTER TABLE `CITAS`
-    ADD COLUMN IF NOT EXISTS `id_mecanico` int NULL AFTER `id_taller`;
+    ADD COLUMN `id_mecanico` int NULL AFTER `id_taller`;
 
 -- 4. Foreign key (only add if it doesn't exist — safe to re-run)
 SET @fk_exists = (
