@@ -370,16 +370,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await res.json();
 
                 if (res.ok && data.id_presupuesto) {
-                    // Close modal
                     const modalEl = document.getElementById('nuevoPresupuestoModal');
                     const bsModal = bootstrap.Modal.getInstance(modalEl);
                     if (bsModal) bsModal.hide();
-
-                    // Refresh table
                     await window.cargarPresupuestos();
-
-                    // Open PDF in new tab
-                    window.open('/api/presupuestos?id_presupuesto=' + data.id_presupuesto, '_blank');
                 } else {
                     alert('Error: ' + (data.message || 'No se pudo crear el presupuesto.'));
                 }
@@ -388,7 +382,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('Error de red al crear el presupuesto.');
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-save me-1"></i> Guardar y Descargar PDF';
+                btn.innerHTML = '<i class="fas fa-save me-1"></i> Guardar Presupuesto';
             }
         });
     }
