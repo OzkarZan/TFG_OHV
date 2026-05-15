@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
         viewDashboard.classList.remove('d-flex');
     }
 
-    if (menuDashboard && menuInventario && menuCalendario && menuReparaciones && menuClientes && menuMecanicos) {
+    if (menuDashboard && menuInventario && menuCalendario && menuReparaciones && menuClientes) {
         menuDashboard.addEventListener('click', (e) => {
             e.preventDefault();
             hideAllViews();
@@ -75,6 +75,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (window.cargarClientes) window.cargarClientes();
         });
 
+    }
+
+    // Mecánicos: handler independiente para no bloquear el resto de menús
+    if (menuMecanicos && viewMecanicos) {
         menuMecanicos.addEventListener('click', (e) => {
             e.preventDefault();
             hideAllViews();
