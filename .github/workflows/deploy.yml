@@ -36,10 +36,8 @@ jobs:
 
       - name: Desplegar con Docker Compose
         run: |
-          docker compose build backend
+          docker compose build backend frontend
           docker compose up -d --remove-orphans
-          # Reiniciar nginx para que aplique el nginx.conf actualizado
-          docker compose restart frontend
 
       - name: Limpiar imágenes Docker antiguas
         run: docker image prune -f
