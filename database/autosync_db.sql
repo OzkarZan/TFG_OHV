@@ -71,12 +71,19 @@ CREATE TABLE `REPARACIONES` (
 
 CREATE TABLE `PRESUPUESTOS` (
   `id_presupuesto` int PRIMARY KEY AUTO_INCREMENT,
-  `id_reparacion` int NOT NULL,
+  `id_reparacion` int NULL,
+  `id_mecanico` int NULL,
+  `id_cliente` int NULL,
+  `id_vehiculo` int NULL,
+  `km` int NULL,
+  `color` varchar(30) NULL,
   `total_piezas` decimal(10,2) DEFAULT 0,
   `total_mano_obra` decimal(10,2) DEFAULT 0,
+  `servicios_terceros` decimal(10,2) DEFAULT 0,
   `gran_total` decimal(10,2) DEFAULT 0,
   `fecha_emision` date,
   `estado` ENUM ('Borrador', 'Enviado', 'Aprobado', 'Rechazado') DEFAULT 'Borrador',
+  `notas` text NULL,
   FOREIGN KEY (`id_reparacion`) REFERENCES `REPARACIONES` (`id_reparacion`)
 );
 

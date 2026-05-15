@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const menuReparaciones = document.getElementById('menuReparaciones');
     const menuClientes     = document.getElementById('menuClientes');
     const menuMecanicos    = document.getElementById('menuMecanicos');
+    const menuPresupuestos = document.getElementById('menuPresupuestos');
 
     const viewDashboard    = document.getElementById('viewDashboard');
     const viewInventario   = document.getElementById('viewInventario');
@@ -16,9 +17,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const viewReparaciones = document.getElementById('viewReparaciones');
     const viewClientes     = document.getElementById('viewClientes');
     const viewMecanicos    = document.getElementById('viewMecanicos');
+    const viewPresupuestos = document.getElementById('viewPresupuestos');
 
-    const allMenus = [menuDashboard, menuInventario, menuCalendario, menuReparaciones, menuClientes, menuMecanicos];
-    const allViews = [viewDashboard, viewInventario, viewCalendario, viewReparaciones, viewClientes, viewMecanicos];
+    const allMenus = [menuDashboard, menuInventario, menuCalendario, menuReparaciones, menuClientes, menuMecanicos, menuPresupuestos];
+    const allViews = [viewDashboard, viewInventario, viewCalendario, viewReparaciones, viewClientes, viewMecanicos, viewPresupuestos];
 
     function hideAllViews() {
         allViews.forEach(v => { if (v) v.classList.add('d-none'); });
@@ -86,6 +88,18 @@ document.addEventListener('DOMContentLoaded', () => {
             menuMecanicos.classList.remove('sidebar-link');
             viewMecanicos.classList.remove('d-none');
             if (window.cargarMecanicos) window.cargarMecanicos();
+        });
+    }
+
+    // Presupuestos: handler independiente
+    if (menuPresupuestos && viewPresupuestos) {
+        menuPresupuestos.addEventListener('click', (e) => {
+            e.preventDefault();
+            hideAllViews();
+            menuPresupuestos.classList.add('active');
+            menuPresupuestos.classList.remove('sidebar-link');
+            viewPresupuestos.classList.remove('d-none');
+            if (window.cargarPresupuestos) window.cargarPresupuestos();
         });
     }
 
