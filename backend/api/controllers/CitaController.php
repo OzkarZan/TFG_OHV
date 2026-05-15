@@ -66,7 +66,8 @@ class CitaController {
             $this->cita->es_emergencia = $data->es_emergencia ?? 0;
             $this->cita->id_cliente = $data->id_cliente;
             $this->cita->id_vehiculo = $data->id_vehiculo;
-            $this->cita->id_taller = $data->id_taller ?? null;
+            $this->cita->id_taller   = $data->id_taller ?? null;
+            $this->cita->id_mecanico = !empty($data->id_mecanico) ? $data->id_mecanico : null;
 
             if ($this->cita->create()) {
                 http_response_code(201);
@@ -91,9 +92,10 @@ class CitaController {
             $this->cita->estado = $data->estado ?? null;
             $this->cita->prioridad = $data->prioridad ?? null;
             $this->cita->es_emergencia = $data->es_emergencia ?? null;
-            $this->cita->id_cliente = $data->id_cliente ?? null;
+            $this->cita->id_cliente  = $data->id_cliente ?? null;
             $this->cita->id_vehiculo = $data->id_vehiculo ?? null;
-            $this->cita->id_taller = $data->id_taller ?? null;
+            $this->cita->id_taller   = $data->id_taller ?? null;
+            $this->cita->id_mecanico = !empty($data->id_mecanico) ? $data->id_mecanico : null;
 
             if ($this->cita->update()) {
                 http_response_code(200);

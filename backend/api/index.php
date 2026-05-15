@@ -95,6 +95,14 @@ if (preg_match('/^\/auth\/login$/', $path)) {
     require_once 'controllers/ContactoController.php';
     $controller = new ContactoController();
     $controller->handleRequest($method);
+} elseif (preg_match('/^\/mecanicos$/', $path)) {
+    require_once 'controllers/MecanicoController.php';
+    $controller = new MecanicoController();
+    $controller->handleRequest($method);
+} elseif (preg_match('/^\/mecanico-horarios$/', $path)) {
+    require_once 'controllers/MecanicoController.php';
+    $controller = new MecanicoController();
+    $controller->handleHorarios($method);
 } else {
     http_response_code(404);
     echo json_encode(["message" => "Endpoint no encontrado"]);
