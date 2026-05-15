@@ -177,7 +177,13 @@ class PresupuestoController {
     }
 
     private function descargarPDFById($id_presupuesto) {
-        $stmt = $this->presupuesto->readByIdFull($id_presupuesto);
+        try {
+            $stmt = $this->presupuesto->readByIdFull($id_presupuesto);
+        } catch (Exception $e) {
+            http_response_code(503);
+            echo json_encode(["message" => "Error al generar PDF: " . $e->getMessage()]);
+            return;
+        }
 
         if ($stmt->rowCount() === 0) {
             http_response_code(404);
@@ -185,16 +191,26 @@ class PresupuestoController {
             return;
         }
 
-        $row     = $stmt->fetch(PDO::FETCH_ASSOC);
-        $detalles_stmt = $this->presupuesto->readDetallesByPresupuesto($id_presupuesto);
-        $detalles = $detalles_stmt->fetchAll(PDO::FETCH_ASSOC);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        // Override Content-Type for PDF
+        try {
+            $detalles_stmt = $this->presupuesto->readDetallesByPresupuesto($id_presupuesto);
+            $detalles      = $detalles_stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            $detalles = [];
+        }
+
+        // Flush any buffered output (e.g. PHP warnings) and override headers
+        if (ob_get_level()) ob_end_clean();
+        header_remove();
         header('Content-Type: application/pdf');
+        header('Content-Disposition: inline; filename="Presupuesto_' . $id_presupuesto . '.pdf"');
+        header('Cache-Control: private, max-age=0, must-revalidate');
 
-        $pdf = new FPDF();
+        $pdf = new FPDF('P', 'mm', 'A4');
+        $pdf->SetMargins(15, 15, 15);   // must be BEFORE AddPage
+        $pdf->SetAutoPageBreak(true, 15);
         $pdf->AddPage();
-        $pdf->SetMargins(15, 15, 15);
 
         // ── Header ──
         $pdf->SetFillColor(0, 62, 133);
