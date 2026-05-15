@@ -49,6 +49,40 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // ── Cargar presupuestos dentro del modal de cliente ───────────────────────
+    async function cargarPresupuestosEnModal(id_cliente) {
+        const list = document.getElementById('cliPresupuestosList');
+        if (!list) return;
+        list.innerHTML = '<p class="text-muted small text-center py-2">Cargando...</p>';
+        try {
+            const res  = await fetch('/api/presupuestos?id_cliente=' + id_cliente);
+            const data = await res.json();
+            if (!Array.isArray(data) || data.length === 0) {
+                list.innerHTML = '<p class="text-muted small mb-0">Sin presupuestos asociados.</p>';
+                return;
+            }
+            const estadoBadge = (e) => {
+                const map = { 'Aprobado': 'success', 'Borrador': 'secondary', 'Rechazado': 'danger', 'Enviado': 'info' };
+                return `<span class="badge bg-${map[e] || 'secondary'}">${e || 'Borrador'}</span>`;
+            };
+            list.innerHTML = data.map(p => `
+                <div class="d-flex justify-content-between align-items-center border rounded px-3 py-2 mb-2 bg-light">
+                    <div>
+                        <div class="small fw-bold text-dark">${p.vehiculo_str || 'Vehículo'}</div>
+                        <div class="small text-muted">${p.fecha_emision || ''} &mdash; ${parseFloat(p.gran_total || 0).toFixed(2)} EUR</div>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        ${estadoBadge(p.estado)}
+                        <button class="btn btn-sm btn-outline-primary py-0 px-2"
+                            onclick="window.open('/api/presupuestos?id_presupuesto=${p.id_presupuesto}','_blank')"
+                            title="Descargar PDF"><i class="fas fa-file-pdf"></i></button>
+                    </div>
+                </div>`).join('');
+        } catch (err) {
+            list.innerHTML = '<p class="text-danger small mb-0">Error al cargar presupuestos.</p>';
+        }
+    }
+
     // ── Cargar vehículos dentro del modal de edición ──────────────────────────
     async function cargarVehiculosEnModal(id_cliente) {
         const list   = document.getElementById('cliVehiculosList');
@@ -194,6 +228,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         cargarVehiculosEnModal(id);
+        cargarPresupuestosEnModal(id);
         modalInstance.show();
     };
 
