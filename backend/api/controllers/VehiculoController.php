@@ -30,6 +30,12 @@ class VehiculoController {
             case 'POST':
                 $this->create();
                 break;
+            case 'PUT':
+                $this->update();
+                break;
+            case 'DELETE':
+                $this->deleteVehiculo();
+                break;
             default:
                 http_response_code(405);
                 echo json_encode(["message" => "Método no permitido"]);
@@ -52,6 +58,48 @@ class VehiculoController {
 
         http_response_code(200);
         echo json_encode($arr);
+    }
+
+    private function update() {
+        $data = json_decode(file_get_contents("php://input"));
+
+        if (!empty($data->id_vehiculo) && !empty($data->matricula) && !empty($data->modelo)) {
+            $this->vehiculo->id_vehiculo = $data->id_vehiculo;
+            $this->vehiculo->matricula   = $data->matricula;
+            $this->vehiculo->modelo      = $data->modelo;
+            $this->vehiculo->marca       = $data->marca ?? null;
+            $this->vehiculo->anio        = $data->anio   ?? null;
+
+            if ($this->vehiculo->update()) {
+                http_response_code(200);
+                echo json_encode(["message" => "Vehículo actualizado con éxito."]);
+            } else {
+                http_response_code(503);
+                echo json_encode(["message" => "No se pudo actualizar el vehículo (¿matrícula duplicada?)."]);
+            }
+        } else {
+            http_response_code(400);
+            echo json_encode(["message" => "Datos incompletos para actualizar vehículo."]);
+        }
+    }
+
+    private function deleteVehiculo() {
+        $data = json_decode(file_get_contents("php://input"));
+
+        if (!empty($data->id_vehiculo)) {
+            $this->vehiculo->id_vehiculo = $data->id_vehiculo;
+
+            if ($this->vehiculo->delete()) {
+                http_response_code(200);
+                echo json_encode(["message" => "Vehículo eliminado con éxito."]);
+            } else {
+                http_response_code(503);
+                echo json_encode(["message" => "No se pudo eliminar el vehículo."]);
+            }
+        } else {
+            http_response_code(400);
+            echo json_encode(["message" => "Falta ID de vehículo."]);
+        }
     }
 
     private function create() {
