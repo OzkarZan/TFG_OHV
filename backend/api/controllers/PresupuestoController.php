@@ -29,6 +29,8 @@ class PresupuestoController {
                 $this->descargarPDFById((int)$_GET['id_presupuesto']);
             } elseif (isset($_GET['id_reparacion'])) {
                 $this->descargarPDF((int)$_GET['id_reparacion']);
+            } elseif (isset($_GET['id_cliente'])) {
+                $this->readByCliente((int)$_GET['id_cliente']);
             } else {
                 $this->readAllFull();
             }
@@ -44,6 +46,21 @@ class PresupuestoController {
         } else {
             http_response_code(405);
             echo json_encode(["message" => "Metodo no permitido"]);
+        }
+    }
+
+    private function readByCliente($id_cliente) {
+        try {
+            $stmt = $this->presupuesto->readByClienteId($id_cliente);
+            $arr = [];
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                array_push($arr, $row);
+            }
+            http_response_code(200);
+            echo json_encode($arr);
+        } catch (Exception $e) {
+            http_response_code(503);
+            echo json_encode(["message" => "Error: " . $e->getMessage()]);
         }
     }
 
