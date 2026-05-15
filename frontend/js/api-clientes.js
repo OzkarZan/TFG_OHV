@@ -6,28 +6,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.cargarClientes = async function() {
         if (!tableBody) return;
-        tableBody.innerHTML = '<tr><td colspan="5" class="text-center p-4">Cargando clientes...</td></tr>';
+        tableBody.innerHTML = '<tr><td colspan="6" class="text-center p-4">Cargando clientes...</td></tr>';
 
         try {
             const res = await fetch('/api/clientes', { credentials: 'include' });
             if (res.ok) {
                 const data = await res.json();
                 tableBody.innerHTML = '';
-                
+
                 if (data.length === 0) {
-                    tableBody.innerHTML = '<tr><td colspan="5" class="text-center p-4 text-muted">No hay clientes registrados.</td></tr>';
+                    tableBody.innerHTML = '<tr><td colspan="6" class="text-center p-4 text-muted">No hay clientes registrados.</td></tr>';
                     return;
                 }
 
                 data.forEach(cli => {
+                    const vehiculosHtml = cli.vehiculos
+                        ? cli.vehiculos.split(' | ').map(v => `<span class="badge bg-secondary me-1">${v}</span>`).join('')
+                        : '<span class="text-muted fst-italic small">Sin vehículo</span>';
+
                     tableBody.innerHTML += `
                         <tr>
                             <td class="ps-4 fw-bold text-start text-dark">${cli.nombre_completo}</td>
                             <td class="text-start">${cli.correo}</td>
                             <td>${cli.telefono || '<span class="text-muted fst-italic">No especificado</span>'}</td>
-                            <td class="text-start text-truncate" style="max-width: 150px;" title="${cli.direccion}">${cli.direccion || '<span class="text-muted fst-italic">No especificada</span>'}</td>
+                            <td class="text-start text-truncate" style="max-width: 120px;" title="${cli.direccion}">${cli.direccion || '<span class="text-muted fst-italic">No especificada</span>'}</td>
+                            <td class="text-start">${vehiculosHtml}</td>
                             <td class="text-end pe-4">
-                                <button class="btn btn-sm btn-outline-primary rounded-circle shadow-sm" 
+                                <button class="btn btn-sm btn-outline-primary rounded-circle shadow-sm"
                                         onclick="abrirModalCliente(${cli.id_cliente}, '${cli.telefono || ''}', '${(cli.direccion || '').replace(/'/g, "\\'")}')"
                                         title="Editar">
                                     <i class="fas fa-pencil-alt"></i>
@@ -39,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (e) {
             console.error('Error cargando clientes:', e);
-            tableBody.innerHTML = '<tr><td colspan="5" class="text-center text-danger p-4">Error de conexión al cargar clientes.</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="6" class="text-center text-danger p-4">Error de conexión al cargar clientes.</td></tr>';
         }
     };
 

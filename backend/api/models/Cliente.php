@@ -16,9 +16,13 @@ class Cliente {
     }
 
     public function readAll() {
-        $query = "SELECT c.*, u.nombre_completo, u.email as correo 
+        $query = "SELECT c.id_cliente, c.id_usuario, c.telefono, c.direccion,
+                         u.nombre_completo, u.email as correo,
+                         GROUP_CONCAT(CONCAT(v.matricula, ' - ', v.modelo) ORDER BY v.id_vehiculo SEPARATOR ' | ') as vehiculos
                   FROM " . $this->table_name . " c
                   LEFT JOIN USUARIOS u ON c.id_usuario = u.id_usuario
+                  LEFT JOIN VEHICULOS v ON c.id_cliente = v.id_cliente
+                  GROUP BY c.id_cliente, c.id_usuario, c.telefono, c.direccion, u.nombre_completo, u.email
                   ORDER BY u.nombre_completo ASC";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
