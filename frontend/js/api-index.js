@@ -9,8 +9,10 @@ function redirectByRole(rol) {
 
 async function handleGoogleCredential(response) {
     const btn = document.getElementById('btnGoogleLogin');
-    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Verificando...'; }
-
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Verificando...';
+    }
     try {
         const res  = await fetch('/api/auth/google', {
             method: 'POST',
@@ -23,11 +25,11 @@ async function handleGoogleCredential(response) {
             redirectByRole(data.rol);
         } else {
             alert('Error con Google: ' + data.message);
-            if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fab fa-google me-2"></i>Continuar con Google'; }
+            if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fab fa-google me-2"></i> Continuar con Google'; }
         }
     } catch (e) {
         alert('Error de conexión al verificar Google.');
-        if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fab fa-google me-2"></i>Continuar con Google'; }
+        if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fab fa-google me-2"></i> Continuar con Google'; }
     }
 }
 
@@ -35,18 +37,45 @@ async function initGoogleSignIn() {
     try {
         const cfgRes = await fetch('/api/auth/config', { credentials: 'include' });
         const cfg    = await cfgRes.json();
-        if (!cfg.google_client_id) return; // No configurado aún
 
+        if (!cfg.google_client_id) {
+            // Secret no configurado: deshabilitar el botón visualmente
+            const btn = document.getElementById('btnGoogleLogin');
+            if (btn) {
+                btn.disabled = true;
+                btn.title = 'Google Sign-In no configurado';
+            }
+            return;
+        }
+
+        // Inicializar GIS con el Client ID real
         window.google.accounts.id.initialize({
             client_id: cfg.google_client_id,
             callback:  handleGoogleCredential,
             ux_mode:   'popup',
         });
 
+        // Renderizar el botón oficial de Google en el contenedor oculto.
+        // Cuando el usuario hace clic en nuestro botón personalizado,
+        // hacemos click programático sobre el botón real de Google.
+        const container = document.getElementById('googleBtnContainer');
+        if (container) {
+            window.google.accounts.id.renderButton(container, {
+                type:   'standard',
+                theme:  'outline',
+                size:   'large',
+                text:   'continue_with',
+                locale: 'es',
+            });
+        }
+
         const btn = document.getElementById('btnGoogleLogin');
         if (btn) {
             btn.addEventListener('click', () => {
-                window.google.accounts.id.prompt();
+                const googleBtn = container?.querySelector('div[role=button]');
+                if (googleBtn) {
+                    googleBtn.click();
+                }
             });
         }
     } catch (e) {
