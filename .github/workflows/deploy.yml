@@ -39,6 +39,7 @@ jobs:
         run: |
           docker compose build backend frontend
           docker compose up -d --remove-orphans
+          docker compose restart frontend
 
       - name: Ejecutar migraciones de base de datos
         run: |
