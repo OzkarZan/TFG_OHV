@@ -178,35 +178,21 @@ class AuthController {
 
     public function googleLogin() {
         $data = json_decode(file_get_contents("php://input"));
-        if (empty($data->credential)) {
+
+        // Supports both access_token (oauth2 flow) and credential (ID token flow)
+        if (!empty($data->access_token)) {
+            $payload = $this->verifyGoogleAccessToken($data->access_token);
+        } elseif (!empty($data->credential)) {
+            $payload = $this->verifyGoogleIdToken($data->credential);
+        } else {
             http_response_code(400);
             echo json_encode(["message" => "Token de Google requerido."]);
             return;
         }
 
-        // Verify the ID token with Google's tokeninfo endpoint
-        $token    = $data->credential;
-        $url      = "https://oauth2.googleapis.com/tokeninfo?id_token=" . urlencode($token);
-        $response = @file_get_contents($url);
-
-        if ($response === false) {
-            http_response_code(502);
+        if (!$payload) {
+            http_response_code(401);
             echo json_encode(["message" => "No se pudo verificar el token de Google."]);
-            return;
-        }
-
-        $payload = json_decode($response, true);
-
-        // Validate audience matches our Client ID
-        $expectedAud = getenv('GOOGLE_CLIENT_ID');
-        if (empty($payload['email_verified']) || $payload['email_verified'] !== 'true') {
-            http_response_code(401);
-            echo json_encode(["message" => "Email de Google no verificado."]);
-            return;
-        }
-        if ($expectedAud && isset($payload['aud']) && $payload['aud'] !== $expectedAud) {
-            http_response_code(401);
-            echo json_encode(["message" => "Token no válido para esta aplicación."]);
             return;
         }
 
@@ -259,6 +245,29 @@ class AuthController {
             "rol"             => $rol,
             "nombre_completo" => $nombre_completo,
         ]);
+    }
+
+    private function verifyGoogleAccessToken(string $accessToken): ?array {
+        $ctx = stream_context_create(['http' => [
+            'header' => "Authorization: Bearer $accessToken",
+            'timeout' => 5,
+        ]]);
+        $raw = @file_get_contents('https://www.googleapis.com/oauth2/v3/userinfo', false, $ctx);
+        if (!$raw) return null;
+        $payload = json_decode($raw, true);
+        if (empty($payload['email']) || empty($payload['email_verified'])) return null;
+        return $payload;
+    }
+
+    private function verifyGoogleIdToken(string $idToken): ?array {
+        $url = 'https://oauth2.googleapis.com/tokeninfo?id_token=' . urlencode($idToken);
+        $raw = @file_get_contents($url);
+        if (!$raw) return null;
+        $payload = json_decode($raw, true);
+        if (empty($payload['email']) || ($payload['email_verified'] ?? '') !== 'true') return null;
+        $expectedAud = getenv('GOOGLE_CLIENT_ID');
+        if ($expectedAud && isset($payload['aud']) && $payload['aud'] !== $expectedAud) return null;
+        return $payload;
     }
 
     public function me() {
