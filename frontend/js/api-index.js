@@ -55,9 +55,9 @@ async function initGoogleSignIn() {
             ux_mode:   'popup',
         });
 
-        // Renderizar el botón oficial de Google en el contenedor oculto.
-        // Cuando el usuario hace clic en nuestro botón personalizado,
-        // hacemos click programático sobre el botón real de Google.
+        // Renderizar el botón oficial de Google en un contenedor fuera de pantalla.
+        // display:none impide el render; position:fixed+left:-9999px lo saca del viewport
+        // pero permite que Google lo monte en el DOM correctamente.
         const container = document.getElementById('googleBtnContainer');
         if (container) {
             window.google.accounts.id.renderButton(container, {
@@ -69,15 +69,20 @@ async function initGoogleSignIn() {
             });
         }
 
-        const btn = document.getElementById('btnGoogleLogin');
-        if (btn) {
-            btn.addEventListener('click', () => {
-                const googleBtn = container?.querySelector('div[role=button]');
-                if (googleBtn) {
-                    googleBtn.click();
-                }
-            });
-        }
+        // Esperar un frame a que Google monte el botón en el DOM
+        requestAnimationFrame(() => {
+            const googleBtn = container?.querySelector('div[role=button]');
+            const btn = document.getElementById('btnGoogleLogin');
+
+            if (!googleBtn) {
+                console.warn('AutoSync: Google button not rendered yet');
+                return;
+            }
+            if (!btn) return;
+
+            console.log('AutoSync: Google Sign-In listo');
+            btn.addEventListener('click', () => googleBtn.click());
+        });
     } catch (e) {
         console.warn('Google Sign-In no disponible:', e);
     }
