@@ -14,11 +14,15 @@ async function handleGoogleCredential(response) {
         btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Verificando...';
     }
     try {
+        const body = response.access_token
+            ? { access_token: response.access_token }
+            : { credential: response.credential };
+
         const res  = await fetch('/api/auth/google', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
-            body: JSON.stringify({ credential: response.credential })
+            body: JSON.stringify(body)
         });
         const data = await res.json();
         if (res.ok) {
@@ -38,51 +42,32 @@ async function initGoogleSignIn() {
         const cfgRes = await fetch('/api/auth/config', { credentials: 'include' });
         const cfg    = await cfgRes.json();
 
+        const btn = document.getElementById('btnGoogleLogin');
         if (!cfg.google_client_id) {
-            // Secret no configurado: deshabilitar el botón visualmente
-            const btn = document.getElementById('btnGoogleLogin');
-            if (btn) {
-                btn.disabled = true;
-                btn.title = 'Google Sign-In no configurado';
-            }
+            if (btn) { btn.disabled = true; btn.title = 'Google Sign-In no configurado'; }
             return;
         }
 
-        // Inicializar GIS con el Client ID real
-        window.google.accounts.id.initialize({
+        // initTokenClient es la API de Google diseñada para clics de botón explícitos.
+        // Abre un popup de selección de cuenta sin depender de renderButton.
+        const tokenClient = window.google.accounts.oauth2.initTokenClient({
             client_id: cfg.google_client_id,
-            callback:  handleGoogleCredential,
-            ux_mode:   'popup',
+            scope:     'openid email profile',
+            callback:  async (tokenResponse) => {
+                if (tokenResponse.error) {
+                    console.error('Google OAuth error:', tokenResponse.error);
+                    return;
+                }
+                await handleGoogleCredential({ access_token: tokenResponse.access_token });
+            },
         });
 
-        // Renderizar el botón oficial de Google en un contenedor fuera de pantalla.
-        // display:none impide el render; position:fixed+left:-9999px lo saca del viewport
-        // pero permite que Google lo monte en el DOM correctamente.
-        const container = document.getElementById('googleBtnContainer');
-        if (container) {
-            window.google.accounts.id.renderButton(container, {
-                type:   'standard',
-                theme:  'outline',
-                size:   'large',
-                text:   'continue_with',
-                locale: 'es',
+        if (btn) {
+            btn.addEventListener('click', () => {
+                tokenClient.requestAccessToken({ prompt: 'select_account' });
             });
-        }
-
-        // Esperar un frame a que Google monte el botón en el DOM
-        requestAnimationFrame(() => {
-            const googleBtn = container?.querySelector('div[role=button]');
-            const btn = document.getElementById('btnGoogleLogin');
-
-            if (!googleBtn) {
-                console.warn('AutoSync: Google button not rendered yet');
-                return;
-            }
-            if (!btn) return;
-
             console.log('AutoSync: Google Sign-In listo');
-            btn.addEventListener('click', () => googleBtn.click());
-        });
+        }
     } catch (e) {
         console.warn('Google Sign-In no disponible:', e);
     }
