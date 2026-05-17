@@ -176,6 +176,91 @@ class AuthController {
         echo json_encode(["message" => "Contraseña actualizada correctamente."]);
     }
 
+    public function googleLogin() {
+        $data = json_decode(file_get_contents("php://input"));
+        if (empty($data->credential)) {
+            http_response_code(400);
+            echo json_encode(["message" => "Token de Google requerido."]);
+            return;
+        }
+
+        // Verify the ID token with Google's tokeninfo endpoint
+        $token    = $data->credential;
+        $url      = "https://oauth2.googleapis.com/tokeninfo?id_token=" . urlencode($token);
+        $response = @file_get_contents($url);
+
+        if ($response === false) {
+            http_response_code(502);
+            echo json_encode(["message" => "No se pudo verificar el token de Google."]);
+            return;
+        }
+
+        $payload = json_decode($response, true);
+
+        // Validate audience matches our Client ID
+        $expectedAud = getenv('GOOGLE_CLIENT_ID');
+        if (empty($payload['email_verified']) || $payload['email_verified'] !== 'true') {
+            http_response_code(401);
+            echo json_encode(["message" => "Email de Google no verificado."]);
+            return;
+        }
+        if ($expectedAud && isset($payload['aud']) && $payload['aud'] !== $expectedAud) {
+            http_response_code(401);
+            echo json_encode(["message" => "Token no válido para esta aplicación."]);
+            return;
+        }
+
+        $email  = $payload['email'];
+        $nombre = $payload['name'] ?? $email;
+
+        // Find or create user
+        $this->user->email = $email;
+        if ($this->user->emailExists()) {
+            $id_usuario      = $this->user->id_usuario;
+            $rol             = $this->user->rol;
+            $nombre_completo = $this->user->nombre_completo;
+        } else {
+            // Create new client account (Google users are always clients)
+            $this->user->nombre_completo = $nombre;
+            $this->user->password_hash   = password_hash(bin2hex(random_bytes(16)), PASSWORD_BCRYPT);
+            $this->user->rol             = 'cliente';
+
+            if (!$this->user->create()) {
+                http_response_code(503);
+                echo json_encode(["message" => "No se pudo crear la cuenta."]);
+                return;
+            }
+
+            $id_usuario      = $this->user->id_usuario;
+            $rol             = 'cliente';
+            $nombre_completo = $nombre;
+
+            // Create CLIENTES profile
+            require_once 'models/Cliente.php';
+            $cliente             = new Cliente($this->db);
+            $cliente->id_usuario = $id_usuario;
+            $cliente->telefono   = null;
+            $cliente->direccion  = null;
+            $cliente->create();
+
+            // Welcome email
+            require_once 'helpers/MailHelper.php';
+            (new MailHelper())->sendWelcomeClient($email, $nombre_completo);
+        }
+
+        session_regenerate_id(true);
+        $_SESSION['id_usuario']      = $id_usuario;
+        $_SESSION['rol']             = $rol;
+        $_SESSION['nombre_completo'] = $nombre_completo;
+
+        http_response_code(200);
+        echo json_encode([
+            "message"         => "Login con Google exitoso.",
+            "rol"             => $rol,
+            "nombre_completo" => $nombre_completo,
+        ]);
+    }
+
     public function me() {
         if (isset($_SESSION['id_usuario'])) {
             http_response_code(200);
