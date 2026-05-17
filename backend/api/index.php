@@ -59,6 +59,14 @@ if (preg_match('/^\/auth\/login$/', $path)) {
     require_once 'controllers/AuthController.php';
     $controller = new AuthController();
     $controller->resetPassword();
+} elseif (preg_match('/^\/auth\/google$/', $path)) {
+    require_once 'controllers/AuthController.php';
+    $controller = new AuthController();
+    $controller->googleLogin();
+} elseif (preg_match('/^\/auth\/config$/', $path)) {
+    header('Content-Type: application/json');
+    echo json_encode(['google_client_id' => getenv('GOOGLE_CLIENT_ID') ?: '']);
+    exit;
 } elseif (preg_match('/^\/citas$/', $path)) {
     require_once 'controllers/CitaController.php';
     $controller = new CitaController();
