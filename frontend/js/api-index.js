@@ -1,3 +1,68 @@
+// ===== GOOGLE SIGN-IN =====
+function redirectByRole(rol) {
+    if (rol === 'admin' || rol === 'empleado' || rol === 'mecanico') {
+        window.location.href = 'dashboard.html';
+    } else {
+        window.location.href = 'client.html';
+    }
+}
+
+async function handleGoogleCredential(response) {
+    const btn = document.getElementById('btnGoogleLogin');
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Verificando...'; }
+
+    try {
+        const res  = await fetch('/api/auth/google', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ credential: response.credential })
+        });
+        const data = await res.json();
+        if (res.ok) {
+            redirectByRole(data.rol);
+        } else {
+            alert('Error con Google: ' + data.message);
+            if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fab fa-google me-2"></i>Continuar con Google'; }
+        }
+    } catch (e) {
+        alert('Error de conexión al verificar Google.');
+        if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fab fa-google me-2"></i>Continuar con Google'; }
+    }
+}
+
+async function initGoogleSignIn() {
+    try {
+        const cfgRes = await fetch('/api/auth/config', { credentials: 'include' });
+        const cfg    = await cfgRes.json();
+        if (!cfg.google_client_id) return; // No configurado aún
+
+        window.google.accounts.id.initialize({
+            client_id: cfg.google_client_id,
+            callback:  handleGoogleCredential,
+            ux_mode:   'popup',
+        });
+
+        const btn = document.getElementById('btnGoogleLogin');
+        if (btn) {
+            btn.addEventListener('click', () => {
+                window.google.accounts.id.prompt();
+            });
+        }
+    } catch (e) {
+        console.warn('Google Sign-In no disponible:', e);
+    }
+}
+
+// Esperar a que el script GSI cargue antes de inicializar
+(function waitForGSI() {
+    if (window.google && window.google.accounts) {
+        initGoogleSignIn();
+    } else {
+        setTimeout(waitForGSI, 100);
+    }
+})();
+
 // Integración de Login con la API del Backend (index.html)
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('loginForm');
@@ -70,12 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
 
                 if(response.ok) {
-                    // Redirigir basado en el rol devuelto por el servidor
-                    if (data.rol === 'admin' || data.rol === 'empleado') {
-                        window.location.href = 'dashboard.html';
-                    } else {
-                        window.location.href = 'client.html';
-                    }
+                    redirectByRole(data.rol);
                 } else {
                     alert("Error lógico del Backend: " + data.message);
                     submitBtn.innerText = "Reintentar";
@@ -162,8 +222,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const res = await fetch('/api/auth/me', { credentials: 'include' });
             if (res.ok) {
                 const data = await res.json();
-                window.location.href = (data.rol === 'admin' || data.rol === 'empleado')
-                    ? 'dashboard.html' : 'client.html';
+                redirectByRole(data.rol);
             } else {
                 new bootstrap.Modal(document.getElementById('loginModal')).show();
             }

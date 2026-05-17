@@ -32,6 +32,7 @@ jobs:
           MAIL_FROM=${{ secrets.MAIL_FROM }}
           MAIL_FROM_NAME=AutoSync
           BOTPRESS_WEBHOOK_TOKEN=${{ secrets.BOTPRESS_WEBHOOK_TOKEN }}
+          GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
           ENVEOF
 
       - name: Desplegar con Docker Compose
