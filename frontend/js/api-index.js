@@ -7,17 +7,9 @@ function redirectByRole(rol) {
     }
 }
 
-async function handleGoogleCredential(response) {
+async function enviarTokenGoogle(body) {
     const btn = document.getElementById('btnGoogleLogin');
-    if (btn) {
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Verificando...';
-    }
     try {
-        const body = response.access_token
-            ? { access_token: response.access_token }
-            : { credential: response.credential };
-
         const res  = await fetch('/api/auth/google', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -32,55 +24,85 @@ async function handleGoogleCredential(response) {
             if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fab fa-google me-2"></i> Continuar con Google'; }
         }
     } catch (e) {
-        alert('Error de conexión al verificar Google.');
+        console.error('Error enviando token Google:', e);
+        alert('Error de conexión con el servidor.');
         if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fab fa-google me-2"></i> Continuar con Google'; }
     }
 }
 
-async function initGoogleSignIn() {
-    try {
-        const cfgRes = await fetch('/api/auth/config', { credentials: 'include' });
-        const cfg    = await cfgRes.json();
+// El listener del botón se registra en DOMContentLoaded de forma garantizada.
+// Google se inicializa de forma lazy en el primer clic, evitando carreras de carga.
+document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('btnGoogleLogin');
+    if (!btn) return;
 
-        const btn = document.getElementById('btnGoogleLogin');
-        if (!cfg.google_client_id) {
-            if (btn) { btn.disabled = true; btn.title = 'Google Sign-In no configurado'; }
+    btn.addEventListener('click', async () => {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Cargando...';
+
+        // Esperar a que el script de Google esté disponible (máx. 5s)
+        let intentos = 0;
+        while (!window.google?.accounts && intentos < 50) {
+            await new Promise(r => setTimeout(r, 100));
+            intentos++;
+        }
+
+        if (!window.google?.accounts) {
+            alert('No se pudo cargar Google Sign-In. Comprueba tu conexión.');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fab fa-google me-2"></i> Continuar con Google';
             return;
         }
 
-        // initTokenClient es la API de Google diseñada para clics de botón explícitos.
-        // Abre un popup de selección de cuenta sin depender de renderButton.
-        const tokenClient = window.google.accounts.oauth2.initTokenClient({
-            client_id: cfg.google_client_id,
-            scope:     'openid email profile',
-            callback:  async (tokenResponse) => {
-                if (tokenResponse.error) {
-                    console.error('Google OAuth error:', tokenResponse.error);
-                    return;
-                }
-                await handleGoogleCredential({ access_token: tokenResponse.access_token });
-            },
-        });
-
-        if (btn) {
-            btn.addEventListener('click', () => {
-                tokenClient.requestAccessToken({ prompt: 'select_account' });
-            });
-            console.log('AutoSync: Google Sign-In listo');
+        let clientId = '';
+        try {
+            const cfgRes = await fetch('/api/auth/config', { credentials: 'include' });
+            const cfg    = await cfgRes.json();
+            clientId     = cfg.google_client_id || '';
+        } catch (e) {
+            console.error('Error al obtener configuración de Google:', e);
         }
-    } catch (e) {
-        console.warn('Google Sign-In no disponible:', e);
-    }
-}
 
-// Esperar a que el script GSI cargue antes de inicializar
-(function waitForGSI() {
-    if (window.google && window.google.accounts) {
-        initGoogleSignIn();
-    } else {
-        setTimeout(waitForGSI, 100);
-    }
-})();
+        if (!clientId) {
+            alert('Google Sign-In no está configurado en el servidor.');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fab fa-google me-2"></i> Continuar con Google';
+            return;
+        }
+
+        // Usar oauth2.initTokenClient si está disponible (abre popup directo)
+        if (window.google.accounts.oauth2) {
+            const tokenClient = window.google.accounts.oauth2.initTokenClient({
+                client_id: clientId,
+                scope:     'openid email profile',
+                callback:  (resp) => {
+                    if (resp.error) {
+                        console.error('Google OAuth error:', resp.error);
+                        btn.disabled = false;
+                        btn.innerHTML = '<i class="fab fa-google me-2"></i> Continuar con Google';
+                        return;
+                    }
+                    enviarTokenGoogle({ access_token: resp.access_token });
+                },
+                error_callback: (err) => {
+                    console.error('Google OAuth error_callback:', err);
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fab fa-google me-2"></i> Continuar con Google';
+                },
+            });
+            tokenClient.requestAccessToken({ prompt: 'select_account' });
+        } else {
+            // Fallback: google.accounts.id con ux_mode popup
+            window.google.accounts.id.initialize({
+                client_id:   clientId,
+                callback:    (resp) => enviarTokenGoogle({ credential: resp.credential }),
+                ux_mode:     'popup',
+                auto_select: false,
+            });
+            window.google.accounts.id.prompt();
+        }
+    });
+});
 
 // Integración de Login con la API del Backend (index.html)
 document.addEventListener('DOMContentLoaded', () => {
