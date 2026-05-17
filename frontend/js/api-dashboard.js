@@ -37,6 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
             viewDashboard.classList.remove('d-none');
             viewDashboard.classList.add('d-flex');
             if (window.cargarColaTrabajos) window.cargarColaTrabajos();
+            if (window.cargarCitasHoy) window.cargarCitasHoy();
         });
 
         menuInventario.addEventListener('click', (e) => {
@@ -298,9 +299,62 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // ===== 4b. CITAS DE HOY =====
+    window.cargarCitasHoy = async function() {
+        const tbody  = document.getElementById('citasHoyTableBody');
+        const kpi    = document.getElementById('kpiCitasHoy');
+        const badge  = document.getElementById('kpiCitasHoyBadge');
+        if (!tbody) return;
+
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">Cargando...</td></tr>';
+
+        try {
+            const res   = await fetch('/api/citas', { credentials: 'include' });
+            const citas = await res.json();
+
+            const hoy     = new Date();
+            const yyyyMMdd = `${hoy.getFullYear()}-${String(hoy.getMonth()+1).padStart(2,'0')}-${String(hoy.getDate()).padStart(2,'0')}`;
+
+            const deHoy = citas.filter(c => c.fecha_hora && c.fecha_hora.startsWith(yyyyMMdd));
+
+            if (kpi)   kpi.textContent  = deHoy.length;
+            if (badge) badge.textContent = deHoy.length > 0 ? `${deHoy.length} citas` : '';
+
+            if (deHoy.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">No hay citas programadas para hoy.</td></tr>';
+                return;
+            }
+
+            const estadoClase = { Pendiente: 'bg-warning text-dark', Confirmada: 'bg-success', Cancelada: 'bg-secondary' };
+
+            tbody.innerHTML = deHoy.map(c => {
+                const hora    = c.fecha_hora.substring(11, 16);
+                const cliente = c.nombre_cliente || '—';
+                const vehiculo = (c.matricula && c.modelo) ? `${c.matricula} · ${c.modelo}` : (c.matricula || '—');
+                const motivo  = (c.motivo || '').length > 50 ? c.motivo.substring(0,50) + '…' : (c.motivo || '—');
+                const cls     = estadoClase[c.estado] || 'bg-secondary';
+                return `<tr>
+                    <td class="ps-4 fw-bold">${hora}</td>
+                    <td class="fw-bold">${escDash(cliente)}</td>
+                    <td class="text-muted small">${escDash(vehiculo)}</td>
+                    <td class="text-truncate" style="max-width:220px" title="${escDash(c.motivo||'')}">${escDash(motivo)}</td>
+                    <td><span class="badge ${cls} p-2">${escDash(c.estado)}</span></td>
+                </tr>`;
+            }).join('');
+        } catch(e) {
+            console.error('Error cargando citas de hoy', e);
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center text-danger py-4">Error al cargar las citas.</td></tr>';
+        }
+    };
+
+    function escDash(str) {
+        return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
     // Llamar al inicio
     if (viewDashboard && !viewDashboard.classList.contains('d-none')) {
         cargarColaTrabajos();
+        cargarCitasHoy();
     }
 
     // ===== 4. SOLICITUDES DE PIEZAS =====
