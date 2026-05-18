@@ -3,6 +3,7 @@
 *.sql
 *.key
 *.pem
+.DS_Store
 .antigravity/
 .agent/
 srccc/
