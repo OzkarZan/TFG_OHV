@@ -77,6 +77,11 @@
 
         <!-- Tab Citas -->
         <div class="tab-pane" id="tab-citas">
+            <div class="d-flex justify-content-end mb-3">
+                <button class="btn btn-primary rounded-pill px-4 fw-bold" data-bs-toggle="modal" data-bs-target="#modalNuevaCita">
+                    <i class="fas fa-plus me-2"></i>Nueva Cita
+                </button>
+            </div>
             <div id="citaList">
                 <div class="text-center py-5 text-muted"><div class="spinner-border spinner-border-sm me-2"></div> Cargando...</div>
             </div>
@@ -84,6 +89,11 @@
 
         <!-- Tab Vehículos -->
         <div class="tab-pane" id="tab-vehiculos">
+            <div class="d-flex justify-content-end mb-3">
+                <button class="btn btn-primary rounded-pill px-4 fw-bold" data-bs-toggle="modal" data-bs-target="#modalNuevoVehiculo">
+                    <i class="fas fa-plus me-2"></i>Añadir Vehículo
+                </button>
+            </div>
             <div id="vehList">
                 <div class="text-center py-5 text-muted"><div class="spinner-border spinner-border-sm me-2"></div> Cargando...</div>
             </div>
@@ -97,6 +107,82 @@
         </div>
 
     </main>
+
+    <!-- Modal Nueva Cita -->
+    <div class="modal fade" id="modalNuevaCita" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0 shadow">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold"><i class="fas fa-calendar-plus text-primary me-2"></i>Nueva Cita</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formNuevaCita">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Fecha y hora</label>
+                            <input type="datetime-local" id="ncFechaHora" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Vehículo <span class="text-muted fw-normal">(opcional)</span></label>
+                            <select id="ncVehiculo" class="form-select">
+                                <option value="">Sin vehículo asignado</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Motivo de la visita</label>
+                            <textarea id="ncMotivo" class="form-control" rows="3" placeholder="Describe brevemente el motivo..." required></textarea>
+                        </div>
+                        <div id="ncError" class="alert alert-danger d-none"></div>
+                        <div class="d-grid">
+                            <button type="submit" id="btnNcSubmit" class="btn btn-primary rounded-pill fw-bold">
+                                <i class="fas fa-check me-2"></i>Solicitar Cita
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Nuevo Vehículo -->
+    <div class="modal fade" id="modalNuevoVehiculo" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0 shadow">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold"><i class="fas fa-car text-primary me-2"></i>Añadir Vehículo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formNuevoVehiculo">
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <label class="form-label fw-semibold">Marca</label>
+                                <input type="text" id="nvMarca" class="form-control" placeholder="Toyota, BMW...">
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label fw-semibold">Modelo <span class="text-danger">*</span></label>
+                                <input type="text" id="nvModelo" class="form-control" placeholder="Corolla, Serie 3..." required>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label fw-semibold">Matrícula <span class="text-danger">*</span></label>
+                                <input type="text" id="nvMatricula" class="form-control text-uppercase" placeholder="1234ABC" required>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label fw-semibold">Año</label>
+                                <input type="number" id="nvAnio" class="form-control" placeholder="2020" min="1980" max="2030">
+                            </div>
+                        </div>
+                        <div id="nvError" class="alert alert-danger d-none mt-3"></div>
+                        <div class="d-grid mt-3">
+                            <button type="submit" id="btnNvSubmit" class="btn btn-primary rounded-pill fw-bold">
+                                <i class="fas fa-plus me-2"></i>Añadir Vehículo
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer class="text-center py-4 text-muted small border-top bg-white mt-4">
@@ -240,6 +326,78 @@
                     </div>
                 </div>`).join('')}</div>`;
         }
+
+        // ── Nueva Cita (modal) ────────────────────────────────────────────────────
+        const modalNuevaCita = document.getElementById('modalNuevaCita');
+        modalNuevaCita.addEventListener('show.bs.modal', () => {
+            const sel = document.getElementById('ncVehiculo');
+            sel.innerHTML = '<option value="">Sin vehículo específico</option>';
+            vehiculos.forEach(v => {
+                const opt = document.createElement('option');
+                opt.value = v.id_vehiculo;
+                opt.textContent = `${v.marca || ''} ${v.modelo} (${v.matricula})`.trim();
+                sel.appendChild(opt);
+            });
+            document.getElementById('ncFechaHora').value = '';
+            document.getElementById('ncMotivo').value = '';
+            document.getElementById('ncError').classList.add('d-none');
+        });
+
+        document.getElementById('formNuevaCita').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const errEl  = document.getElementById('ncError');
+            const btn    = document.getElementById('btnNcSubmit');
+            const payload = {
+                fecha_hora:  document.getElementById('ncFechaHora').value,
+                motivo:      document.getElementById('ncMotivo').value.trim(),
+                id_vehiculo: document.getElementById('ncVehiculo').value || null,
+            };
+            errEl.classList.add('d-none');
+            btn.disabled = true;
+            try {
+                const res  = await fetch('/api/mi-area/cita', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                const data = await res.json();
+                if (!res.ok) { errEl.textContent = data.message || 'Error al crear la cita.'; errEl.classList.remove('d-none'); return; }
+                bootstrap.Modal.getInstance(modalNuevaCita).hide();
+                const r2  = await fetch('/api/mi-area', { credentials: 'include' });
+                const d2  = await r2.json();
+                citas     = d2.citas || [];
+                renderCitas(citas);
+            } catch { errEl.textContent = 'Error de conexión.'; errEl.classList.remove('d-none'); }
+            finally { btn.disabled = false; }
+        });
+
+        // ── Nuevo Vehículo (modal) ────────────────────────────────────────────────
+        const modalNuevoVehiculo = document.getElementById('modalNuevoVehiculo');
+        modalNuevoVehiculo.addEventListener('show.bs.modal', () => {
+            ['nvMarca','nvModelo','nvMatricula','nvAnio'].forEach(id => document.getElementById(id).value = '');
+            document.getElementById('nvError').classList.add('d-none');
+        });
+
+        document.getElementById('formNuevoVehiculo').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const errEl  = document.getElementById('nvError');
+            const btn    = document.getElementById('btnNvSubmit');
+            const payload = {
+                marca:     document.getElementById('nvMarca').value.trim(),
+                modelo:    document.getElementById('nvModelo').value.trim(),
+                matricula: document.getElementById('nvMatricula').value.trim().toUpperCase(),
+                anio:      document.getElementById('nvAnio').value || null,
+            };
+            errEl.classList.add('d-none');
+            btn.disabled = true;
+            try {
+                const res  = await fetch('/api/mi-area/vehiculo', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                const data = await res.json();
+                if (!res.ok) { errEl.textContent = data.message || 'Error al añadir el vehículo.'; errEl.classList.remove('d-none'); return; }
+                bootstrap.Modal.getInstance(modalNuevoVehiculo).hide();
+                const r2  = await fetch('/api/mi-area', { credentials: 'include' });
+                const d2  = await r2.json();
+                vehiculos = d2.vehiculos || [];
+                renderVehiculos(vehiculos);
+            } catch { errEl.textContent = 'Error de conexión.'; errEl.classList.remove('d-none'); }
+            finally { btn.disabled = false; }
+        });
 
         async function renderPresupuestos() {
             const el = document.getElementById('presList');

@@ -50,6 +50,21 @@ class MiAreaController
             return;
         }
 
+        if ($method === 'POST' && strpos($path, '/cita') !== false) {
+            $this->crearCita($id_cliente);
+            return;
+        }
+
+        if ($method === 'POST' && strpos($path, '/vehiculo') !== false) {
+            $this->agregarVehiculo($id_cliente);
+            return;
+        }
+
+        if ($method === 'DELETE' && strpos($path, '/cita') !== false) {
+            $this->cancelarCita($id_cliente);
+            return;
+        }
+
         if ($method !== 'GET') {
             http_response_code(405);
             echo json_encode(["message" => "Método no permitido."]);
@@ -197,5 +212,89 @@ class MiAreaController
 
         $pdf->Output('I', 'Presupuesto_' . $row['matricula'] . '.pdf');
         exit;
+    }
+
+    private function crearCita(int $id_cliente): void
+    {
+        $data       = json_decode(file_get_contents('php://input'), true);
+        $fecha_hora = trim($data['fecha_hora'] ?? '');
+        $motivo     = trim($data['motivo']     ?? '');
+        $id_vehiculo = isset($data['id_vehiculo']) && $data['id_vehiculo'] ? (int)$data['id_vehiculo'] : null;
+
+        if (!$fecha_hora || !$motivo) {
+            http_response_code(400);
+            echo json_encode(['message' => 'La fecha y el motivo son obligatorios.']);
+            return;
+        }
+
+        // Verificar que el vehículo pertenece al cliente
+        if ($id_vehiculo) {
+            $sv = $this->db->prepare("SELECT id_vehiculo FROM VEHICULOS WHERE id_vehiculo = ? AND id_cliente = ?");
+            $sv->execute([$id_vehiculo, $id_cliente]);
+            if (!$sv->fetch()) {
+                http_response_code(403);
+                echo json_encode(['message' => 'Vehículo no pertenece a este cliente.']);
+                return;
+            }
+        }
+
+        $stmt = $this->db->prepare(
+            "INSERT INTO CITAS (id_cliente, id_vehiculo, fecha_hora, motivo, estado, prioridad)
+             VALUES (?, ?, ?, ?, 'Pendiente', 'Media')"
+        );
+        $stmt->execute([$id_cliente, $id_vehiculo, $fecha_hora, $motivo]);
+
+        http_response_code(201);
+        echo json_encode(['message' => 'Cita solicitada correctamente. El taller la confirmará pronto.', 'id_cita' => $this->db->lastInsertId()]);
+    }
+
+    private function cancelarCita(int $id_cliente): void
+    {
+        $data    = json_decode(file_get_contents('php://input'), true);
+        $id_cita = (int)($data['id_cita'] ?? 0);
+
+        $stmt = $this->db->prepare(
+            "UPDATE CITAS SET estado = 'Cancelada'
+             WHERE id_cita = ? AND id_cliente = ? AND estado IN ('Pendiente', 'Confirmada')"
+        );
+        $stmt->execute([$id_cita, $id_cliente]);
+
+        if ($stmt->rowCount() === 0) {
+            http_response_code(400);
+            echo json_encode(['message' => 'No se puede cancelar esta cita.']);
+            return;
+        }
+        echo json_encode(['message' => 'Cita cancelada.']);
+    }
+
+    private function agregarVehiculo(int $id_cliente): void
+    {
+        $data      = json_decode(file_get_contents('php://input'), true);
+        $matricula = strtoupper(trim($data['matricula'] ?? ''));
+        $marca     = trim($data['marca']     ?? '');
+        $modelo    = trim($data['modelo']    ?? '');
+        $anio      = isset($data['anio']) && $data['anio'] ? (int)$data['anio'] : null;
+
+        if (!$matricula || !$modelo) {
+            http_response_code(400);
+            echo json_encode(['message' => 'Matrícula y modelo son obligatorios.']);
+            return;
+        }
+
+        $check = $this->db->prepare("SELECT id_vehiculo FROM VEHICULOS WHERE matricula = ?");
+        $check->execute([$matricula]);
+        if ($check->fetch()) {
+            http_response_code(409);
+            echo json_encode(['message' => "La matrícula {$matricula} ya está registrada."]);
+            return;
+        }
+
+        $stmt = $this->db->prepare(
+            "INSERT INTO VEHICULOS (id_cliente, matricula, marca, modelo, anio) VALUES (?,?,?,?,?)"
+        );
+        $stmt->execute([$id_cliente, $matricula, $marca, $modelo, $anio]);
+
+        http_response_code(201);
+        echo json_encode(['message' => 'Vehículo añadido correctamente.', 'id_vehiculo' => $this->db->lastInsertId()]);
     }
 }
