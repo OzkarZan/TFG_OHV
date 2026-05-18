@@ -105,9 +105,13 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         presupuestosTableBody.innerHTML = lista.map(p => {
-            const badge      = estadoPresupuestoBadge(p.estado);
-            const fechaStr   = p.fecha_emision ? formatFecha(p.fecha_emision) : '—';
-            const totalStr   = '€ ' + parseFloat(p.gran_total || 0).toFixed(2);
+            const fechaStr = p.fecha_emision ? formatFecha(p.fecha_emision) : '—';
+            const totalStr = '€ ' + parseFloat(p.gran_total || 0).toFixed(2);
+            const estados  = ['Borrador', 'Enviado', 'Aprobado', 'Rechazado'];
+            const colors   = { 'Borrador': 'secondary', 'Enviado': 'info', 'Aprobado': 'success', 'Rechazado': 'danger' };
+            const estadoOpts = estados.map(e =>
+                `<option value="${e}" ${p.estado === e ? 'selected' : ''}>${e}</option>`
+            ).join('');
             return `
                 <tr>
                     <td class="ps-4 text-muted fw-bold text-start">#${p.id_presupuesto}</td>
@@ -116,7 +120,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     <td class="text-start text-muted small">${escHtml(p.mecanico_nombre || '—')}</td>
                     <td>${fechaStr}</td>
                     <td class="fw-bold text-primary">${totalStr}</td>
-                    <td>${badge}</td>
+                    <td>
+                        <select class="form-select form-select-sm border-0 fw-semibold text-${colors[p.estado] || 'secondary'}"
+                                style="min-width:120px;background:transparent;cursor:pointer;"
+                                onchange="cambiarEstadoPresupuesto(${p.id_presupuesto}, this)">
+                            ${estadoOpts}
+                        </select>
+                    </td>
                     <td class="text-end pe-4">
                         <button class="btn btn-sm btn-outline-primary rounded-circle shadow-sm me-1"
                                 style="width:35px;height:35px;"
@@ -426,6 +436,32 @@ document.addEventListener('DOMContentLoaded', () => {
             if (res.ok) await window.cargarPresupuestos(filtroClientePres?.value || null);
             else { const d = await res.json(); alert('Error: ' + (d.message || 'No se pudo eliminar.')); }
         } catch (e) { alert('Error de red al eliminar el presupuesto.'); }
+    };
+
+    window.cambiarEstadoPresupuesto = async function(id, selectEl) {
+        const nuevoEstado = selectEl.value;
+        const colors = { 'Borrador': 'secondary', 'Enviado': 'info', 'Aprobado': 'success', 'Rechazado': 'danger' };
+        try {
+            const res = await fetch('/api/presupuestos', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ id_presupuesto: id, estado: nuevoEstado })
+            });
+            if (res.ok) {
+                selectEl.className = `form-select form-select-sm border-0 fw-semibold text-${colors[nuevoEstado] || 'secondary'}`;
+                // Actualizar cache local
+                const p = _allPresupuestos.find(p => p.id_presupuesto == id);
+                if (p) p.estado = nuevoEstado;
+            } else {
+                const d = await res.json();
+                alert('Error: ' + (d.message || 'No se pudo actualizar el estado.'));
+                await window.cargarPresupuestos(filtroClientePres?.value || null);
+            }
+        } catch (e) {
+            alert('Error de red al actualizar el estado.');
+            await window.cargarPresupuestos(filtroClientePres?.value || null);
+        }
     };
 
     cargarFiltroClientes();

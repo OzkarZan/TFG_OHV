@@ -41,6 +41,8 @@ class PresupuestoController {
             } else {
                 $this->create($data);
             }
+        } elseif ($method === 'PUT') {
+            $this->updateEstado();
         } elseif ($method === 'DELETE') {
             $this->deletePresupuesto();
         } else {
@@ -513,5 +515,31 @@ class PresupuestoController {
             http_response_code(404);
             echo json_encode(["message" => "Presupuesto no encontrado para esta reparacion."]);
         }
+    }
+
+    private function updateEstado(): void
+    {
+        $data = json_decode(file_get_contents('php://input'), true);
+        $id   = (int)($data['id_presupuesto'] ?? 0);
+        $estado = trim($data['estado'] ?? '');
+
+        $permitidos = ['Borrador', 'Enviado', 'Aprobado', 'Rechazado'];
+        if (!$id || !in_array($estado, $permitidos, true)) {
+            http_response_code(400);
+            echo json_encode(['message' => 'id_presupuesto y estado válido son obligatorios.']);
+            return;
+        }
+
+        $stmt = $this->db->prepare('UPDATE PRESUPUESTOS SET estado = ? WHERE id_presupuesto = ?');
+        $stmt->execute([$estado, $id]);
+
+        if ($stmt->rowCount() === 0) {
+            http_response_code(404);
+            echo json_encode(['message' => 'Presupuesto no encontrado.']);
+            return;
+        }
+
+        http_response_code(200);
+        echo json_encode(['message' => 'Estado actualizado correctamente.']);
     }
 }
