@@ -184,6 +184,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     const citaClienteSelect = document.getElementById('citaCliente');
     const citaVehiculoSelect = document.getElementById('citaVehiculo');
 
+    // Cargar clientes siempre que el modal se abra (cubre botones con data-bs-toggle)
+    document.getElementById('citaModal')?.addEventListener('show.bs.modal', () => {
+        if (!document.getElementById('citaId').value) {
+            loadClientesForSelect();
+            document.getElementById('citaVehiculo').innerHTML = '<option value="">Seleccione primero un cliente</option>';
+            document.getElementById('citaVehiculo').disabled = true;
+            document.getElementById('citaFechaHora').value = '';
+            document.getElementById('citaMotivo').value = '';
+            document.getElementById('citaEstado').value = 'Pendiente';
+            document.getElementById('citaPrioridad').value = 'Media';
+            document.getElementById('citaDisponibilidad').innerHTML = '';
+            btnDeleteCita.classList.add('d-none');
+        }
+    });
+
     async function loadVehiculosForSelect(id_cliente, selectedId = null) {
         if (!citaVehiculoSelect) return;
         citaVehiculoSelect.innerHTML = '<option value="">Cargando...</option>';
