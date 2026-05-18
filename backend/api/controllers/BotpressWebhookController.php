@@ -117,9 +117,9 @@ class BotpressWebhookController
     // ── Reservar una cita (el cliente debe estar registrado) ────────────────
     private function reservarCita(array $body): void
     {
-        $nombre     = trim($body['nombre']     ?? '');
-        $email      = strtolower(trim($body['email']      ?? ''));
-        $fecha_hora = trim($body['fecha_hora'] ?? '');
+        $nombre      = trim($body['nombre']      ?? '');
+        $email       = strtolower(trim($body['email']      ?? ''));
+        $fecha_hora  = trim($body['fecha_hora']  ?? '');
         $descripcion = trim($body['descripcion'] ?? 'Solicitud desde chatbot');
 
         if (!$email || !$fecha_hora) {
@@ -128,7 +128,64 @@ class BotpressWebhookController
             return;
         }
 
-        // Buscar cliente por email
+        // ── Validar fecha y hora ─────────────────────────────────────────────
+        $dt = \DateTime::createFromFormat('Y-m-d H:i:s', $fecha_hora)
+           ?: \DateTime::createFromFormat('Y-m-d H:i',   $fecha_hora);
+
+        if (!$dt) {
+            echo json_encode(["ok" => false, "message" => "Formato de fecha incorrecto. Usa YYYY-MM-DD HH:MM."]);
+            return;
+        }
+
+        if ($dt < new \DateTime()) {
+            echo json_encode(["ok" => false, "message" => "No puedes reservar una cita en el pasado."]);
+            return;
+        }
+
+        $diaSemana = (int)$dt->format('N'); // 1=Lun … 7=Dom
+        $hora      = (int)$dt->format('H');
+        $minutos   = (int)$dt->format('i');
+
+        // Horario: Lun-Vie 08:00-18:00, Sáb 09:00-13:00, Dom cerrado
+        if ($diaSemana === 7) {
+            echo json_encode(["ok" => false, "message" => "El taller está cerrado los domingos. Puedes reservar de lunes a viernes de 08:00 a 18:00, o los sábados de 09:00 a 13:00."]);
+            return;
+        }
+
+        $dentroHorario = false;
+        if ($diaSemana <= 5 && $hora >= 8 && ($hora < 18 || ($hora === 18 && $minutos === 0))) {
+            $dentroHorario = true;
+        } elseif ($diaSemana === 6 && $hora >= 9 && ($hora < 13 || ($hora === 13 && $minutos === 0))) {
+            $dentroHorario = true;
+        }
+
+        if (!$dentroHorario) {
+            $horario = $diaSemana <= 5 ? 'de 08:00 a 18:00' : 'de 09:00 a 13:00';
+            $dia     = $diaSemana <= 5 ? 'los días laborables' : 'los sábados';
+            echo json_encode(["ok" => false, "message" => "Fuera de horario. El taller atiende {$dia} {$horario}."]);
+            return;
+        }
+
+        // ── Verificar disponibilidad (máx. 3 citas por franja de 1 hora) ────
+        $franjaInicio = $dt->format('Y-m-d H:00:00');
+        $franjaFin    = $dt->format('Y-m-d H:59:59');
+
+        $stmtDisp = $this->db->prepare(
+            "SELECT COUNT(*) FROM CITAS
+             WHERE fecha_hora BETWEEN ? AND ?
+               AND estado != 'Cancelada'"
+        );
+        $stmtDisp->execute([$franjaInicio, $franjaFin]);
+        $citasEnFranja = (int)$stmtDisp->fetchColumn();
+
+        if ($citasEnFranja >= 3) {
+            $horaStr = $dt->format('H:00');
+            $sigHora = $dt->modify('+1 hour')->format('H:00');
+            echo json_encode(["ok" => false, "message" => "No hay disponibilidad en la franja de las {$horaStr} a las {$sigHora}. Por favor elige otro horario."]);
+            return;
+        }
+
+        // ── Buscar cliente por email ─────────────────────────────────────────
         $stmt = $this->db->prepare(
             "SELECT cl.id_cliente FROM CLIENTES cl
              JOIN USUARIOS u ON cl.id_usuario = u.id_usuario
