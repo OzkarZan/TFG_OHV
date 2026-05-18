@@ -6,11 +6,12 @@ require_once '../config/config.php';
  * Todas las acciones requieren { "token": "BOTPRESS_WEBHOOK_TOKEN", "action": "...", ...datos }
  *
  * Acciones disponibles:
- *   check_coche    → { matricula }
- *   reservar_cita  → { nombre, email, fecha_hora (YYYY-MM-DD HH:MM), descripcion }
- *   mis_citas      → { email }
- *   cancelar_cita  → { email, id_cita }
- *   contacto       → { nombre, email, mensaje }
+ *   check_coche       → { matricula }
+ *   validar_cliente   → { email } — Valida si cliente existe ANTES de pedir fecha
+ *   reservar_cita     → { nombre, email, fecha_hora (YYYY-MM-DD HH:MM), descripcion }
+ *   mis_citas         → { email }
+ *   cancelar_cita     → { email, id_cita }
+ *   contacto          → { nombre, email, mensaje }
  */
 class BotpressWebhookController
 {
@@ -46,6 +47,9 @@ class BotpressWebhookController
         switch ($action) {
             case 'check_coche':
                 $this->checkCoche($body);
+                break;
+            case 'validar_cliente':
+                $this->validateClienteEmail($body);
                 break;
             case 'reservar_cita':
                 $this->reservarCita($body);
@@ -111,6 +115,42 @@ class BotpressWebhookController
             "diagnostico"        => $r['diagnostico']        ?? null,
             "fecha_entrada"      => $r['fecha_entrada']      ?? null,
             "fecha_salida"       => $r['fecha_salida']       ?? null,
+        ]);
+    }
+
+    // ── Validar si cliente existe (acción previa a reservar) ────────────────
+    public function validateClienteEmail(array $body): void
+    {
+        $email = strtolower(trim($body['email'] ?? ''));
+        if (!$email) {
+            http_response_code(400);
+            echo json_encode(["ok" => false, "message" => "Email es obligatorio."]);
+            return;
+        }
+
+        $stmt = $this->db->prepare(
+            "SELECT cl.id_cliente, u.nombre_completo FROM CLIENTES cl
+             JOIN USUARIOS u ON cl.id_usuario = u.id_usuario
+             WHERE LOWER(u.email) = ? LIMIT 1"
+        );
+        $stmt->execute([$email]);
+        $cliente = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$cliente) {
+            echo json_encode([
+                "ok"      => false,
+                "exists"  => false,
+                "message" => "No encontré ningún cliente registrado con el email {$email}. Por favor regístrate primero en https://autosynctfg.site/index.html"
+            ]);
+            return;
+        }
+
+        echo json_encode([
+            "ok"     => true,
+            "exists" => true,
+            "id_cliente"       => $cliente['id_cliente'],
+            "nombre_completo"  => $cliente['nombre_completo'],
+            "message" => "Cliente encontrado. Procede a ingresar la fecha y hora."
         ]);
     }
 
