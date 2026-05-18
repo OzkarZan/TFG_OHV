@@ -227,6 +227,24 @@ class BotpressWebhookController
             return;
         }
 
+        // Primero verificar si el cliente existe
+        $stmtCliente = $this->db->prepare(
+            "SELECT cl.id_cliente FROM CLIENTES cl
+             JOIN USUARIOS u ON cl.id_usuario = u.id_usuario
+             WHERE LOWER(u.email) = ?"
+        );
+        $stmtCliente->execute([$email]);
+        $cliente = $stmtCliente->fetch(PDO::FETCH_ASSOC);
+
+        if (!$cliente) {
+            echo json_encode([
+                "found" => false,
+                "citas" => []
+            ]);
+            return;
+        }
+
+        // Cliente existe, buscar sus citas próximas
         $stmt = $this->db->prepare(
             "SELECT c.id_cita, c.fecha_hora, c.descripcion, c.estado,
                     v.matricula, v.marca, v.modelo
@@ -243,7 +261,7 @@ class BotpressWebhookController
         $citas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         echo json_encode([
-            "found" => count($citas) > 0,
+            "found" => true,
             "citas" => $citas
         ]);
     }
