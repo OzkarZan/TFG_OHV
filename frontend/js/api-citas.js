@@ -184,10 +184,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     const citaClienteSelect = document.getElementById('citaCliente');
     const citaVehiculoSelect = document.getElementById('citaVehiculo');
 
-    // Cargar clientes siempre que el modal se abra (cubre botones con data-bs-toggle)
+    // Cargar clientes y mecánicos siempre que el modal se abra (cubre botones con data-bs-toggle)
     document.getElementById('citaModal')?.addEventListener('show.bs.modal', () => {
         if (!document.getElementById('citaId').value) {
             loadClientesForSelect();
+            cargarMecanicosParaCita();
             document.getElementById('citaVehiculo').innerHTML = '<option value="">Seleccione primero un cliente</option>';
             document.getElementById('citaVehiculo').disabled = true;
             document.getElementById('citaFechaHora').value = '';
