@@ -6,9 +6,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             const userData = await authRes.json();
             document.getElementById('dashboardUserName').innerText = userData.nombre_completo;
             document.getElementById('dashboardAvatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.nombre_completo)}&background=0055d4&color=fff`;
-            
-            // Redirect if not employee/admin
-            if(userData.rol === 'cliente') {
+
+            //Redirigir si no es empleado/admin
+            if (userData.rol === 'cliente') {
                 window.location.href = 'client.html';
             }
         } else {
@@ -34,10 +34,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             right: 'dayGridMonth,timeGridWeek,timeGridDay'
         },
         events: fetchCitas,
-        dateClick: function(info) {
+        dateClick: function (info) {
             openCitaModal({ fecha_hora: info.dateStr + 'T09:00' });
         },
-        eventClick: function(info) {
+        eventClick: function (info) {
             openCitaModal({
                 id_cita: info.event.id,
                 fecha_hora: info.event.startStr.slice(0, 16),
@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // ── Mechanic selector for cita modal ──
+    // ──  Mecánicos ──
 
     window.cargarMecanicosParaCita = async function (selectedId = null) {
         const select = document.getElementById('citaMecanico');
@@ -106,8 +106,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     async function checkDisponibilidad() {
         const id_mecanico = document.getElementById('citaMecanico')?.value;
-        const fecha_hora  = document.getElementById('citaFechaHora')?.value;
-        const indicator   = document.getElementById('citaDisponibilidad');
+        const fecha_hora = document.getElementById('citaFechaHora')?.value;
+        const indicator = document.getElementById('citaDisponibilidad');
         if (!indicator) return;
 
         if (!id_mecanico || !fecha_hora) {
@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         indicator.innerHTML = '<span class="text-muted">Comprobando disponibilidad…</span>';
         try {
-            const res  = await fetch(`/api/mecanicos?action=disponibilidad&id_mecanico=${id_mecanico}&fecha_hora=${encodeURIComponent(fecha_hora)}`, { credentials: 'include' });
+            const res = await fetch(`/api/mecanicos?action=disponibilidad&id_mecanico=${id_mecanico}&fecha_hora=${encodeURIComponent(fecha_hora)}`, { credentials: 'include' });
             const data = await res.json();
             if (data.disponible) {
                 indicator.innerHTML = '<span class="text-success"><i class="fas fa-check-circle me-1"></i>Mecánico disponible</span>';
@@ -135,7 +135,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     async function loadClientesForSelect(selectedId = null) {
         const select = document.getElementById('citaCliente');
         if (!select) return;
-        
+
         try {
             const res = await fetch('/api/clientes', { credentials: 'include' });
             if (res.ok) {
@@ -218,7 +218,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     citaVehiculoSelect.innerHTML = '<option value="">Este cliente no tiene vehículos</option>';
                     return;
                 }
-                
+
                 if (vehiculos.length > 1) {
                     citaVehiculoSelect.innerHTML = '<option value="">Seleccione un vehículo</option>';
                 } else {
@@ -249,10 +249,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     formCita.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
+
         const id_cita = document.getElementById('citaId').value;
         const id_vehiculo = citaVehiculoSelect.value;
-        
+
         if (!id_vehiculo) {
             alert("Debe seleccionar un vehículo para la cita.");
             return;
@@ -260,11 +260,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const mecId = document.getElementById('citaMecanico')?.value || null;
         const payload = {
-            fecha_hora:  document.getElementById('citaFechaHora').value,
-            motivo:      document.getElementById('citaMotivo').value,
-            estado:      document.getElementById('citaEstado').value,
-            prioridad:   document.getElementById('citaPrioridad').value,
-            id_cliente:  citaClienteSelect.value,
+            fecha_hora: document.getElementById('citaFechaHora').value,
+            motivo: document.getElementById('citaMotivo').value,
+            estado: document.getElementById('citaEstado').value,
+            prioridad: document.getElementById('citaPrioridad').value,
+            id_cliente: citaClienteSelect.value,
             id_vehiculo: id_vehiculo,
             id_mecanico: mecId || null
         };

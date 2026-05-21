@@ -1,14 +1,5 @@
-/* =====================================================
-   AUTOSYNC - CUSTOM STYLES
-   Design System: "The Precision Engineer"
-   ===================================================== */
-
-/* =====================================================
-   1. ROOT & DESIGN TOKENS
-   ===================================================== */
-
 :root {
-    /* Colors */
+    /* Colores */
     --primary: #0062a0;
     --primary-container: #5a9fe2;
     --surface: #f7f9fc;
@@ -36,7 +27,7 @@
 }
 
 /* =====================================================
-   2. GLOBAL STYLES
+   2. Estilos Generales
    ===================================================== */
 
 * {
@@ -59,7 +50,12 @@ body {
 }
 
 /* Headings */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
     font-family: 'Space Grotesk', sans-serif;
     font-weight: 700;
     line-height: 1.2;
@@ -88,7 +84,7 @@ button {
 }
 
 /* =====================================================
-   3. HEADER / NAVBAR (Floating Glassmorphism Bar)
+   3. Barra de Navegacion
    ===================================================== */
 
 .navbar-header {
@@ -153,7 +149,7 @@ button {
 }
 
 /* =====================================================
-   4. HERO SECTION
+   4. Seccion del HERO
    ===================================================== */
 
 .hero-section {
@@ -192,7 +188,7 @@ button {
 }
 
 /* =====================================================
-   5. BUTTONS (Primary & Secondary)
+   5. Botones Primario y Secundario
    ===================================================== */
 
 .btn-primary-custom {
@@ -230,7 +226,7 @@ button {
 }
 
 /* =====================================================
-   6. HERO STATS
+   6. HERO Estadisticas
    ===================================================== */
 
 .hero-stats {
@@ -265,7 +261,7 @@ button {
 }
 
 /* =====================================================
-   7. FEATURE SECTIONS
+   7. Seccion "Feature-section"
    ===================================================== */
 
 .feature-section {
@@ -353,7 +349,7 @@ button {
 }
 
 /* =====================================================
-   8. CTA FINAL SECTION
+   8. CTA Final Section
    ===================================================== */
 
 .cta-final-section {
@@ -450,7 +446,7 @@ button {
 }
 
 /* =====================================================
-   10. CHATBOT WIDGET (Floating)
+   10. CHATBOT WIDGET (Icono)
    ===================================================== */
 
 .chatbot-widget {
@@ -576,7 +572,7 @@ button {
 }
 
 /* =====================================================
-   11. RESPONSIVE DESIGN
+   11. Responsive Cosas
    ===================================================== */
 
 @media (max-width: 768px) {
@@ -689,7 +685,7 @@ button {
 }
 
 /* =====================================================
-   12. UTILITY CLASSES
+   12. Utility Classes
    ===================================================== */
 
 .container-lg {
@@ -715,7 +711,7 @@ button {
 }
 
 /* =====================================================
-   13. DASHBOARD SPECIFIC STYLES
+   13. DASHBOARD styles
    ===================================================== */
 
 #sidebar {
@@ -725,7 +721,8 @@ button {
 }
 
 #page-content-wrapper {
-    margin-left: 260px; /* Compensa el ancho del sidebar fijo */
+    margin-left: 260px;
+    /* Compensa el ancho del sidebar fijo */
     width: calc(100% - 260px);
     transition: margin 0.3s ease, width 0.3s ease;
 }
@@ -764,9 +761,10 @@ button {
 /* Responsive para el Dashboard */
 @media (max-width: 992px) {
     #sidebar {
-        margin-left: -260px; /* Oculta sidebar en móviles por defecto si se añade JS, o ajusta a diseño fluido */
+        margin-left: -260px;
+        /* Oculta sidebar en móviles por defecto si se añade JS, o ajusta a diseño fluido */
     }
-    
+
     #page-content-wrapper {
         margin-left: 0;
         width: 100%;
@@ -774,13 +772,13 @@ button {
 }
 
 /* =====================================================
-   14. LOGIN MODAL (Minimalist / Scanner Style)
+   14. Login / Register
    ===================================================== */
 
 .custom-modal .modal-content {
     border: none;
     border-radius: 0;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
     background: #ffffff;
     position: relative;
 }
@@ -848,5 +846,3 @@ button {
 .custom-modal .btn-close:hover {
     opacity: 1;
 }
-
-

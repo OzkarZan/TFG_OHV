@@ -122,7 +122,7 @@ class SmtpMailer
         $response = '';
         while ($line = fgets($fp, 512)) {
             $response .= $line;
-            if ($line[3] === ' ') break; // final line of multi-line response
+            if ($line[3] === ' ') break; 
         }
         return $response;
     }

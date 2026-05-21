@@ -96,7 +96,7 @@ class MecanicoController
         $dia_semana = (int) date('N', $ts); // 1=Lun … 7=Dom
         $hora       = date('H:i:s', $ts);
 
-        // 1. Check mechanic has a schedule this day
+        // 1. Verificar si el mecánico tiene horario ese día
         $stmtH = $this->db->prepare("
             SELECT hora_inicio, hora_fin
             FROM MECANICO_HORARIOS
@@ -111,7 +111,7 @@ class MecanicoController
             return;
         }
 
-        // 2. Check hour falls within schedule
+        // 2. Verificar que la hora esté dentro del horario
         if ($hora < $horario['hora_inicio'] || $hora >= $horario['hora_fin']) {
             $inicio = substr($horario['hora_inicio'], 0, 5);
             $fin    = substr($horario['hora_fin'], 0, 5);
@@ -123,7 +123,7 @@ class MecanicoController
             return;
         }
 
-        // 3. Check no overlapping appointment (±59 min window)
+        // 3. Verificar que no tenga citas en un margen de 59 minutos
         $stmtC = $this->db->prepare("
             SELECT COUNT(*) AS cnt
             FROM CITAS
@@ -154,7 +154,7 @@ class MecanicoController
             return;
         }
 
-        // Citas assigned this week
+        // Citas asignadas esta semana
         $stmtC = $this->db->prepare("
             SELECT c.id_cita, c.fecha_hora, c.motivo, c.estado,
                    v.matricula, v.modelo, v.marca
@@ -305,11 +305,11 @@ class MecanicoController
             return;
         }
 
-        // Nullify FK before cascade to avoid constraint error
+        // Establecer citas como no asignadas
         $this->db->prepare("UPDATE CITAS SET id_mecanico = NULL WHERE id_mecanico = :id")
                   ->execute([':id' => $id_mecanico]);
 
-        // ON DELETE CASCADE handles MECANICOS and MECANICO_HORARIOS rows
+        // Eliminar mecánico y sus horarios
         $this->db->prepare("DELETE FROM USUARIOS WHERE id_usuario = :id")
                   ->execute([':id' => $row['id_usuario']]);
 

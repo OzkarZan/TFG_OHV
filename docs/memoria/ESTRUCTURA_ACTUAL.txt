@@ -1,0 +1,223 @@
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                  ESTRUCTURA ACTUAL DEL PROYECTO - AutoSync                     ║
+║                                                                                ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+TFG_OHV/
+│
+├── 📄 Archivos de Configuración Root
+│   ├── .env                          ← Variables de entorno (no versionado)
+│   ├── .gitignore                    ← Archivos ignorados por git
+│   ├── .github/
+│   │   └── workflows/
+│   │       ├── deploy.yml            ← CI/CD deployment
+│   │       └── seed.yml              ← CI/CD seed database
+│   │
+│   ├── Dockerfile                    ← Imagen Docker backend
+│   ├── docker-compose.yml            ← Orquestación servicios
+│   ├── nginx.conf                    ← Configuración Nginx
+│   ├── router.php                    ← Router principal
+│   ├── README.md                     ← Documentación principal
+│   │
+│   └── nginx.conf                    ← Configuración del proxy inverso
+│
+├── 📁 backend/                       ← API REST (PHP)
+│   │
+│   ├── 📁 api/                       ← Código principal API
+│   │   │
+│   │   ├── .htaccess                 ← Rewrite rules Apache
+│   │   ├── index.php                 ← Entry point API
+│   │   │
+│   │   ├── 📁 controllers/           ← Controladores CRUD
+│   │   │   ├── AuthController.php
+│   │   │   ├── BotpressWebhookController.php
+│   │   │   ├── ChatbotController.php
+│   │   │   ├── CitaController.php
+│   │   │   ├── ClienteController.php
+│   │   │   ├── ContactoController.php
+│   │   │   ├── MecanicoController.php
+│   │   │   ├── MiAreaController.php
+│   │   │   ├── PresupuestoController.php
+│   │   │   ├── ReparacionController.php
+│   │   │   └── VehiculoController.php
+│   │   │
+│   │   ├── 📁 models/                ← Modelos (clases BD)
+│   │   │   ├── Cita.php
+│   │   │   ├── Cliente.php
+│   │   │   ├── Presupuesto.php
+│   │   │   ├── Reparacion.php
+│   │   │   ├── Usuario.php
+│   │   │   └── Vehiculo.php
+│   │   │
+│   │   ├── 📁 helpers/               ← Funciones auxiliares
+│   │   │   └── MailHelper.php        ← Gestor de emails
+│   │   │
+│   │   ├── 📁 libs/                  ← Librerías externas
+│   │   │   ├── SmtpMailer.php        ← Cliente SMTP (Gmail/Mailhog)
+│   │   │   ├── fpdf.php              ← Generador PDF
+│   │   │   └── 📁 font/              ← Fuentes para FPDF
+│   │   │       ├── helvetica.php
+│   │   │       ├── helveticab.php
+│   │   │       ├── helveticabi.php
+│   │   │       └── helveticai.php
+│   │   │
+│   │   ├── repuestos.php             ← Endpoint GET (Archivo suelto)
+│   │   └── solicitudes.php           ← Endpoint POST (Archivo suelto)
+│   │
+│   ├── 📁 config/                    ← Configuración
+│   │   └── config.php                ← Conexión BD + inicialización
+│   │
+│   └── 📁 database/                  ← Datos y migraciones
+│       └── seed_test_data.php        ← Datos de prueba
+│
+├── 📁 database/                      ← Esquema BD (duplicado)
+│   ├── autosync_db.sql               ← Script SQL completo
+│   └── seed_admin.php                ← Seed de admin
+│
+├── 📁 docs/                          ← Documentación adicional
+│   ├── AutoSyncDBNew.png             ← Imagen diagrama BD
+│   └── 📁 memoria/
+│       ├── AutoSync.pdf              ← Memoria del proyecto
+│       └── estructura.txt            ← Estructura anterior
+│
+├── 📁 frontend/                      ← Frontend (HTML/CSS/JS)
+│   │
+│   ├── 📄 Páginas HTML
+│   │   ├── index.html                ← Inicio + Login + Reservas
+│   │   ├── dashboard.html            ← Panel Admin
+│   │   ├── client.html               ← Portal Cliente
+│   │   └── reset-password.html       ← Recuperar contraseña
+│   │
+│   ├── 📁 js/                        ← Código JavaScript
+│   │   ├── main.js                   ← Funciones compartidas
+│   │   ├── api-index.js              ← Login + Reservas
+│   │   ├── api-dashboard.js          ← Dashboard admin
+│   │   ├── api-clientes.js           ← CRUD Clientes
+│   │   ├── api-citas.js              ← CRUD Citas
+│   │   ├── api-mecanicos.js          ← CRUD Mecánicos
+│   │   ├── api-presupuestos.js       ← CRUD Presupuestos
+│   │   └── api-reparaciones.js       ← CRUD Reparaciones
+│   │
+│   ├── 📁 css/                       ← Estilos
+│   │   └── styles.css                ← Estilos únicos
+│   │
+│   └── 📁 img/                       ← Imágenes
+│       └── logo.png                  ← Logo de AutoSync
+
+
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                       BASE DE DATOS (MySQL)                                    ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+Tablas principales en autosync_db.sql:
+
+  ✓ USUARIOS              → Usuarios del sistema
+  ✓ CLIENTES              → Clientes del taller
+  ✓ VEHICULOS             → Vehículos de clientes
+  ✓ CITAS                 → Citas programadas
+  ✓ REPARACIONES          → Trabajos en reparación
+  ✓ PRESUPUESTOS          → Presupuestos de trabajos
+  ✓ MECANICOS             → Personal del taller
+  ✓ CONTACTO              → Mensajes de contacto
+  + Más tablas auxiliares
+
+
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                    TECNOLOGÍAS UTILIZADAS                                      ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+BACKEND
+  • PHP 8.1                      → Lenguaje servidor
+  • PDO                          → Acceso a BD
+  • MySQL 8.0                    → Base de datos
+  • Apache                       → Servidor web
+  • cURL / HTTP                  → Llamadas HTTP
+
+FRONTEND
+  • HTML 5                       → Estructura
+  • CSS 3                        → Estilos
+  • JavaScript (Vanilla)         → Lógica cliente
+  • Bootstrap 5                  → Framework CSS
+  • Font Awesome                 → Iconos
+
+INTEGRACIONES
+  • Google OAuth 2.0             → Autenticación
+  • Botpress Cloud               → Chatbot
+  • Gmail / Mailhog              → Email
+  • FPDF                         → Generación PDF
+
+DEPLOYMENT
+  • Docker                       → Containerización
+  • Docker Compose               → Orquestación
+  • Nginx                        → Proxy inverso
+  • Cloudflare Tunnel            → Tunelización HTTPS
+  • GitHub Actions               → CI/CD
+
+OTROS
+  • Git                          → Control versiones
+  • GitHub                       → Repositorio remoto
+
+
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                   FLUJOS PRINCIPALES DE DATOS                                  ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+1. LOGIN & REGISTRO
+   index.html → api-index.js → AuthController → Usuario Model → MySQL
+                    ↓
+                   JWT/Session
+
+2. RESERVAR CITA (WEB)
+   index.html → api-citas.js → CitaController → Cita Model → MySQL
+                    ↓
+                MailHelper → SMTP → Email Cliente
+
+3. RESERVAR CITA (CHATBOT)
+   Botpress → Webhook → BotpressWebhookController → CitaController
+                    ↓
+                MySQL + MailHelper
+
+4. VER ESTADO (CHATBOT)
+   Botpress → check_coche action → BotpressWebhookController
+                    ↓
+         ReparacionController → MySQL → JSON Response
+
+5. DASHBOARD ADMIN
+   dashboard.html → api-dashboard.js → MiAreaController
+                    ↓
+         Controllers (CRUD) → Models → MySQL
+
+
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                     DESPLIEGUE (Docker Compose)                                ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+Servicios en docker-compose.yml:
+
+  1. db (MySQL 8.0)
+     • Imagen: mysql:8.0
+     • Puerto: 3306
+     • Volumen: db_data
+
+  2. mailhog (Email Dev)
+     • Imagen: mailhog/mailhog:latest
+     • Puerto: 8025 (Web UI)
+     • SMTP: puerto 1025
+
+  3. backend (PHP + Apache)
+     • Build: ./Dockerfile
+     • Puerto: 8000
+     • Volumen: ./backend
+
+  4. frontend (Nginx)
+     • Imagen: nginx:alpine
+     • Puerto: 8080
+     • Volumen: ./frontend
+
+Dependencies:
+  • backend depende de: db, mailhog
+  • frontend es independiente
+
+
+
+

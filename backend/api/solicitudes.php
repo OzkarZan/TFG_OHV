@@ -89,7 +89,7 @@ if ($method === 'GET') {
     $stmt->bindParam(':estado', $data->estado);
     $stmt->bindParam(':id',     $data->id_solicitud);
     if ($stmt->execute()) {
-        // When received, add quantity back to inventory stock
+        // Al recibir, sumar stock al repuesto
         if ($data->estado === 'Recibido' && !empty($data->id_repuesto) && !empty($data->cantidad)) {
             $db->prepare("UPDATE REPUESTOS SET stock_actual = stock_actual + ? WHERE id_repuesto = ?")
                ->execute([(float)$data->cantidad, (int)$data->id_repuesto]);
