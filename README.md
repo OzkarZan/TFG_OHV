@@ -243,19 +243,6 @@ La aplicación está disponible en producción en:
 
 ---
 
-## 📅 Planificación (Roadmap)
-Utilizamos una metodología **Scrum** con ciclos de vida repetitivos para construir la aplicación por bloques funcionales.
-
-| Fase | Tareas Principales | Fechas | Estado |
-| :--- | :--- | :--- | :--- |
-| **Análisis** | Requisitos e historias de usuario. | 02/03 - 15/03 | ✅ Finalizado |
-| **Diseño** | Wireframes y arquitectura del sistema. | 16/03 - 23/03 | ✅ Finalizado |
-| **Core Dev I** | Registro dual (Cliente/Empleado), Login y Auth. | 24/03 - 19/04 | ✅ Finalizado |
-| **Core Dev II** | Gestión de stock, calendario y Botpress. | 20/04 - 03/05 | 🏗️ En curso |
-| **Pruebas** | Plan de pruebas y memoria final. | 04/05 - 18/05 | 📅 Pendiente |
-
----
-
 ## 👥 Equipo y Autores
 * **Desarrolladores:** Oscar Manuel Malave Ramirez, Hugo Cortés Rosado y Victor Manuel Mariños La Puente.
 * **Tutor:** Amparo Marin Velasco.
