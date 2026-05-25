@@ -58,6 +58,19 @@ class MailHelper
         return $this->send($to_email, $subject, $body);
     }
 
+    public function sendCitaConfirmacion(string $to_email, string $to_name, string $fecha_hora, string $motivo): bool
+    {
+        $subject = 'Cita confirmada - AutoSync';
+        $body    = $this->template(
+            'Cita Confirmada',
+            '#0062a0',
+            "Hola <strong>{$to_name}</strong>,",
+            "Tu cita ha sido registrada correctamente.",
+            "📅 <strong>Fecha y hora:</strong> {$fecha_hora}<br>💬 <strong>Motivo:</strong> " . ($motivo ?: 'Sin especificar')
+        );
+        return $this->send($to_email, $subject, $body);
+    }
+
     public function sendContactForm(string $from_name, string $from_email, string $asunto, string $mensaje): bool
     {
         $subject = "[AutoSync Contacto] {$asunto}";

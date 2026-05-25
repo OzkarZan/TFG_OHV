@@ -250,6 +250,9 @@ class BotpressWebhookController
         $insert->execute([$cliente['id_cliente'], $fecha_hora, $descripcion]);
         $id_cita = $this->db->lastInsertId();
 
+        require_once '../helpers/MailHelper.php';
+        (new MailHelper())->sendCitaConfirmacion($email, $nombre ?: $email, $fecha_hora, $descripcion);
+
         echo json_encode([
             "ok"       => true,
             "id_cita"  => $id_cita,
