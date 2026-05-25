@@ -91,10 +91,6 @@ if (preg_match('/^\/auth\/login$/', $path)) {
     require_once 'controllers/MiAreaController.php';
     $controller = new MiAreaController();
     $controller->handleRequest($method, $path);
-} elseif (preg_match('/^\/chatbot$/', $path)) {
-    require_once 'controllers/ChatbotController.php';
-    $controller = new ChatbotController();
-    $controller->handleRequest($method);
 } elseif (preg_match('/^\/botpress-webhook$/', $path)) {
     require_once 'controllers/BotpressWebhookController.php';
     $controller = new BotpressWebhookController();
