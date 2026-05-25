@@ -244,7 +244,7 @@ class BotpressWebhookController
 
         // Insertar cita (sin vehículo asignado todavía)
         $insert = $this->db->prepare(
-            "INSERT INTO CITAS (id_cliente, fecha_hora, descripcion, estado)
+            "INSERT INTO CITAS (id_cliente, fecha_hora, motivo, estado)
              VALUES (?, ?, ?, 'Pendiente')"
         );
         $insert->execute([$cliente['id_cliente'], $fecha_hora, $descripcion]);
@@ -286,7 +286,7 @@ class BotpressWebhookController
 
         // Cliente existe, buscar sus citas próximas
         $stmt = $this->db->prepare(
-            "SELECT c.id_cita, c.fecha_hora, c.descripcion, c.estado,
+            "SELECT c.id_cita, c.fecha_hora, c.motivo, c.estado,
                     v.matricula, v.marca, v.modelo
              FROM CITAS c
              JOIN CLIENTES cl ON c.id_cliente = cl.id_cliente
