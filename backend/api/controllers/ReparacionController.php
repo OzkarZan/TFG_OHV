@@ -48,6 +48,9 @@ class ReparacionController {
         $arr = array();
 
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $this->reparacion->id_reparacion = $row['id_reparacion'];
+            $presupuesto = $this->reparacion->getPresupuesto();
+            $row['presupuesto'] = $presupuesto;
             array_push($arr, $row);
         }
 
