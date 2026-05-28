@@ -1,6 +1,6 @@
 <?php
 require_once '../config/config.php';
-require_once '../helpers/MailHelper.php';
+require_once 'helpers/MailHelper.php';
 
 class ContactoController
 {
