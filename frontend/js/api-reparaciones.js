@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <div class="small text-muted">${rep.matricula}</div>
                             </td>
                             <td class="text-start text-truncate" style="max-width: 200px;" title="${rep.descripcion_motivo}">${rep.descripcion_motivo}</td>
-                            <td><span class="badge ${badgePresupuesto} p-2" style="cursor: pointer; display: inline-block;" onclick="abrirModalPresupuestoReparacion(${rep.id_reparacion}, '${rep.presupuesto ? rep.presupuesto.id_presupuesto : ''}', '${rep.estado_presupuesto}')" role="button" title="Editar presupuesto">${rep.estado_presupuesto}</span></td>
+                            <td><span class="badge ${badgePresupuesto} p-2" style="cursor: pointer; display: inline-block;" onclick="abrirModalPresupuestoReparacion(${rep.id_reparacion})" role="button" title="Editar presupuesto">${rep.estado_presupuesto}</span></td>
                             <td><span class="badge ${badgeEstado} p-2">${rep.estado}</span></td>
                             <td class="text-end pe-4">
                                 <button class="btn btn-sm btn-outline-success rounded-circle shadow-sm me-1"
@@ -325,13 +325,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const presupuestoReparacionModalInstance = new bootstrap.Modal(document.getElementById('presupuestoReparacionModal'));
     const formPresupuestoReparacion = document.getElementById('formPresupuestoReparacion');
 
-    window.abrirModalPresupuestoReparacion = function(id_reparacion, id_presupuesto, estado) {
+    window.abrirModalPresupuestoReparacion = function(id_reparacion) {
         console.log('Modal presupuesto abierto para reparación:', id_reparacion);
+        const rep = window.reparacionesData && window.reparacionesData.find(r => r.id_reparacion == id_reparacion);
+
+        if (!rep) {
+            console.error('Reparación no encontrada:', id_reparacion);
+            alert('Error: reparación no encontrada');
+            return;
+        }
+
         document.getElementById('presRepIdEdit').textContent = '#' + id_reparacion;
         document.getElementById('presIdReparacionEdit').value = id_reparacion;
-        document.getElementById('presIdPresupuestoEdit').value = id_presupuesto;
+        document.getElementById('presIdPresupuestoEdit').value = rep.presupuesto ? rep.presupuesto.id_presupuesto : '';
 
-        const rep = window.reparacionesData && window.reparacionesData.find(r => r.id_reparacion == id_reparacion);
         if (rep && rep.presupuesto) {
             const pres = rep.presupuesto;
             document.getElementById('presTotalPiezasEdit').value = pres.total_piezas || 0;
