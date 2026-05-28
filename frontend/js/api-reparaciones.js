@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (res.ok) {
                 const data = await res.json();
                 window.reparacionesData = data;
+                console.log('Reparaciones cargadas:', data);
                 tableBody.innerHTML = '';
 
                 if (data.length === 0) {
@@ -325,6 +326,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const formPresupuestoReparacion = document.getElementById('formPresupuestoReparacion');
 
     window.abrirModalPresupuestoReparacion = function(id_reparacion, id_presupuesto, estado) {
+        console.log('Modal presupuesto abierto para reparación:', id_reparacion);
         document.getElementById('presRepIdEdit').textContent = '#' + id_reparacion;
         document.getElementById('presIdReparacionEdit').value = id_reparacion;
         document.getElementById('presIdPresupuestoEdit').value = id_presupuesto;
