@@ -190,7 +190,8 @@ class Presupuesto {
         return $stmt->execute();
     }
 
-    public function readByReparacion() {
+    public function readByReparacion($id_reparacion = null) {
+        $id = $id_reparacion ?? $this->id_reparacion;
         $query = "SELECT p.*, r.modelo_auto, r.matricula, u.nombre_completo as cliente_nombre
                   FROM " . $this->table_name . " p
                   LEFT JOIN REPARACIONES r ON p.id_reparacion = r.id_reparacion
@@ -200,9 +201,10 @@ class Presupuesto {
                   WHERE p.id_reparacion = ? LIMIT 0,1";
 
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(1, $this->id_reparacion);
+        $stmt->bindParam(1, $id);
         $stmt->execute();
-        return $stmt;
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result ?: null;
     }
 
     public function readAllSimple() {

@@ -93,4 +93,10 @@ class Reparacion {
         }
         return false;
     }
+
+    public function getPresupuesto() {
+        require_once 'Presupuesto.php';
+        $presupuesto = new Presupuesto($this->conn);
+        return $presupuesto->readByReparacion($this->id_reparacion);
+    }
 }
