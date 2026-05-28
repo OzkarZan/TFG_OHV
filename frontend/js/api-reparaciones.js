@@ -12,8 +12,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const res = await fetch('/api/reparaciones', { credentials: 'include' });
             if (res.ok) {
                 const data = await res.json();
+                window.reparacionesData = data;
                 tableBody.innerHTML = '';
-                
+
                 if (data.length === 0) {
                     tableBody.innerHTML = '<tr><td colspan="6" class="text-center p-4 text-muted">No hay reparaciones registradas.</td></tr>';
                     return;
