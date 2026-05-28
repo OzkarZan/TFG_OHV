@@ -319,4 +319,96 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    const presupuestoReparacionModalInstance = new bootstrap.Modal(document.getElementById('presupuestoReparacionModal'));
+    const formPresupuestoReparacion = document.getElementById('formPresupuestoReparacion');
+
+    window.abrirModalPresupuestoReparacion = function(id_reparacion, id_presupuesto, estado) {
+        document.getElementById('presRepIdEdit').textContent = '#' + id_reparacion;
+        document.getElementById('presIdReparacionEdit').value = id_reparacion;
+        document.getElementById('presIdPresupuestoEdit').value = id_presupuesto;
+
+        const rep = window.reparacionesData && window.reparacionesData.find(r => r.id_reparacion == id_reparacion);
+        if (rep && rep.presupuesto) {
+            const pres = rep.presupuesto;
+            document.getElementById('presTotalPiezasEdit').value = pres.total_piezas || 0;
+            document.getElementById('presTotalManoObraEdit').value = pres.total_mano_obra || 0;
+            document.getElementById('presEstadoEdit').value = pres.estado || 'Borrador';
+            actualizarTotalEdit();
+        } else {
+            document.getElementById('presTotalPiezasEdit').value = 0;
+            document.getElementById('presTotalManoObraEdit').value = 0;
+            document.getElementById('presEstadoEdit').value = 'Borrador';
+            document.getElementById('presGranTotalEdit').textContent = '€ 0.00';
+        }
+
+        presupuestoReparacionModalInstance.show();
+    };
+
+    function actualizarTotalEdit() {
+        const piezas = parseFloat(document.getElementById('presTotalPiezasEdit').value) || 0;
+        const mano = parseFloat(document.getElementById('presTotalManoObraEdit').value) || 0;
+        const total = piezas + mano;
+        document.getElementById('presGranTotalEdit').textContent = '€ ' + total.toFixed(2);
+    }
+
+    document.getElementById('presTotalPiezasEdit')?.addEventListener('input', actualizarTotalEdit);
+    document.getElementById('presTotalManoObraEdit')?.addEventListener('input', actualizarTotalEdit);
+
+    if (formPresupuestoReparacion) {
+        formPresupuestoReparacion.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const id_presupuesto = document.getElementById('presIdPresupuestoEdit').value;
+            const id_reparacion = document.getElementById('presIdReparacionEdit').value;
+            const total_piezas = parseFloat(document.getElementById('presTotalPiezasEdit').value) || 0;
+            const total_mano_obra = parseFloat(document.getElementById('presTotalManoObraEdit').value) || 0;
+            const estado = document.getElementById('presEstadoEdit').value;
+
+            try {
+                if (!id_presupuesto) {
+                    const res = await fetch('/api/presupuestos', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({
+                            id_reparacion: parseInt(id_reparacion),
+                            total_piezas: total_piezas,
+                            total_mano_obra: total_mano_obra
+                        })
+                    });
+
+                    if (res.ok) {
+                        presupuestoReparacionModalInstance.hide();
+                        await window.cargarReparaciones();
+                    } else {
+                        alert('Error al crear presupuesto');
+                    }
+                } else {
+                    const res = await fetch('/api/presupuestos', {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({
+                            id_presupuesto: parseInt(id_presupuesto),
+                            total_piezas: total_piezas,
+                            total_mano_obra: total_mano_obra,
+                            gran_total: total_piezas + total_mano_obra,
+                            estado: estado
+                        })
+                    });
+
+                    if (res.ok) {
+                        presupuestoReparacionModalInstance.hide();
+                        await window.cargarReparaciones();
+                    } else {
+                        alert('Error al actualizar presupuesto');
+                    }
+                }
+            } catch (err) {
+                console.error('Error:', err);
+                alert('Error de conexión');
+            }
+        });
+    }
 });
