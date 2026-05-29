@@ -424,10 +424,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function cargarRepuestos() {
+        console.log('Cargando repuestos...');
         try {
             const res = await fetch('/api/repuestos', { credentials: 'include' });
+            console.log('Respuesta status:', res.status);
             if (res.ok) {
                 const data = await res.json();
+                console.log('Repuestos cargados:', data);
                 const repuestos = data.data || data;
                 const select = document.getElementById('pieza_id_repuesto');
                 select.innerHTML = '<option value="">-- Seleccionar una pieza --</option>';
@@ -455,17 +458,22 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     window.abrirModalAgregarPieza = function(id_reparacion, id_presupuesto) {
+        console.log('Abriendo modal agregar pieza. Presupuesto:', id_presupuesto);
         if (!id_presupuesto) {
             alert('Primero debe guardar el presupuesto');
             return;
         }
-        document.getElementById('pieza_id_presupuesto').value = id_presupuesto;
-        document.getElementById('pieza_id_repuesto').value = '';
-        document.getElementById('pieza_descripcion').value = '';
-        document.getElementById('pieza_cantidad').value = '1';
-        document.getElementById('pieza_precio').value = '';
-        cargarRepuestos();
-        new bootstrap.Modal(document.getElementById('agregarPiezaModal')).show();
+        const modal = document.getElementById('agregarPiezaModal');
+        console.log('Modal existe:', !!modal);
+        if (modal) {
+            document.getElementById('pieza_id_presupuesto').value = id_presupuesto;
+            document.getElementById('pieza_id_repuesto').value = '';
+            document.getElementById('pieza_descripcion').value = '';
+            document.getElementById('pieza_cantidad').value = '1';
+            document.getElementById('pieza_precio').value = '';
+            cargarRepuestos();
+            new bootstrap.Modal(modal).show();
+        }
     };
 
     function cargarDetallesPresupuesto(id_presupuesto) {
