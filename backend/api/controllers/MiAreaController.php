@@ -3,8 +3,6 @@ require_once '../config/config.php';
 require_once 'models/Reparacion.php';
 require_once 'models/Cita.php';
 require_once 'models/Vehiculo.php';
-require_once 'models/Presupuesto.php';
-require_once 'libs/fpdf.php';
 
 /**
  * Endpoints del área de cliente autenticado.
@@ -218,15 +216,24 @@ class MiAreaController
         }
 
         try {
-            $presupuesto = new Presupuesto($this->db);
-            $stmt = $presupuesto->readByClienteId($id_cliente);
+            $stmt = $this->db->prepare(
+                "SELECT p.id_presupuesto, p.fecha_emision, p.gran_total, p.estado,
+                        COALESCE(
+                            CONCAT(v.matricula, ' - ', v.modelo),
+                            CONCAT(r.matricula, ' - ', r.modelo_auto)
+                        ) AS vehiculo_str
+                 FROM PRESUPUESTOS p
+                 LEFT JOIN VEHICULOS v ON v.id_vehiculo = p.id_vehiculo
+                 LEFT JOIN REPARACIONES r ON r.id_reparacion = p.id_reparacion
+                 LEFT JOIN VEHICULOS vr ON vr.matricula = r.matricula
+                 WHERE p.id_cliente = ?
+                    OR vr.id_cliente = ?
+                 ORDER BY p.fecha_emision DESC"
+            );
+            $stmt->execute([$id_cliente, $id_cliente]);
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            $json = json_encode($rows, JSON_INVALID_UTF8_SUBSTITUTE);
-            if ($json === false) {
-                throw new \RuntimeException('JSON encode error: ' . json_last_error_msg());
-            }
             http_response_code(200);
-            echo $json;
+            echo json_encode($rows, JSON_INVALID_UTF8_SUBSTITUTE);
         } catch (\Exception $e) {
             http_response_code(500);
             echo json_encode(["message" => "Error al obtener presupuestos: " . $e->getMessage()]);
@@ -240,6 +247,7 @@ class MiAreaController
 
     private function streamPDF(array $row): void
     {
+        require_once 'libs/fpdf.php';
         $pdf = new FPDF();
         $pdf->AddPage();
 
