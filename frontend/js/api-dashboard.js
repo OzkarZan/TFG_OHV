@@ -240,7 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const tbody = document.querySelector('#viewDashboard table tbody');
         if (!tbody) return;
         
-        tbody.innerHTML = '<tr><td colspan="4" class="text-center p-4">Cargando cola de trabajos...</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="3" class="text-center p-4">Cargando cola de trabajos...</td></tr>';
         
         try {
             const res = await fetch('/api/reparaciones', { credentials: 'include' });
@@ -252,24 +252,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 const activas = reparaciones.filter(r => r.estado !== 'Finalizada');
                 
                 if (activas.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted p-4">No hay trabajos activos en el taller.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted p-4">No hay trabajos activos en el taller.</td></tr>';
                     return;
                 }
-                
+
                 activas.forEach(rep => {
                     let badgeEstado = 'bg-info text-dark';
                     if (rep.estado === 'Esperando Piezas') badgeEstado = 'bg-warning text-dark';
-                    
+
                     const clienteNombre = rep.nombre_cliente || 'Desconocido';
                     const vehiculoStr = `${rep.matricula} - ${rep.modelo_auto}`;
-                    
-                    // Como no tenemos fecha_entrada real en el listado, simularemos "Hoy" para las activas
-                    // O se puede omitir si no está en la base de datos rellenada.
-                    
+
                     tbody.innerHTML += `
-                        <tr>
-                            <td class="ps-4 fw-bold">ID #${rep.id_reparacion}</td>
-                            <td>
+                        <tr style="cursor:pointer"
+                            onclick="irAReparacion(${rep.id_reparacion}, ${JSON.stringify(rep.modelo_auto)}, ${JSON.stringify(rep.matricula)}, ${JSON.stringify(rep.descripcion_motivo)}, ${JSON.stringify(rep.estado_presupuesto||'')}, ${JSON.stringify(rep.estado)}, ${rep.id_cliente||null})">
+                            <td class="ps-4">
                                 <div class="fw-bold">${clienteNombre}</div>
                                 <div class="small text-muted">${vehiculoStr}</div>
                             </td>
@@ -281,8 +278,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (e) {
             console.error("Error cargando cola de trabajos", e);
-            tbody.innerHTML = '<tr><td colspan="4" class="text-center text-danger p-4">Error al cargar la cola de trabajos.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="3" class="text-center text-danger p-4">Error al cargar la cola de trabajos.</td></tr>';
         }
+    };
+
+    window.irAReparacion = function(id, modelo, matricula, descripcion, estadoPres, estadoRep, id_cliente) {
+        document.getElementById('menuReparaciones')?.click();
+        window.abrirModalReparacion(id, modelo, matricula, descripcion, estadoPres, estadoRep, id_cliente);
     };
 
     // ===== 4b. CITAS DE HOY =====
