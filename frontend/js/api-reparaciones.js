@@ -261,7 +261,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ── Modal de Presupuesto ────────────────────────────────────────────────────
-    const presModal       = new bootstrap.Modal(document.getElementById('presupuestoModal'));
+    const presModalEl = document.getElementById('presupuestoModal');
+    const presModal = presModalEl ? new bootstrap.Modal(presModalEl) : null;
     const formPresupuesto = document.getElementById('formPresupuesto');
     const presPiezas      = document.getElementById('presTotalPiezas');
     const presManoObra    = document.getElementById('presTotalManoObra');
@@ -322,7 +323,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const presupuestoReparacionModalInstance = new bootstrap.Modal(document.getElementById('presupuestoReparacionModal'));
+    const presupuestoReparacionModalEl = document.getElementById('presupuestoReparacionModal');
+    const presupuestoReparacionModalInstance = presupuestoReparacionModalEl ? new bootstrap.Modal(presupuestoReparacionModalEl) : null;
     const formPresupuestoReparacion = document.getElementById('formPresupuestoReparacion');
 
     function cargarDetallesPresupuesto(id_presupuesto) {
@@ -386,7 +388,9 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('presGranTotalEdit').textContent = '€ 0.00';
         }
 
-        presupuestoReparacionModalInstance.show();
+        if (presupuestoReparacionModalInstance) {
+            presupuestoReparacionModalInstance.show();
+        }
         if (rep.presupuesto) {
             cargarDetallesPresupuesto(rep.presupuesto.id_presupuesto);
         }
