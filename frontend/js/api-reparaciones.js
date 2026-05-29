@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     tableBody.innerHTML += `
                         <tr>
-                            <td class="ps-4 fw-bold text-start">#${rep.id_reparacion}</td>
+                            <td class="ps-4 fw-bold text-start">${rep.nombre_cliente || '—'}</td>
                             <td class="text-start">
                                 <div class="fw-bold">${rep.modelo_auto}</div>
                                 <div class="small text-muted">${rep.matricula}</div>
