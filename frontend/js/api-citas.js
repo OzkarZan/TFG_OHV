@@ -314,4 +314,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
+    window.openCitaModal = openCitaModal;
+
 });

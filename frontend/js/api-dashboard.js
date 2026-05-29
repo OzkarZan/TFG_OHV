@@ -306,6 +306,14 @@ document.addEventListener('DOMContentLoaded', () => {
         window.abrirModalReparacion(id, modelo, matricula, descripcion, estadoPres, estadoRep, id_cliente);
     };
 
+    window.irACita = function(cita) {
+        document.getElementById('menuCalendario')?.click();
+        if (window.calendar && cita.fecha_hora) {
+            window.calendar.gotoDate(cita.fecha_hora.substring(0, 10));
+        }
+        if (window.openCitaModal) window.openCitaModal(cita);
+    };
+
     // ===== 4b. CITAS DE HOY =====
     window.cargarCitasHoy = async function() {
         const tbody  = document.getElementById('citasHoyTableBody');
@@ -334,20 +342,46 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const estadoClase = { Pendiente: 'bg-warning text-dark', Confirmada: 'bg-success', Cancelada: 'bg-secondary' };
 
+            const esc = s => (s||'').replace(/"/g, '&quot;');
+
             tbody.innerHTML = deHoy.map(c => {
                 const hora    = c.fecha_hora.substring(11, 16);
                 const cliente = c.nombre_cliente || '—';
                 const vehiculo = (c.matricula && c.modelo) ? `${c.matricula} · ${c.modelo}` : (c.matricula || '—');
                 const motivo  = (c.motivo || '').length > 50 ? c.motivo.substring(0,50) + '…' : (c.motivo || '—');
                 const cls     = estadoClase[c.estado] || 'bg-secondary';
-                return `<tr>
+                return `<tr style="cursor:pointer"
+                    data-id-cita="${c.id_cita||''}"
+                    data-fecha-hora="${esc(c.fecha_hora)}"
+                    data-motivo="${esc(c.motivo)}"
+                    data-estado="${esc(c.estado)}"
+                    data-prioridad="${esc(c.prioridad)}"
+                    data-id-cliente="${c.id_cliente||''}"
+                    data-id-vehiculo="${c.id_vehiculo||''}"
+                    data-id-mecanico="${c.id_mecanico||''}">
                     <td class="ps-4 fw-bold">${hora}</td>
                     <td class="fw-bold">${escDash(cliente)}</td>
                     <td class="text-muted small">${escDash(vehiculo)}</td>
-                    <td class="text-truncate" style="max-width:220px" title="${escDash(c.motivo||'')}">${escDash(motivo)}</td>
+                    <td class="text-truncate" style="max-width:220px" title="${esc(c.motivo||'')}">${escDash(motivo)}</td>
                     <td><span class="badge ${cls} p-2">${escDash(c.estado)}</span></td>
                 </tr>`;
             }).join('');
+
+            tbody.addEventListener('click', (e) => {
+                const row = e.target.closest('tr[data-id-cita]');
+                if (!row) return;
+                const d = row.dataset;
+                window.irACita({
+                    id_cita:     d.idCita     || '',
+                    fecha_hora:  d.fechaHora  || '',
+                    motivo:      d.motivo     || '',
+                    estado:      d.estado     || '',
+                    prioridad:   d.prioridad  || '',
+                    id_cliente:  d.idCliente  ? parseInt(d.idCliente)  : null,
+                    id_vehiculo: d.idVehiculo ? parseInt(d.idVehiculo) : null,
+                    id_mecanico: d.idMecanico ? parseInt(d.idMecanico) : null,
+                });
+            });
         } catch(e) {
             console.error('Error cargando citas de hoy', e);
             tbody.innerHTML = '<tr><td colspan="5" class="text-center text-danger py-4">Error al cargar las citas.</td></tr>';
