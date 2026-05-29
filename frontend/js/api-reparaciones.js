@@ -169,6 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 repVehiculoSelect.disabled = true;
             }
             btnDeleteRep.classList.add('d-none');
+            if (btnVerPresupuesto) btnVerPresupuesto.classList.add('d-none');
             repMatriculaVal.value = '';
             repModeloVal.value = '';
         }
