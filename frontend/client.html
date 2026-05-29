@@ -399,14 +399,13 @@
             finally { btn.disabled = false; }
         });
 
-        const estadoBadge = {
-            'Borrador':  'bg-secondary',
-            'Enviado':   'bg-warning text-dark',
-            'Aprobado':  'bg-success',
-            'Rechazado': 'bg-danger'
-        };
-
         async function renderPresupuestos() {
+            const estadoBadge = {
+                'Borrador':  'bg-secondary',
+                'Enviado':   'bg-warning text-dark',
+                'Aprobado':  'bg-success',
+                'Rechazado': 'bg-danger'
+            };
             const el = document.getElementById('presList');
             try {
                 const res  = await fetch('/api/mi-area/presupuestos', { credentials: 'include' });
