@@ -700,8 +700,34 @@
                         <input type="hidden" id="presIdPresupuestoEdit">
 
                         <div class="mb-3">
-                            <label class="form-label small fw-bold text-muted">Total Repuestos / Piezas (€)</label>
-                            <input type="number" step="0.01" min="0" id="presTotalPiezasEdit" class="form-control custom-input" placeholder="0.00" required>
+                            <div class="d-flex align-items-center justify-content-between border rounded p-2 bg-light"
+                                 role="button" data-bs-toggle="collapse" data-bs-target="#piezasCollapse" style="cursor:pointer;">
+                                <span class="small fw-bold text-muted">
+                                    <i class="fas fa-boxes me-1"></i>Piezas a usar en la reparación
+                                </span>
+                                <span class="small fw-bold text-success" id="totalPiezasDisplay">&#x20AC; 0.00</span>
+                            </div>
+                            <div class="collapse show" id="piezasCollapse">
+                                <div class="table-responsive mt-2">
+                                    <table class="table table-sm table-bordered" id="tablaPiezasPresupuesto">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Descripción</th>
+                                                <th>Tipo</th>
+                                                <th class="text-end">Cant.</th>
+                                                <th class="text-end">Precio Unit</th>
+                                                <th class="text-end">Importe</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="cuerpoTablaPiezas">
+                                            <tr><td colspan="5" class="text-center text-muted small">Sin piezas agregadas</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-outline-success w-100 py-2 rounded-pill fw-bold" onclick="abrirModalAgregarPieza()">
+                                    <i class="fas fa-plus me-1"></i> Agregar Pieza
+                                </button>
+                            </div>
                         </div>
 
                         <div class="mb-3">
@@ -721,29 +747,6 @@
                                 <option value="Aprobado">Aprobado</option>
                                 <option value="Rechazado">Rechazado</option>
                             </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label small fw-bold text-muted">Piezas Agregadas</label>
-                            <div class="table-responsive">
-                                <table class="table table-sm table-bordered" id="tablaPiezasPresupuesto">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th>Descripción</th>
-                                            <th>Tipo</th>
-                                            <th>Cantidad</th>
-                                            <th>Precio Unit</th>
-                                            <th>Importe</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="cuerpoTablaPiezas">
-                                        <tr><td colspan="5" class="text-center text-muted small">Sin piezas agregadas</td></tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <button type="button" class="btn btn-sm btn-outline-success w-100 py-2 rounded-pill fw-bold mt-2" onclick="abrirModalAgregarPieza()">
-                                <i class="fas fa-plus me-1"></i> Agregar Pieza
-                            </button>
                         </div>
 
                         <div class="d-flex gap-2 mt-3">

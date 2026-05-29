@@ -363,8 +363,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             tbody.innerHTML = '';
+            let totalPiezas = 0;
             rep.presupuesto.detalles.forEach(detalle => {
                 const importe = (detalle.cantidad || 0) * (detalle.precio_unitario || 0);
+                if (detalle.tipo_item === 'Repuesto') totalPiezas += importe;
                 const fila = `<tr>
                     <td class="small">${detalle.descripcion}</td>
                     <td class="small">${detalle.tipo_item}</td>
@@ -374,6 +376,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 </tr>`;
                 tbody.innerHTML += fila;
             });
+            window.presupuestoCurrentTotalPiezas = totalPiezas;
+            const display = document.getElementById('totalPiezasDisplay');
+            if (display) display.textContent = '€ ' + totalPiezas.toFixed(2);
+            actualizarTotalEdit();
         } catch (err) {
             console.error('Error en cargarDetallesPresupuesto:', err);
         }
@@ -395,12 +401,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (rep && rep.presupuesto) {
             const pres = rep.presupuesto;
-            document.getElementById('presTotalPiezasEdit').value = pres.total_piezas || 0;
+            window.presupuestoCurrentTotalPiezas = parseFloat(pres.total_piezas || 0);
+            document.getElementById('totalPiezasDisplay').textContent = '€ ' + window.presupuestoCurrentTotalPiezas.toFixed(2);
             document.getElementById('presTotalManoObraEdit').value = pres.total_mano_obra || 0;
             document.getElementById('presEstadoEdit').value = pres.estado || 'Borrador';
             actualizarTotalEdit();
         } else {
-            document.getElementById('presTotalPiezasEdit').value = 0;
+            window.presupuestoCurrentTotalPiezas = 0;
+            document.getElementById('totalPiezasDisplay').textContent = '€ 0.00';
             document.getElementById('presTotalManoObraEdit').value = 0;
             document.getElementById('presEstadoEdit').value = 'Borrador';
             document.getElementById('presGranTotalEdit').textContent = '€ 0.00';
@@ -415,13 +423,12 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     function actualizarTotalEdit() {
-        const piezas = parseFloat(document.getElementById('presTotalPiezasEdit').value) || 0;
+        const piezas = window.presupuestoCurrentTotalPiezas || 0;
         const mano = parseFloat(document.getElementById('presTotalManoObraEdit').value) || 0;
         const total = piezas + mano;
         document.getElementById('presGranTotalEdit').textContent = '€ ' + total.toFixed(2);
     }
 
-    document.getElementById('presTotalPiezasEdit')?.addEventListener('input', actualizarTotalEdit);
     document.getElementById('presTotalManoObraEdit')?.addEventListener('input', actualizarTotalEdit);
 
     if (formPresupuestoReparacion) {
@@ -430,7 +437,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const id_presupuesto = document.getElementById('presIdPresupuestoEdit').value;
             const id_reparacion = document.getElementById('presIdReparacionEdit').value;
-            const total_piezas = parseFloat(document.getElementById('presTotalPiezasEdit').value) || 0;
+            const total_piezas = window.presupuestoCurrentTotalPiezas || 0;
             const total_mano_obra = parseFloat(document.getElementById('presTotalManoObraEdit').value) || 0;
             const estado = document.getElementById('presEstadoEdit').value;
 
