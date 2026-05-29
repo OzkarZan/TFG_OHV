@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const reparacionModalEl = document.getElementById('reparacionModal');
     const modalInstance = reparacionModalEl ? new bootstrap.Modal(reparacionModalEl) : null;
     const btnDeleteRep = document.getElementById('btnDeleteRep');
+    const btnVerPresupuesto = document.getElementById('btnVerPresupuesto');
 
     window.cargarReparaciones = async function() {
         if (!tableBody) return;
@@ -181,6 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (id) {
             btnDeleteRep.classList.remove('d-none');
+            btnVerPresupuesto.classList.remove('d-none');
             // En modo edición es complejo repoblar los selects sin saber el id_cliente, 
             // así que para simplificar forzamos el vehículo si ya está seteado.
             repMatriculaVal.value = matricula;
@@ -194,6 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
             await loadClientesForRep(); // Cargar detrás para permitir cambio
         } else {
             btnDeleteRep.classList.add('d-none');
+            btnVerPresupuesto.classList.add('d-none');
             repMatriculaVal.value = '';
             repModeloVal.value = '';
             await loadClientesForRep();
@@ -249,6 +252,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error(err);
                 alert("Fallo de red al intentar guardar la reparación.");
             }
+        });
+    }
+
+    if (btnVerPresupuesto) {
+        btnVerPresupuesto.addEventListener('click', () => {
+            const id = document.getElementById('repId').value;
+            if (!id) return;
+            modalInstance.hide();
+            window.abrirModalPresupuestoReparacion(id);
         });
     }
 
