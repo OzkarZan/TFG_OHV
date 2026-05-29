@@ -45,7 +45,6 @@ class ReparacionController {
     }
 
     private function read() {
-        require_once '../models/Presupuesto.php';
         $presupuesto_model = new Presupuesto($this->db);
 
         $stmt = $this->reparacion->readAll();
