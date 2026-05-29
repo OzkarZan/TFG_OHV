@@ -105,6 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.disabled = true;
 
             const pNombre = document.getElementById('repNombre').value;
+            const pMarca  = document.getElementById('repMarca').value || null;
             const pPrecio = parseFloat(document.getElementById('repPrecio').value);
             const pStock = parseInt(document.getElementById('repStock').value);
 
@@ -112,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 await fetch(API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ nombre_pieza: pNombre, precio_unitario: pPrecio, stock_actual: pStock })
+                    body: JSON.stringify({ nombre_pieza: pNombre, marca: pMarca, precio_unitario: pPrecio, stock_actual: pStock })
                 });
 
                 formRepuesto.reset();
@@ -136,6 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const pId = parseInt(document.getElementById('editRepId').value);
             const pNombre = document.getElementById('editRepNombre').value;
+            const pMarca  = document.getElementById('editRepMarca').value || null;
             const pPrecio = parseFloat(document.getElementById('editRepPrecio').value);
             const pStock = parseInt(document.getElementById('editRepStock').value);
 
@@ -143,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 await fetch(API_URL, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id_repuesto: pId, nombre_pieza: pNombre, precio_unitario: pPrecio, stock_actual: pStock })
+                    body: JSON.stringify({ id_repuesto: pId, nombre_pieza: pNombre, marca: pMarca, precio_unitario: pPrecio, stock_actual: pStock })
                 });
 
                 formEditRepuesto.reset();
@@ -161,7 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // READ (GET + RENDER)
     window.cargarInventario = async function() {
         if(!invTableBody) return;
-        invTableBody.innerHTML = '<tr><td colspan="5" class="text-center p-4"><code>Cargando la base de datos MySQL (Docker)...</code></td></tr>';
+        invTableBody.innerHTML = '<tr><td colspan="6" class="text-center p-4"><code>Cargando la base de datos MySQL (Docker)...</code></td></tr>';
         
         try {
             const resp = await fetch(API_URL);
@@ -169,7 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
             invTableBody.innerHTML = '';
 
             if (repuestos.length === 0) {
-                invTableBody.innerHTML = `<tr><td colspan="5" class="text-center text-muted p-4">La base de datos MySQL de repuestos está vacía. Añade el primero.</td></tr>`;
+                invTableBody.innerHTML = `<tr><td colspan="6" class="text-center text-muted p-4">La base de datos MySQL de repuestos está vacía. Añade el primero.</td></tr>`;
                 return;
             }
 
@@ -180,21 +182,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     <tr>
                         <td class="ps-4 text-muted fw-bold text-start">#${rep.id_repuesto}</td>
                         <td class="fw-bold text-dark text-start">${rep.nombre_pieza}</td>
+                        <td class="text-start text-muted">${rep.marca || '—'}</td>
                         <td><span class="badge ${stockColor} p-2 fs-6 rounded-pill" style="min-width: 60px">${rep.stock_actual} Uds</span></td>
                         <td class="text-primary fw-bold">€${rep.precio_unitario.toFixed(2)}</td>
                         <td class="text-end pe-4">
-                            <!-- Botón Editar -->
-                            <button class="btn btn-sm btn-outline-primary rounded-circle shadow-sm me-2" 
-                                    style="width: 35px; height: 35px;" 
-                                    onclick="abrirModalEdicion(${rep.id_repuesto}, '${rep.nombre_pieza.replace(/'/g, "\\'")}', ${rep.precio_unitario}, ${rep.stock_actual})" 
+                            <button class="btn btn-sm btn-outline-primary rounded-circle shadow-sm me-2"
+                                    style="width: 35px; height: 35px;"
+                                    onclick="abrirModalEdicion(${rep.id_repuesto}, '${rep.nombre_pieza.replace(/'/g, "\\'")}', ${rep.precio_unitario}, ${rep.stock_actual}, '${(rep.marca||'').replace(/'/g, "\\'")}')"
                                     title="Editar Pieza">
                                 <i class="fas fa-pencil-alt"></i>
                             </button>
-                            <!-- Botón Eliminar -->
-                            <button class="btn btn-sm btn-outline-danger rounded-circle shadow-sm" 
-                                    style="width: 35px; height: 35px;" 
-                                    onclick="borrarRepuesto(${rep.id_repuesto})" 
-                                    title="Eliminar Base de Datos">
+                            <button class="btn btn-sm btn-outline-danger rounded-circle shadow-sm"
+                                    style="width: 35px; height: 35px;"
+                                    onclick="borrarRepuesto(${rep.id_repuesto})"
+                                    title="Eliminar">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </td>
@@ -203,17 +204,18 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         } catch(e) {
             console.error("Error cargando inventario desde Docker: ", e);
-            invTableBody.innerHTML = '<tr><td colspan="5" class="text-center text-danger p-4">Error cargando inventario. Revisa tu consola o contenedor.</td></tr>';
+            invTableBody.innerHTML = '<tr><td colspan="6" class="text-center text-danger p-4">Error cargando inventario. Revisa tu consola o contenedor.</td></tr>';
         }
     };
 
     // Funciones Helper Globales para uso In-Line HTML
-    window.abrirModalEdicion = function(id, nombre, precio, stock) {
+    window.abrirModalEdicion = function(id, nombre, precio, stock, marca) {
         document.getElementById('editRepId').value = id;
         document.getElementById('editRepNombre').value = nombre;
+        document.getElementById('editRepMarca').value = marca || '';
         document.getElementById('editRepPrecio').value = precio;
         document.getElementById('editRepStock').value = stock;
-        
+
         let modal = new bootstrap.Modal(document.getElementById('editRepuestoModal'));
         modal.show();
     };
