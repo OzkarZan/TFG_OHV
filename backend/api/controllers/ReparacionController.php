@@ -1,6 +1,7 @@
 <?php
 require_once '../config/config.php';
 require_once 'models/Reparacion.php';
+require_once 'models/Presupuesto.php';
 
 class ReparacionController {
     private $db;
@@ -44,10 +45,22 @@ class ReparacionController {
     }
 
     private function read() {
+        $presupuesto_model = new Presupuesto($this->db);
+
         $stmt = $this->reparacion->readAll();
         $arr = array();
 
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $pres = $presupuesto_model->readByReparacion($row['id_reparacion']);
+            if ($pres) {
+                $detalles_stmt = $presupuesto_model->readDetallesByPresupuesto($pres['id_presupuesto']);
+                $detalles = [];
+                while ($detalle = $detalles_stmt->fetch(PDO::FETCH_ASSOC)) {
+                    $detalles[] = $detalle;
+                }
+                $pres['detalles'] = $detalles;
+            }
+            $row['presupuesto'] = $pres;
             array_push($arr, $row);
         }
 

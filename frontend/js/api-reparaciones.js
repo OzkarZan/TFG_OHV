@@ -1,7 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     const tableBody = document.getElementById('reparacionesTableBody');
     const formReparacion = document.getElementById('formReparacion');
-    const modalInstance = new bootstrap.Modal(document.getElementById('reparacionModal'));
+    const reparacionModalEl = document.getElementById('reparacionModal');
+    const modalInstance = reparacionModalEl ? new bootstrap.Modal(reparacionModalEl) : null;
     const btnDeleteRep = document.getElementById('btnDeleteRep');
 
     window.cargarReparaciones = async function() {
@@ -12,8 +13,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const res = await fetch('/api/reparaciones', { credentials: 'include' });
             if (res.ok) {
                 const data = await res.json();
+                window.reparacionesData = data;
+                console.log('Reparaciones cargadas:', data);
                 tableBody.innerHTML = '';
-                
+
                 if (data.length === 0) {
                     tableBody.innerHTML = '<tr><td colspan="6" class="text-center p-4 text-muted">No hay reparaciones registradas.</td></tr>';
                     return;
@@ -38,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <div class="small text-muted">${rep.matricula}</div>
                             </td>
                             <td class="text-start text-truncate" style="max-width: 200px;" title="${rep.descripcion_motivo}">${rep.descripcion_motivo}</td>
-                            <td><span class="badge ${badgePresupuesto} p-2">${rep.estado_presupuesto}</span></td>
+                            <td><button class="badge ${badgePresupuesto} p-2 border-0" style="cursor: pointer;" onclick="abrirModalPresupuestoReparacion(${rep.id_reparacion})" title="Editar presupuesto">${rep.estado_presupuesto}</button></td>
                             <td><span class="badge ${badgeEstado} p-2">${rep.estado}</span></td>
                             <td class="text-end pe-4">
                                 <button class="btn btn-sm btn-outline-success rounded-circle shadow-sm me-1"
@@ -60,6 +63,26 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error cargando reparaciones:', e);
             tableBody.innerHTML = '<tr><td colspan="6" class="text-center text-danger p-4">Error de conexión al cargar reparaciones.</td></tr>';
         }
+    };
+
+    window.abrirModalAgregarPieza = function() {
+        const id_presupuesto = document.getElementById('presIdPresupuestoEdit').value;
+        if (!id_presupuesto) {
+            alert('Primero debe guardar el presupuesto');
+            return;
+        }
+        const modal = document.getElementById('agregarPiezaModal');
+        if (!modal) {
+            alert('Modal no encontrado');
+            return;
+        }
+        document.getElementById('pieza_id_presupuesto').value = id_presupuesto;
+        document.getElementById('pieza_id_repuesto').value = '';
+        document.getElementById('pieza_descripcion').value = '';
+        document.getElementById('pieza_cantidad').value = '1';
+        document.getElementById('pieza_precio').value = '';
+        const modalInstance = new bootstrap.Modal(modal);
+        modalInstance.show();
     };
 
     const repClienteSelect = document.getElementById('repCliente');
@@ -259,7 +282,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ── Modal de Presupuesto ────────────────────────────────────────────────────
-    const presModal       = new bootstrap.Modal(document.getElementById('presupuestoModal'));
+    const presModalEl = document.getElementById('presupuestoModal');
+    const presModal = presModalEl ? new bootstrap.Modal(presModalEl) : null;
     const formPresupuesto = document.getElementById('formPresupuesto');
     const presPiezas      = document.getElementById('presTotalPiezas');
     const presManoObra    = document.getElementById('presTotalManoObra');
@@ -319,4 +343,249 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    const presupuestoReparacionModalEl = document.getElementById('presupuestoReparacionModal');
+    const presupuestoReparacionModalInstance = presupuestoReparacionModalEl ? new bootstrap.Modal(presupuestoReparacionModalEl) : null;
+    const formPresupuestoReparacion = document.getElementById('formPresupuestoReparacion');
+
+    function cargarDetallesPresupuesto(id_presupuesto) {
+        try {
+            const tbody = document.getElementById('cuerpoTablaPiezas');
+            if (!tbody) return;
+
+            if (!window.reparacionesData || !id_presupuesto) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted small">Sin piezas agregadas</td></tr>';
+                return;
+            }
+
+            const rep = window.reparacionesData.find(r => r.presupuesto && r.presupuesto.id_presupuesto == id_presupuesto);
+
+            if (!rep || !rep.presupuesto || !rep.presupuesto.detalles || rep.presupuesto.detalles.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted small">Sin piezas agregadas</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = '';
+            rep.presupuesto.detalles.forEach(detalle => {
+                const importe = (detalle.cantidad || 0) * (detalle.precio_unitario || 0);
+                const fila = `<tr>
+                    <td class="small">${detalle.descripcion}</td>
+                    <td class="small">${detalle.tipo_item}</td>
+                    <td class="small text-end">${parseFloat(detalle.cantidad).toFixed(2)}</td>
+                    <td class="small text-end">€ ${parseFloat(detalle.precio_unitario).toFixed(2)}</td>
+                    <td class="small text-end fw-bold">€ ${importe.toFixed(2)}</td>
+                </tr>`;
+                tbody.innerHTML += fila;
+            });
+        } catch (err) {
+            console.error('Error en cargarDetallesPresupuesto:', err);
+        }
+    }
+
+    window.abrirModalPresupuestoReparacion = function(id_reparacion) {
+        console.log('Modal presupuesto abierto para reparación:', id_reparacion);
+        const rep = window.reparacionesData && window.reparacionesData.find(r => r.id_reparacion == id_reparacion);
+
+        if (!rep) {
+            console.error('Reparación no encontrada:', id_reparacion);
+            alert('Error: reparación no encontrada');
+            return;
+        }
+
+        document.getElementById('presRepIdEdit').textContent = '#' + id_reparacion;
+        document.getElementById('presIdReparacionEdit').value = id_reparacion;
+        document.getElementById('presIdPresupuestoEdit').value = rep.presupuesto ? rep.presupuesto.id_presupuesto : '';
+
+        if (rep && rep.presupuesto) {
+            const pres = rep.presupuesto;
+            document.getElementById('presTotalPiezasEdit').value = pres.total_piezas || 0;
+            document.getElementById('presTotalManoObraEdit').value = pres.total_mano_obra || 0;
+            document.getElementById('presEstadoEdit').value = pres.estado || 'Borrador';
+            actualizarTotalEdit();
+        } else {
+            document.getElementById('presTotalPiezasEdit').value = 0;
+            document.getElementById('presTotalManoObraEdit').value = 0;
+            document.getElementById('presEstadoEdit').value = 'Borrador';
+            document.getElementById('presGranTotalEdit').textContent = '€ 0.00';
+        }
+
+        if (presupuestoReparacionModalInstance) {
+            presupuestoReparacionModalInstance.show();
+        }
+        if (rep.presupuesto) {
+            cargarDetallesPresupuesto(rep.presupuesto.id_presupuesto);
+        }
+    };
+
+    function actualizarTotalEdit() {
+        const piezas = parseFloat(document.getElementById('presTotalPiezasEdit').value) || 0;
+        const mano = parseFloat(document.getElementById('presTotalManoObraEdit').value) || 0;
+        const total = piezas + mano;
+        document.getElementById('presGranTotalEdit').textContent = '€ ' + total.toFixed(2);
+    }
+
+    document.getElementById('presTotalPiezasEdit')?.addEventListener('input', actualizarTotalEdit);
+    document.getElementById('presTotalManoObraEdit')?.addEventListener('input', actualizarTotalEdit);
+
+    if (formPresupuestoReparacion) {
+        formPresupuestoReparacion.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const id_presupuesto = document.getElementById('presIdPresupuestoEdit').value;
+            const id_reparacion = document.getElementById('presIdReparacionEdit').value;
+            const total_piezas = parseFloat(document.getElementById('presTotalPiezasEdit').value) || 0;
+            const total_mano_obra = parseFloat(document.getElementById('presTotalManoObraEdit').value) || 0;
+            const estado = document.getElementById('presEstadoEdit').value;
+
+            try {
+                if (!id_presupuesto) {
+                    const res = await fetch('/api/presupuestos', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({
+                            id_reparacion: parseInt(id_reparacion),
+                            total_piezas: total_piezas,
+                            total_mano_obra: total_mano_obra
+                        })
+                    });
+
+                    if (res.ok) {
+                        presupuestoReparacionModalInstance.hide();
+                        await window.cargarReparaciones();
+                    } else {
+                        alert('Error al crear presupuesto');
+                    }
+                } else {
+                    const res = await fetch('/api/presupuestos', {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({
+                            id_presupuesto: parseInt(id_presupuesto),
+                            total_piezas: total_piezas,
+                            total_mano_obra: total_mano_obra,
+                            gran_total: total_piezas + total_mano_obra,
+                            estado: estado
+                        })
+                    });
+
+                    if (res.ok) {
+                        presupuestoReparacionModalInstance.hide();
+                        await window.cargarReparaciones();
+                    } else {
+                        alert('Error al actualizar presupuesto');
+                    }
+                }
+            } catch (err) {
+                console.error('Error:', err);
+                alert('Error de conexión');
+            }
+        });
+    }
+
+    async function cargarRepuestos() {
+        console.log('Cargando repuestos...');
+        try {
+            const res = await fetch('/api/repuestos', { credentials: 'include' });
+            console.log('Respuesta status:', res.status);
+            if (res.ok) {
+                const data = await res.json();
+                console.log('Repuestos cargados:', data);
+                const repuestos = data.data || data;
+                const select = document.getElementById('pieza_id_repuesto');
+                select.innerHTML = '<option value="">-- Seleccionar una pieza --</option>';
+                repuestos.forEach(rep => {
+                    const option = document.createElement('option');
+                    option.value = rep.id_repuesto;
+                    option.text = `${rep.nombre_pieza} (Stock: ${rep.stock_actual})`;
+                    option.dataset.nombre = rep.nombre_pieza;
+                    select.appendChild(option);
+                });
+            } else {
+                console.error('Error al cargar repuestos:', res.status);
+            }
+        } catch (err) {
+            console.error('Error cargando repuestos:', err);
+        }
+    }
+
+    document.getElementById('pieza_id_repuesto')?.addEventListener('change', () => {
+        const select = document.getElementById('pieza_id_repuesto');
+        const selected = select.options[select.selectedIndex];
+        if (selected && selected.dataset.nombre) {
+            document.getElementById('pieza_descripcion').value = selected.dataset.nombre;
+        }
+    });
+
+    async function cargarRepuestos() {
+        try {
+            const res = await fetch('/api/repuestos', { credentials: 'include' });
+            if (res.ok) {
+                const data = await res.json();
+                const repuestos = data.data || data;
+                const select = document.getElementById('pieza_id_repuesto');
+                if (select) {
+                    select.innerHTML = '<option value="">-- Seleccionar una pieza --</option>';
+                    repuestos.forEach(rep => {
+                        const option = document.createElement('option');
+                        option.value = rep.id_repuesto;
+                        option.text = `${rep.nombre_pieza} (Stock: ${rep.stock_actual})`;
+                        option.dataset.nombre = rep.nombre_pieza;
+                        select.appendChild(option);
+                    });
+                }
+            }
+        } catch (err) {
+            console.error('Error cargando repuestos:', err);
+        }
+    }
+
+    document.getElementById('pieza_id_repuesto')?.addEventListener('change', () => {
+        const select = document.getElementById('pieza_id_repuesto');
+        const selected = select.options[select.selectedIndex];
+        if (selected && selected.dataset.nombre) {
+            document.getElementById('pieza_descripcion').value = selected.dataset.nombre;
+        }
+    });
+
+    document.addEventListener('submit', async (e) => {
+        if (e.target.id === 'formAgregarPieza') {
+            e.preventDefault();
+
+            const id_presupuesto = document.getElementById('pieza_id_presupuesto').value;
+            const id_repuesto = document.getElementById('pieza_id_repuesto').value || null;
+            const descripcion = document.getElementById('pieza_descripcion').value;
+            const cantidad = parseFloat(document.getElementById('pieza_cantidad').value) || 0;
+            const precio_unitario = parseFloat(document.getElementById('pieza_precio').value) || 0;
+
+            try {
+                const res = await fetch('/api/presupuestos/detalles', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        id_presupuesto: parseInt(id_presupuesto),
+                        id_repuesto: id_repuesto ? parseInt(id_repuesto) : null,
+                        descripcion: descripcion,
+                        cantidad: cantidad,
+                        precio_unitario: precio_unitario,
+                        tipo: id_repuesto ? 'Repuesto' : 'Mano de Obra'
+                    })
+                });
+
+                if (res.ok) {
+                    new bootstrap.Modal(document.getElementById('agregarPiezaModal')).hide();
+                    await window.cargarReparaciones();
+                    cargarDetallesPresupuesto(id_presupuesto);
+                } else {
+                    const data = await res.json();
+                    alert('Error: ' + (data.message || 'No se pudo agregar pieza'));
+                }
+            } catch (err) {
+                console.error('Error:', err);
+                alert('Error de conexión');
+            }
+        }
+    });
 });
