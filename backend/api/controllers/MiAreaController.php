@@ -217,10 +217,20 @@ class MiAreaController
             return;
         }
 
-        $presupuesto = new Presupuesto($this->db);
-        $stmt = $presupuesto->readByClienteId($id_cliente);
-        http_response_code(200);
-        echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
+        try {
+            $presupuesto = new Presupuesto($this->db);
+            $stmt = $presupuesto->readByClienteId($id_cliente);
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $json = json_encode($rows, JSON_INVALID_UTF8_SUBSTITUTE);
+            if ($json === false) {
+                throw new \RuntimeException('JSON encode error: ' . json_last_error_msg());
+            }
+            http_response_code(200);
+            echo $json;
+        } catch (\Exception $e) {
+            http_response_code(500);
+            echo json_encode(["message" => "Error al obtener presupuestos: " . $e->getMessage()]);
+        }
     }
 
     private function latin(string $str): string

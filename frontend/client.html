@@ -410,7 +410,16 @@
             const el = document.getElementById('presList');
             try {
                 const res  = await fetch('/api/mi-area/presupuestos', { credentials: 'include' });
-                const list = await res.json();
+                const text = await res.text();
+                let list;
+                try { list = JSON.parse(text); } catch {
+                    el.innerHTML = `<div class="alert alert-danger">Respuesta inesperada del servidor: <pre class="small mt-1 mb-0">${text.slice(0, 300)}</pre></div>`;
+                    return;
+                }
+                if (!res.ok) {
+                    el.innerHTML = `<div class="alert alert-danger">${list.message || 'Error del servidor.'}</div>`;
+                    return;
+                }
                 if (!Array.isArray(list) || list.length === 0) {
                     el.innerHTML = `<div class="empty-state"><i class="fas fa-file-invoice-dollar"></i><br>Aún no tienes presupuestos disponibles.</div>`;
                     return;
