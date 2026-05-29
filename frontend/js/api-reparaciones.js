@@ -1,7 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     const tableBody = document.getElementById('reparacionesTableBody');
     const formReparacion = document.getElementById('formReparacion');
-    const modalInstance = new bootstrap.Modal(document.getElementById('reparacionModal'));
+    const reparacionModalEl = document.getElementById('reparacionModal');
+    const modalInstance = reparacionModalEl ? new bootstrap.Modal(reparacionModalEl) : null;
     const btnDeleteRep = document.getElementById('btnDeleteRep');
 
     window.cargarReparaciones = async function() {
