@@ -262,18 +262,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     const clienteNombre = rep.nombre_cliente || 'Desconocido';
                     const vehiculoStr = `${rep.matricula} - ${rep.modelo_auto}`;
+                    const esc = s => (s||'').replace(/"/g, '&quot;');
 
                     tbody.innerHTML += `
                         <tr style="cursor:pointer"
-                            onclick="irAReparacion(${rep.id_reparacion}, ${JSON.stringify(rep.modelo_auto)}, ${JSON.stringify(rep.matricula)}, ${JSON.stringify(rep.descripcion_motivo)}, ${JSON.stringify(rep.estado_presupuesto||'')}, ${JSON.stringify(rep.estado)}, ${rep.id_cliente||null})">
+                            data-id="${rep.id_reparacion}"
+                            data-modelo="${esc(rep.modelo_auto)}"
+                            data-matricula="${esc(rep.matricula)}"
+                            data-descripcion="${esc(rep.descripcion_motivo)}"
+                            data-estado-pres="${esc(rep.estado_presupuesto)}"
+                            data-estado="${esc(rep.estado)}"
+                            data-cliente="${rep.id_cliente||''}">
                             <td class="ps-4">
                                 <div class="fw-bold">${clienteNombre}</div>
                                 <div class="small text-muted">${vehiculoStr}</div>
                             </td>
-                            <td class="text-truncate" style="max-width: 200px;" title="${rep.descripcion_motivo}">${rep.descripcion_motivo}</td>
+                            <td class="text-truncate" style="max-width: 200px;" title="${esc(rep.descripcion_motivo)}">${rep.descripcion_motivo}</td>
                             <td><span class="badge ${badgeEstado} p-2">${rep.estado}</span></td>
                         </tr>
                     `;
+                });
+
+                tbody.addEventListener('click', (e) => {
+                    const row = e.target.closest('tr[data-id]');
+                    if (!row) return;
+                    const d = row.dataset;
+                    window.irAReparacion(
+                        parseInt(d.id),
+                        d.modelo, d.matricula, d.descripcion,
+                        d.estadoPres, d.estado,
+                        d.cliente ? parseInt(d.cliente) : null
+                    );
                 });
             }
         } catch (e) {
