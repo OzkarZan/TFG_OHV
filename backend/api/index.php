@@ -75,7 +75,7 @@ if (preg_match('/^\/auth\/login$/', $path)) {
     require_once 'controllers/ReparacionController.php';
     $controller = new ReparacionController();
     $controller->handleRequest($method);
-} elseif (preg_match('/^\/presupuestos(\/generar_pdf)?$/', $path)) {
+} elseif (preg_match('/^\/presupuestos(\/generar_pdf|\/detalles)?$/', $path)) {
     require_once 'controllers/PresupuestoController.php';
     $controller = new PresupuestoController();
     $controller->handleRequest($method, $path);
