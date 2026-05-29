@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <div class="small text-muted">${rep.matricula}</div>
                             </td>
                             <td class="text-start text-truncate" style="max-width: 200px;" title="${rep.descripcion_motivo}">${rep.descripcion_motivo}</td>
-                            <td><button class="badge ${badgePresupuesto} p-2 border-0" style="cursor: pointer;" onclick="abrirModalPresupuestoReparacion(${rep.id_reparacion})" title="Editar presupuesto">${rep.estado_presupuesto}</button></td>
+                            <td><span class="badge ${badgePresupuesto} p-2">${rep.estado_presupuesto}</span></td>
                             <td><span class="badge ${badgeEstado} p-2">${rep.estado}</span></td>
                             <td class="text-end pe-4">
                                 <button class="btn btn-sm btn-outline-success rounded-circle shadow-sm me-1"
