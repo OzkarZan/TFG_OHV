@@ -87,6 +87,10 @@ if (preg_match('/^\/auth\/login$/', $path)) {
     require_once 'controllers/VehiculoController.php';
     $controller = new VehiculoController();
     $controller->handleRequest($method);
+} elseif (preg_match('/^\/repuestos$/', $path)) {
+    require_once 'controllers/RepuestoController.php';
+    $controller = new RepuestoController();
+    $controller->handleRequest($method);
 } elseif (preg_match('/^\/mi-area(\/presupuestos|\/cita|\/vehiculo)?$/', $path)) {
     require_once 'controllers/MiAreaController.php';
     $controller = new MiAreaController();

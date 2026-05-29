@@ -490,7 +490,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function cargarRepuestos() {
         try {
-            const res = await fetch('/api/repuestos.php', { credentials: 'include' });
+            const res = await fetch('/api/repuestos', { credentials: 'include' });
             if (res.ok) {
                 const data = await res.json();
                 const repuestos = data.data || data;
