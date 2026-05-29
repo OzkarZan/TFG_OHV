@@ -427,7 +427,8 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const res = await fetch('/api/repuestos', { credentials: 'include' });
             if (res.ok) {
-                const repuestos = await res.json();
+                const data = await res.json();
+                const repuestos = data.data || data;
                 const select = document.getElementById('pieza_id_repuesto');
                 select.innerHTML = '<option value="">-- Seleccionar una pieza --</option>';
                 repuestos.forEach(rep => {
@@ -437,17 +438,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     option.dataset.nombre = rep.nombre_pieza;
                     select.appendChild(option);
                 });
-                select.addEventListener('change', () => {
-                    const selected = select.options[select.selectedIndex];
-                    if (selected.dataset.nombre) {
-                        document.getElementById('pieza_descripcion').value = selected.dataset.nombre;
-                    }
-                });
+            } else {
+                console.error('Error al cargar repuestos:', res.status);
             }
         } catch (err) {
             console.error('Error cargando repuestos:', err);
         }
     }
+
+    document.getElementById('pieza_id_repuesto')?.addEventListener('change', () => {
+        const select = document.getElementById('pieza_id_repuesto');
+        const selected = select.options[select.selectedIndex];
+        if (selected && selected.dataset.nombre) {
+            document.getElementById('pieza_descripcion').value = selected.dataset.nombre;
+        }
+    });
 
     window.abrirModalAgregarPieza = function(id_reparacion, id_presupuesto) {
         if (!id_presupuesto) {
