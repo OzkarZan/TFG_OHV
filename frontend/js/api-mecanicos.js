@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // Count this-week citas per mechanic
+         
             const now       = new Date();
             const weekStart = new Date(now);
             weekStart.setDate(now.getDate() - ((now.getDay() + 6) % 7)); // Monday

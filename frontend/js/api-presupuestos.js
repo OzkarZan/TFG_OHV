@@ -297,7 +297,7 @@ document.addEventListener('DOMContentLoaded', () => {
         recalcularTotales();
     }
 
-    // Called when tipo select changes
+    
     window._presTipoChange = function (select) {
         const row    = select.closest('.linea-row');
         const picker = row.querySelector('.linea-repuesto-picker');
