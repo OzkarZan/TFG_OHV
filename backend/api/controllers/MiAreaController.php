@@ -165,9 +165,9 @@ class MiAreaController
             return;
         }
 
-        if ($pres['estado'] !== 'Enviado') {
+        if (in_array($pres['estado'], ['Aprobado', 'Rechazado'], true)) {
             http_response_code(409);
-            echo json_encode(["message" => "Solo puedes responder presupuestos en estado Enviado."]);
+            echo json_encode(["message" => "Este presupuesto ya fue respondido."]);
             return;
         }
 
