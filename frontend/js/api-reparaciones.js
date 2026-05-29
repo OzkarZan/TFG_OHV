@@ -326,26 +326,37 @@ document.addEventListener('DOMContentLoaded', () => {
     const formPresupuestoReparacion = document.getElementById('formPresupuestoReparacion');
 
     function cargarDetallesPresupuesto(id_presupuesto) {
-        const rep = window.reparacionesData && window.reparacionesData.find(r => r.presupuesto && r.presupuesto.id_presupuesto == id_presupuesto);
-        const tbody = document.getElementById('cuerpoTablaPiezas');
+        try {
+            const tbody = document.getElementById('cuerpoTablaPiezas');
+            if (!tbody) return;
 
-        if (!rep || !rep.presupuesto || !rep.presupuesto.detalles || rep.presupuesto.detalles.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted small">Sin piezas agregadas</td></tr>';
-            return;
+            if (!window.reparacionesData || !id_presupuesto) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted small">Sin piezas agregadas</td></tr>';
+                return;
+            }
+
+            const rep = window.reparacionesData.find(r => r.presupuesto && r.presupuesto.id_presupuesto == id_presupuesto);
+
+            if (!rep || !rep.presupuesto || !rep.presupuesto.detalles || rep.presupuesto.detalles.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted small">Sin piezas agregadas</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = '';
+            rep.presupuesto.detalles.forEach(detalle => {
+                const importe = (detalle.cantidad || 0) * (detalle.precio_unitario || 0);
+                const fila = `<tr>
+                    <td class="small">${detalle.descripcion}</td>
+                    <td class="small">${detalle.tipo_item}</td>
+                    <td class="small text-end">${parseFloat(detalle.cantidad).toFixed(2)}</td>
+                    <td class="small text-end">€ ${parseFloat(detalle.precio_unitario).toFixed(2)}</td>
+                    <td class="small text-end fw-bold">€ ${importe.toFixed(2)}</td>
+                </tr>`;
+                tbody.innerHTML += fila;
+            });
+        } catch (err) {
+            console.error('Error en cargarDetallesPresupuesto:', err);
         }
-
-        tbody.innerHTML = '';
-        rep.presupuesto.detalles.forEach(detalle => {
-            const importe = (detalle.cantidad || 0) * (detalle.precio_unitario || 0);
-            const fila = `<tr>
-                <td class="small">${detalle.descripcion}</td>
-                <td class="small">${detalle.tipo_item}</td>
-                <td class="small text-end">${parseFloat(detalle.cantidad).toFixed(2)}</td>
-                <td class="small text-end">€ ${parseFloat(detalle.precio_unitario).toFixed(2)}</td>
-                <td class="small text-end fw-bold">€ ${importe.toFixed(2)}</td>
-            </tr>`;
-            tbody.innerHTML += fila;
-        });
     }
 
     window.abrirModalPresupuestoReparacion = function(id_reparacion) {
