@@ -84,14 +84,15 @@ class Reparacion {
     }
 
     public function delete() {
-        $query = "DELETE FROM " . $this->table_name . " WHERE id_reparacion = ?";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(1, $this->id_reparacion);
+        $id = $this->id_reparacion;
+        // PRESUPUESTOS, REPARACION_MECANICO y REPARACION_REPUESTOS no tienen CASCADE desde REPARACIONES
+        $this->conn->prepare("DELETE FROM PRESUPUESTOS WHERE id_reparacion = ?")->execute([$id]);
+        $this->conn->prepare("DELETE FROM REPARACION_MECANICO WHERE id_reparacion = ?")->execute([$id]);
+        $this->conn->prepare("DELETE FROM REPARACION_REPUESTOS WHERE id_reparacion = ?")->execute([$id]);
 
-        if ($stmt->execute()) {
-            return true;
-        }
-        return false;
+        $stmt = $this->conn->prepare("DELETE FROM REPARACIONES WHERE id_reparacion = ?");
+        $stmt->execute([$id]);
+        return $stmt->rowCount() > 0;
     }
 
     public function getPresupuesto() {

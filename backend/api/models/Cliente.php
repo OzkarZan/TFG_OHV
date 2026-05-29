@@ -69,22 +69,32 @@ class Cliente {
     }
 
     public function delete() {
-        // Primero obtener el id_usuario
-        $query_get_user = "SELECT id_usuario FROM " . $this->table_name . " WHERE id_cliente = ?";
-        $stmt_get = $this->conn->prepare($query_get_user);
-        $stmt_get->bindParam(1, $this->id_cliente);
-        $stmt_get->execute();
-        $row = $stmt_get->fetch(PDO::FETCH_ASSOC);
+        $stmt = $this->conn->prepare("SELECT id_usuario FROM CLIENTES WHERE id_cliente = ?");
+        $stmt->execute([$this->id_cliente]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$row) return false;
 
-        if ($row) {
-            // Eliminar el usuario (esto eliminará en cascada el cliente si la DB está bien configurada)
-            $query_del = "DELETE FROM USUARIOS WHERE id_usuario = ?";
-            $stmt_del = $this->conn->prepare($query_del);
-            $stmt_del->bindParam(1, $row['id_usuario']);
-            if ($stmt_del->execute()) {
-                return true;
+        // Obtener matrículas del cliente para borrar reparaciones dependientes
+        $stmtV = $this->conn->prepare("SELECT matricula FROM VEHICULOS WHERE id_cliente = ?");
+        $stmtV->execute([$this->id_cliente]);
+        $matriculas = $stmtV->fetchAll(PDO::FETCH_COLUMN);
+
+        foreach ($matriculas as $matricula) {
+            $stmtR = $this->conn->prepare("SELECT id_reparacion FROM REPARACIONES WHERE matricula = ?");
+            $stmtR->execute([$matricula]);
+            foreach ($stmtR->fetchAll(PDO::FETCH_COLUMN) as $id_rep) {
+                $this->conn->prepare("DELETE FROM PRESUPUESTOS WHERE id_reparacion = ?")->execute([$id_rep]);
+                $this->conn->prepare("DELETE FROM REPARACION_MECANICO WHERE id_reparacion = ?")->execute([$id_rep]);
+                $this->conn->prepare("DELETE FROM REPARACION_REPUESTOS WHERE id_reparacion = ?")->execute([$id_rep]);
             }
+            $this->conn->prepare("DELETE FROM REPARACIONES WHERE matricula = ?")->execute([$matricula]);
         }
-        return false;
+
+        // CITAS no tiene CASCADE desde CLIENTES
+        $this->conn->prepare("DELETE FROM CITAS WHERE id_cliente = ?")->execute([$this->id_cliente]);
+
+        // Borrar usuario: CASCADE elimina CLIENTES → VEHICULOS
+        $this->conn->prepare("DELETE FROM USUARIOS WHERE id_usuario = ?")->execute([$row['id_usuario']]);
+        return true;
     }
 }
