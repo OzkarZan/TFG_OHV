@@ -46,8 +46,8 @@ document.addEventListener('DOMContentLoaded', () => {
                             <td><span class="badge ${badgeEstado} p-2">${rep.estado}</span></td>
                             <td class="text-end pe-4">
                                 <button class="btn btn-sm btn-outline-success rounded-circle shadow-sm me-1"
-                                        onclick="abrirModalPresupuesto(${rep.id_reparacion})"
-                                        title="Generar Presupuesto PDF">
+                                        onclick="descargarPDFPresupuesto(${rep.id_reparacion})"
+                                        title="Descargar PDF del presupuesto">
                                     <i class="fas fa-file-pdf"></i>
                                 </button>
                                 <button class="btn btn-sm btn-outline-primary rounded-circle shadow-sm" 
@@ -63,6 +63,15 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (e) {
             console.error('Error cargando reparaciones:', e);
             tableBody.innerHTML = '<tr><td colspan="6" class="text-center text-danger p-4">Error de conexión al cargar reparaciones.</td></tr>';
+        }
+    };
+
+    window.descargarPDFPresupuesto = function(id_reparacion) {
+        const rep = window.reparacionesData && window.reparacionesData.find(r => r.id_reparacion == id_reparacion);
+        if (rep && rep.presupuesto && rep.presupuesto.id_presupuesto) {
+            window.open(`/api/presupuestos?id_presupuesto=${rep.presupuesto.id_presupuesto}`, '_blank');
+        } else {
+            alert('Esta reparación aún no tiene presupuesto. Créalo desde el botón "Ver o Modificar presupuesto" al editar la reparación.');
         }
     };
 
