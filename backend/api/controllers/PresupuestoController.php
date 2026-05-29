@@ -36,7 +36,9 @@ class PresupuestoController {
             }
         } elseif ($method === 'POST') {
             $data = json_decode(file_get_contents("php://input"));
-            if (!empty($data->standalone)) {
+            if (strpos($path, 'detalles') !== false) {
+                $this->createDetalle($data);
+            } elseif (!empty($data->standalone)) {
                 $this->createStandalone($data);
             } else {
                 $this->create($data);
@@ -541,5 +543,61 @@ class PresupuestoController {
 
         http_response_code(200);
         echo json_encode(['message' => 'Estado actualizado correctamente.']);
+    }
+
+    private function createDetalle($data) {
+        if (empty($data->id_presupuesto) || empty($data->descripcion) || !isset($data->cantidad) || !isset($data->precio_unitario)) {
+            http_response_code(400);
+            echo json_encode(['message' => 'Faltan campos obligatorios']);
+            return;
+        }
+
+        $id_presupuesto = (int)$data->id_presupuesto;
+        $id_repuesto = !empty($data->id_repuesto) ? (int)$data->id_repuesto : null;
+        $descripcion = trim($data->descripcion);
+        $cantidad = floatval($data->cantidad);
+        $precio_unitario = floatval($data->precio_unitario);
+        $tipo = ($data->tipo ?? 'Mano de Obra') === 'Repuesto' ? 'Repuesto' : 'Mano de Obra';
+
+        try {
+            $this->presupuesto->addDetalle($id_presupuesto, $tipo, $descripcion, $cantidad, $precio_unitario, $id_repuesto);
+
+            if ($tipo === 'Repuesto' && $id_repuesto !== null) {
+                $stmtPieza = $this->db->prepare('SELECT stock_actual, nombre_pieza FROM REPUESTOS WHERE id_repuesto = ?');
+                $stmtPieza->execute([$id_repuesto]);
+                $pieza = $stmtPieza->fetch(PDO::FETCH_ASSOC);
+
+                if ($pieza && floatval($pieza['stock_actual']) >= $cantidad) {
+                    $this->db->prepare('UPDATE REPUESTOS SET stock_actual = stock_actual - ? WHERE id_repuesto = ?')
+                        ->execute([$cantidad, $id_repuesto]);
+                } else {
+                    $nombre = $pieza ? $pieza['nombre_pieza'] : $descripcion;
+                    $this->db->prepare('INSERT INTO SOLICITUDES_PIEZAS (id_repuesto, nombre_pieza, cantidad, estado, fecha_solicitud) VALUES (?, ?, ?, "Pendiente", CURDATE())')
+                        ->execute([$id_repuesto, $nombre, $cantidad]);
+                }
+            }
+
+            $stmtTotales = $this->db->prepare('SELECT SUM(CASE WHEN tipo_item = "Repuesto" THEN cantidad * precio_unitario ELSE 0 END) as total_piezas, SUM(CASE WHEN tipo_item = "Mano de Obra" THEN cantidad * precio_unitario ELSE 0 END) as total_mano_obra FROM PRESUPUESTO_DETALLES WHERE id_presupuesto = ?');
+            $stmtTotales->execute([$id_presupuesto]);
+            $totales = $stmtTotales->fetch(PDO::FETCH_ASSOC);
+
+            $total_piezas = floatval($totales['total_piezas'] ?? 0);
+            $total_mano_obra = floatval($totales['total_mano_obra'] ?? 0);
+            $gran_total = $total_piezas + $total_mano_obra;
+
+            $this->db->prepare('UPDATE PRESUPUESTOS SET total_piezas = ?, total_mano_obra = ?, gran_total = ? WHERE id_presupuesto = ?')
+                ->execute([$total_piezas, $total_mano_obra, $gran_total, $id_presupuesto]);
+
+            http_response_code(201);
+            echo json_encode([
+                'message' => 'Pieza agregada correctamente',
+                'total_piezas' => $total_piezas,
+                'total_mano_obra' => $total_mano_obra,
+                'gran_total' => $gran_total
+            ]);
+        } catch (Exception $e) {
+            http_response_code(503);
+            echo json_encode(['message' => 'Error al agregar pieza: ' . $e->getMessage()]);
+        }
     }
 }

@@ -52,6 +52,14 @@ class ReparacionController {
 
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $pres = $presupuesto_model->readByReparacion($row['id_reparacion']);
+            if ($pres) {
+                $detalles_stmt = $presupuesto_model->readDetallesByPresupuesto($pres['id_presupuesto']);
+                $detalles = [];
+                while ($detalle = $detalles_stmt->fetch(PDO::FETCH_ASSOC)) {
+                    $detalles[] = $detalle;
+                }
+                $pres['detalles'] = $detalles;
+            }
             $row['presupuesto'] = $pres;
             array_push($arr, $row);
         }
