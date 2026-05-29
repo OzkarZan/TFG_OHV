@@ -65,24 +65,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    window.abrirModalAgregarPieza = function() {
+    window.abrirModalAgregarPieza = async function() {
         const id_presupuesto = document.getElementById('presIdPresupuestoEdit').value;
         if (!id_presupuesto) {
             alert('Primero debe guardar el presupuesto');
             return;
         }
         const modal = document.getElementById('agregarPiezaModal');
-        if (!modal) {
-            alert('Modal no encontrado');
-            return;
-        }
+        if (!modal) return;
         document.getElementById('pieza_id_presupuesto').value = id_presupuesto;
         document.getElementById('pieza_id_repuesto').value = '';
         document.getElementById('pieza_descripcion').value = '';
         document.getElementById('pieza_cantidad').value = '1';
         document.getElementById('pieza_precio').value = '';
-        const modalInstance = new bootstrap.Modal(modal);
-        modalInstance.show();
+        await cargarRepuestos();
+        new bootstrap.Modal(modal).show();
     };
 
     const repClienteSelect = document.getElementById('repCliente');
@@ -485,40 +482,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function cargarRepuestos() {
-        console.log('Cargando repuestos...');
-        try {
-            const res = await fetch('/api/repuestos', { credentials: 'include' });
-            console.log('Respuesta status:', res.status);
-            if (res.ok) {
-                const data = await res.json();
-                console.log('Repuestos cargados:', data);
-                const repuestos = data.data || data;
-                const select = document.getElementById('pieza_id_repuesto');
-                select.innerHTML = '<option value="">-- Seleccionar una pieza --</option>';
-                repuestos.forEach(rep => {
-                    const option = document.createElement('option');
-                    option.value = rep.id_repuesto;
-                    option.text = `${rep.nombre_pieza} (Stock: ${rep.stock_actual})`;
-                    option.dataset.nombre = rep.nombre_pieza;
-                    select.appendChild(option);
-                });
-            } else {
-                console.error('Error al cargar repuestos:', res.status);
-            }
-        } catch (err) {
-            console.error('Error cargando repuestos:', err);
-        }
-    }
-
-    document.getElementById('pieza_id_repuesto')?.addEventListener('change', () => {
-        const select = document.getElementById('pieza_id_repuesto');
-        const selected = select.options[select.selectedIndex];
-        if (selected && selected.dataset.nombre) {
-            document.getElementById('pieza_descripcion').value = selected.dataset.nombre;
-        }
-    });
-
-    async function cargarRepuestos() {
         try {
             const res = await fetch('/api/repuestos', { credentials: 'include' });
             if (res.ok) {
@@ -532,6 +495,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         option.value = rep.id_repuesto;
                         option.text = `${rep.nombre_pieza} (Stock: ${rep.stock_actual})`;
                         option.dataset.nombre = rep.nombre_pieza;
+                        option.dataset.precio = rep.precio_unitario || '';
                         select.appendChild(option);
                     });
                 }
@@ -546,6 +510,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const selected = select.options[select.selectedIndex];
         if (selected && selected.dataset.nombre) {
             document.getElementById('pieza_descripcion').value = selected.dataset.nombre;
+            if (selected.dataset.precio) {
+                document.getElementById('pieza_precio').value = selected.dataset.precio;
+            }
         }
     });
 
@@ -575,7 +542,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 if (res.ok) {
-                    new bootstrap.Modal(document.getElementById('agregarPiezaModal')).hide();
+                    const piezaModal = bootstrap.Modal.getInstance(document.getElementById('agregarPiezaModal'));
+                    if (piezaModal) piezaModal.hide();
                     await window.cargarReparaciones();
                     cargarDetallesPresupuesto(id_presupuesto);
                 } else {

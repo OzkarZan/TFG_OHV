@@ -532,8 +532,18 @@ class PresupuestoController {
             return;
         }
 
-        $stmt = $this->db->prepare('UPDATE PRESUPUESTOS SET estado = ? WHERE id_presupuesto = ?');
-        $stmt->execute([$estado, $id]);
+        if (isset($data['total_piezas']) && isset($data['total_mano_obra'])) {
+            $total_piezas    = floatval($data['total_piezas']);
+            $total_mano_obra = floatval($data['total_mano_obra']);
+            $gran_total      = isset($data['gran_total']) ? floatval($data['gran_total']) : $total_piezas + $total_mano_obra;
+            $stmt = $this->db->prepare(
+                'UPDATE PRESUPUESTOS SET estado = ?, total_piezas = ?, total_mano_obra = ?, gran_total = ? WHERE id_presupuesto = ?'
+            );
+            $stmt->execute([$estado, $total_piezas, $total_mano_obra, $gran_total, $id]);
+        } else {
+            $stmt = $this->db->prepare('UPDATE PRESUPUESTOS SET estado = ? WHERE id_presupuesto = ?');
+            $stmt->execute([$estado, $id]);
+        }
 
         if ($stmt->rowCount() === 0) {
             http_response_code(404);
@@ -542,7 +552,7 @@ class PresupuestoController {
         }
 
         http_response_code(200);
-        echo json_encode(['message' => 'Estado actualizado correctamente.']);
+        echo json_encode(['message' => 'Presupuesto actualizado correctamente.']);
     }
 
     private function createDetalle($data) {
