@@ -483,7 +483,8 @@ button {
         margin-bottom: 2rem;
     }
 
-    .row {
+    .feature-section .row,
+    .hero-section .row {
         flex-direction: column;
     }
 
@@ -623,12 +624,48 @@ button {
 @media (max-width: 992px) {
     #sidebar {
         margin-left: -260px;
-        /* Oculta sidebar en móviles por defecto si se añade JS, o ajusta a diseño fluido */
     }
 
     #page-content-wrapper {
         margin-left: 0;
         width: 100%;
+    }
+
+    #page-content-wrapper header {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+}
+
+/* Sidebar toggle en móvil */
+#sidebar-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1039;
+}
+
+@media (max-width: 992px) {
+    #wrapper.sidebar-open #sidebar {
+        margin-left: 0;
+    }
+
+    #wrapper.sidebar-open #sidebar-backdrop {
+        display: block;
+    }
+}
+
+/* Modales en móvil */
+@media (max-width: 576px) {
+    .modal-dialog {
+        margin: 0.5rem;
+    }
+
+    .modal-body {
+        max-height: 70vh;
+        overflow-y: auto;
     }
 }
 

@@ -92,6 +92,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
+    // ===== SIDEBAR TOGGLE MÓVIL =====
+    const sidebarToggle   = document.getElementById('sidebarToggle');
+    const sidebarBackdrop = document.getElementById('sidebar-backdrop');
+    const wrapper         = document.getElementById('wrapper');
+
+    function closeSidebar() { wrapper?.classList.remove('sidebar-open'); }
+
+    sidebarToggle?.addEventListener('click', () => wrapper?.classList.toggle('sidebar-open'));
+    sidebarBackdrop?.addEventListener('click', closeSidebar);
+    allMenus.forEach(m => m?.addEventListener('click', () => {
+        if (window.innerWidth < 992) closeSidebar();
+    }));
+
     // ===== 2. LÓGICA CRUD =====
     const formRepuesto = document.getElementById('formRepuesto');
     const formEditRepuesto = document.getElementById('formEditRepuesto');
