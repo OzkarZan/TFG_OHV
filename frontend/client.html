@@ -399,6 +399,13 @@
             finally { btn.disabled = false; }
         });
 
+        const estadoBadge = {
+            'Borrador':  'bg-secondary',
+            'Enviado':   'bg-warning text-dark',
+            'Aprobado':  'bg-success',
+            'Rechazado': 'bg-danger'
+        };
+
         async function renderPresupuestos() {
             const el = document.getElementById('presList');
             try {
@@ -411,19 +418,31 @@
                 el.innerHTML = list.map(p => `
                     <div class="card border-0 shadow-sm mb-3">
                         <div class="card-body py-3">
-                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                            <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
                                 <div>
                                     <div class="fw-bold">${esc(p.vehiculo_str) || 'Presupuesto de Reparación'}</div>
                                     <div class="small text-muted mt-1">
                                         <i class="fas fa-calendar me-1"></i>${p.fecha_emision}
                                         &nbsp;·&nbsp; Total: <strong>€${parseFloat(p.gran_total).toFixed(2)}</strong>
+                                        &nbsp;·&nbsp; <span class="badge ${estadoBadge[p.estado] || 'bg-secondary'}">${p.estado}</span>
                                     </div>
                                 </div>
-                                <a href="/api/presupuestos?id_presupuesto=${p.id_presupuesto}"
-                                   target="_blank"
-                                   class="btn btn-outline-primary btn-sm rounded-pill fw-bold px-3">
-                                    <i class="fas fa-file-pdf me-1"></i> Descargar PDF
-                                </a>
+                                <div class="d-flex gap-2 flex-wrap align-items-center">
+                                    <a href="/api/presupuestos?id_presupuesto=${p.id_presupuesto}"
+                                       target="_blank"
+                                       class="btn btn-outline-primary btn-sm rounded-pill fw-bold px-3">
+                                        <i class="fas fa-file-pdf me-1"></i> PDF
+                                    </a>
+                                    ${p.estado === 'Enviado' ? `
+                                    <button onclick="responderPresupuesto(${p.id_presupuesto}, 'aceptar')"
+                                            class="btn btn-success btn-sm rounded-pill fw-bold px-3">
+                                        <i class="fas fa-check me-1"></i> Aceptar
+                                    </button>
+                                    <button onclick="responderPresupuesto(${p.id_presupuesto}, 'rechazar')"
+                                            class="btn btn-outline-danger btn-sm rounded-pill fw-bold px-3">
+                                        <i class="fas fa-times me-1"></i> Rechazar
+                                    </button>` : ''}
+                                </div>
                             </div>
                         </div>
                     </div>`).join('');
@@ -431,6 +450,27 @@
                 el.innerHTML = '<div class="alert alert-danger">Error al cargar presupuestos.</div>';
             }
         }
+
+        window.responderPresupuesto = async function(id_presupuesto, accion) {
+            const texto = accion === 'aceptar' ? 'aceptar' : 'rechazar';
+            if (!confirm(`¿Seguro que quieres ${texto} este presupuesto?`)) return;
+            try {
+                const res = await fetch('/api/mi-area/presupuestos', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ id_presupuesto, accion })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    await renderPresupuestos();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            } catch (e) {
+                alert('Error de conexión.');
+            }
+        };
 
     });
     </script>

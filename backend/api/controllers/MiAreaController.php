@@ -65,6 +65,11 @@ class MiAreaController
             return;
         }
 
+        if ($method === 'PUT' && strpos($path, '/presupuestos') !== false) {
+            $this->responderPresupuesto($id_cliente);
+            return;
+        }
+
         if ($method !== 'GET') {
             http_response_code(405);
             echo json_encode(["message" => "Método no permitido."]);
@@ -125,6 +130,62 @@ class MiAreaController
         );
         $stmt->execute([$id_cliente]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    private function responderPresupuesto(int $id_cliente): void
+    {
+        $data           = json_decode(file_get_contents('php://input'), true);
+        $id_presupuesto = (int)($data['id_presupuesto'] ?? 0);
+        $accion         = trim($data['accion'] ?? '');
+
+        if (!$id_presupuesto || !in_array($accion, ['aceptar', 'rechazar'], true)) {
+            http_response_code(400);
+            echo json_encode(["message" => "id_presupuesto y accion (aceptar/rechazar) son obligatorios."]);
+            return;
+        }
+
+        // Verificar que el presupuesto pertenece al cliente
+        $stmt = $this->db->prepare(
+            "SELECT p.id_presupuesto, p.estado, p.id_reparacion
+             FROM PRESUPUESTOS p
+             WHERE p.id_presupuesto = ?
+               AND (
+                   p.id_cliente = ?
+                   OR p.id_reparacion IN (
+                       SELECT r.id_reparacion FROM REPARACIONES r
+                       JOIN VEHICULOS v ON r.matricula = v.matricula
+                       WHERE v.id_cliente = ?
+                   )
+               )"
+        );
+        $stmt->execute([$id_presupuesto, $id_cliente, $id_cliente]);
+        $pres = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$pres) {
+            http_response_code(403);
+            echo json_encode(["message" => "No tienes acceso a este presupuesto."]);
+            return;
+        }
+
+        if ($pres['estado'] !== 'Enviado') {
+            http_response_code(409);
+            echo json_encode(["message" => "Solo puedes responder presupuestos en estado Enviado."]);
+            return;
+        }
+
+        $nuevoEstado = $accion === 'aceptar' ? 'Aprobado'    : 'Rechazado';
+        $estadoRep   = $accion === 'aceptar' ? 'Aprobado'    : 'No Aprobado';
+
+        $this->db->prepare("UPDATE PRESUPUESTOS SET estado = ? WHERE id_presupuesto = ?")
+            ->execute([$nuevoEstado, $id_presupuesto]);
+
+        if ($pres['id_reparacion']) {
+            $this->db->prepare("UPDATE REPARACIONES SET estado_presupuesto = ? WHERE id_reparacion = ?")
+                ->execute([$estadoRep, (int)$pres['id_reparacion']]);
+        }
+
+        http_response_code(200);
+        echo json_encode(["message" => "Presupuesto " . ($accion === 'aceptar' ? 'aceptado' : 'rechazado') . " correctamente."]);
     }
 
     private function misPresupuestos(int $id_cliente): void
