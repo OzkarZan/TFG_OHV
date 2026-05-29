@@ -47,8 +47,6 @@ class MecanicoController
         }
     }
 
-    // ── GET /mecanicos  or  GET /mecanicos?action=disponibilidad|detalle ──
-
     private function read(): void
     {
         $action = $_GET['action'] ?? '';
@@ -93,10 +91,9 @@ class MecanicoController
             return;
         }
 
-        $dia_semana = (int) date('N', $ts); // 1=Lun … 7=Dom
+        $dia_semana = (int) date('N', $ts);
         $hora       = date('H:i:s', $ts);
 
-        // 1. Verificar si el mecánico tiene horario ese día
         $stmtH = $this->db->prepare("
             SELECT hora_inicio, hora_fin
             FROM MECANICO_HORARIOS
@@ -111,7 +108,6 @@ class MecanicoController
             return;
         }
 
-        // 2. Verificar que la hora esté dentro del horario
         if ($hora < $horario['hora_inicio'] || $hora >= $horario['hora_fin']) {
             $inicio = substr($horario['hora_inicio'], 0, 5);
             $fin    = substr($horario['hora_fin'], 0, 5);
@@ -154,7 +150,6 @@ class MecanicoController
             return;
         }
 
-        // Citas asignadas esta semana
         $stmtC = $this->db->prepare("
             SELECT c.id_cita, c.fecha_hora, c.motivo, c.estado,
                    v.matricula, v.modelo, v.marca
@@ -167,7 +162,6 @@ class MecanicoController
         $stmtC->execute([':id' => $id_mecanico]);
         $citas = $stmtC->fetchAll(PDO::FETCH_ASSOC);
 
-        // Presupuestos via REPARACION_MECANICO
         $stmtP = $this->db->prepare("
             SELECT p.id_presupuesto, p.gran_total, p.estado, p.fecha_emision,
                    r.matricula, r.modelo_auto
@@ -184,8 +178,6 @@ class MecanicoController
         http_response_code(200);
         echo json_encode(compact('citas', 'presupuestos'));
     }
-
-    // ── POST /mecanicos ──
 
     private function create(): void
     {
@@ -250,8 +242,6 @@ class MecanicoController
         }
     }
 
-    // ── PUT /mecanicos ──
-
     private function update(): void
     {
         $data        = json_decode(file_get_contents("php://input"), true);
@@ -282,8 +272,6 @@ class MecanicoController
         echo json_encode(["message" => "Mecánico actualizado."]);
     }
 
-    // ── DELETE /mecanicos ──
-
     private function delete(): void
     {
         $data        = json_decode(file_get_contents("php://input"), true);
@@ -305,19 +293,15 @@ class MecanicoController
             return;
         }
 
-        // Establecer citas como no asignadas
         $this->db->prepare("UPDATE CITAS SET id_mecanico = NULL WHERE id_mecanico = :id")
                   ->execute([':id' => $id_mecanico]);
 
-        // Eliminar mecánico y sus horarios
         $this->db->prepare("DELETE FROM USUARIOS WHERE id_usuario = :id")
                   ->execute([':id' => $row['id_usuario']]);
 
         http_response_code(200);
         echo json_encode(["message" => "Mecánico eliminado."]);
     }
-
-    // ── GET /mecanico-horarios?id_mecanico=X ──
 
     private function getHorarios(): void
     {

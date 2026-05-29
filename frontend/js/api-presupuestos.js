@@ -1,10 +1,5 @@
-/**
- * api-presupuestos.js — Standalone Presupuestos section
- */
-
 document.addEventListener('DOMContentLoaded', () => {
 
-    // ── Cached DOM refs ──
     const presupuestosTableBody = document.getElementById('presupuestosTableBody');
     const filtroClientePres     = document.getElementById('filtroClientePres');
     const formNuevoPresupuesto  = document.getElementById('formNuevoPresupuesto');
@@ -19,18 +14,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const presGranTotal         = document.getElementById('presGranTotal');
 
     let _allPresupuestos = [];
-    let _repuestos       = [];  // inventory cache
+    let _repuestos       = [];
 
-    // ── Load inventory once for the part selector ──
     async function cargarRepuestosSelector() {
         if (_repuestos.length > 0) return;
         try {
             const res = await fetch('/api/repuestos.php', { credentials: 'include' });
             if (res.ok) _repuestos = await res.json();
-        } catch (e) { /* inventory unavailable — selector just stays empty */ }
+        } catch (e) { /* inventario no disponible — el selector queda vacío */ }
     }
 
-    // ── Populate a repuesto <select> from the cache ──
     function populateRepuestoSelect(sel) {
         sel.innerHTML = '<option value="">— Seleccionar del inventario —</option>';
         _repuestos.forEach(r => {
@@ -80,7 +73,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ── Load & render presupuestos table ──
     window.cargarPresupuestos = async function (filtroClienteId = null) {
         if (!presupuestosTableBody) return;
         presupuestosTableBody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-muted">Cargando...</td></tr>';
@@ -156,7 +148,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
-    // ── Filter dropdown ──
     async function cargarFiltroClientes() {
         if (!filtroClientePres) return;
         try {
@@ -177,7 +168,6 @@ document.addEventListener('DOMContentLoaded', () => {
         filtroClientePres.addEventListener('change', () => renderPresupuestosTable(filtroClientePres.value || null));
     }
 
-    // ── Modal: populate selects ──
     let _clientesLoaded  = false;
     let _mecanicosLoaded = false;
 
@@ -269,7 +259,6 @@ document.addEventListener('DOMContentLoaded', () => {
         addLineaRow();
     }
 
-    // ── Line items ──
     function addLineaRow() {
         if (!presLineas) return;
         const row = document.createElement('div');
@@ -355,7 +344,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnAddLinea)  btnAddLinea.addEventListener('click', addLineaRow);
     if (presTerceros) presTerceros.addEventListener('input', recalcularTotales);
 
-    // ── Form submit ──
     if (formNuevoPresupuesto) {
         formNuevoPresupuesto.addEventListener('submit', async (e) => {
             e.preventDefault();

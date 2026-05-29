@@ -19,7 +19,6 @@ class AuthController {
             $this->user->email = $data->email;
 
             if ($this->user->emailExists() && password_verify($data->password, $this->user->password_hash)) {
-                // Generar ID de sesión seguro
                 session_regenerate_id(true);
                 $_SESSION['id_usuario'] = $this->user->id_usuario;
                 $_SESSION['rol'] = $this->user->rol;
@@ -56,7 +55,6 @@ class AuthController {
             $this->user->nombre_completo = $data->nombre;
             $this->user->password_hash = password_hash($data->password, PASSWORD_BCRYPT);
             
-            // Lógica de registro para Empleado
             if (isset($data->rol) && $data->rol === 'empleado') {
                 if (isset($data->access_code) && $data->access_code === '[admin]') {
                     $this->user->rol = 'empleado';
@@ -80,7 +78,6 @@ class AuthController {
                     $cliente->create();
                 }
 
-                // Enviar Correo de bienvenida
                 require_once 'helpers/MailHelper.php';
                 $mail = new MailHelper();
                 
@@ -179,7 +176,7 @@ class AuthController {
     public function googleLogin() {
         $data = json_decode(file_get_contents("php://input"));
 
-        // Supports both access_token (oauth2 flow) and credential (ID token flow)
+        // Acepta access_token (flujo OAuth2) o credential (flujo ID token de Google)
         if (!empty($data->access_token)) {
             $payload = $this->verifyGoogleAccessToken($data->access_token);
         } elseif (!empty($data->credential)) {
@@ -199,14 +196,12 @@ class AuthController {
         $email  = $payload['email'];
         $nombre = $payload['name'] ?? $email;
 
-        // Find or create user
         $this->user->email = $email;
         if ($this->user->emailExists()) {
             $id_usuario      = $this->user->id_usuario;
             $rol             = $this->user->rol;
             $nombre_completo = $this->user->nombre_completo;
         } else {
-            // Create new client account (Google users are always clients)
             $this->user->nombre_completo = $nombre;
             $this->user->password_hash   = password_hash(bin2hex(random_bytes(16)), PASSWORD_BCRYPT);
             $this->user->rol             = 'cliente';
@@ -221,7 +216,6 @@ class AuthController {
             $rol             = 'cliente';
             $nombre_completo = $nombre;
 
-            // Create CLIENTES profile
             require_once 'models/Cliente.php';
             $cliente             = new Cliente($this->db);
             $cliente->id_usuario = $id_usuario;
@@ -229,7 +223,6 @@ class AuthController {
             $cliente->direccion  = null;
             $cliente->create();
 
-            // Welcome email
             require_once 'helpers/MailHelper.php';
             (new MailHelper())->sendWelcomeClient($email, $nombre_completo);
         }

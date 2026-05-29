@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', async () => {
-    // 1. Verificar sesión y mostrar nombre en navbar
     try {
         const authRes = await fetch('/api/auth/me', { credentials: 'include' });
         if (authRes.ok) {
@@ -7,7 +6,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('dashboardUserName').innerText = userData.nombre_completo;
             document.getElementById('dashboardAvatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.nombre_completo)}&background=0055d4&color=fff`;
 
-            //Redirigir si no es empleado/admin
             if (userData.rol === 'cliente') {
                 window.location.href = 'client.html';
             }
@@ -19,7 +17,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.location.href = 'index.html';
     }
 
-    // 3. Configurar FullCalendar
     const calendarEl = document.getElementById('calendar');
     const citaModal = new bootstrap.Modal(document.getElementById('citaModal'));
     const formCita = document.getElementById('formCita');
@@ -81,8 +78,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             failureCallback(e);
         }
     }
-
-    // ──  Mecánicos ──
 
     window.cargarMecanicosParaCita = async function (selectedId = null) {
         const select = document.getElementById('citaMecanico');

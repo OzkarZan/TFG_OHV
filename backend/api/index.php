@@ -1,5 +1,5 @@
 <?php
-// In production restrict CORS to the app's own origin; in dev allow all
+// En producción restringir CORS al origen propio; en dev permitir todo
 $allowed_origin = getenv('APP_ENV') === 'production'
     ? rtrim(getenv('APP_URL') ?: '', '/')
     : '*';
@@ -15,7 +15,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit();
 }
 
-// Configuración de Sesiones
 ini_set('session.cookie_httponly', 1);
 ini_set('session.cookie_secure', getenv('APP_ENV') === 'production' ? 1 : 0);
 ini_set('session.cookie_samesite', 'Lax');
@@ -27,14 +26,10 @@ include_once '../config/config.php';
 $request_uri = $_SERVER['REQUEST_URI'];
 $method = $_SERVER['REQUEST_METHOD'];
 
-// Parse URI
 $parsed_uri = parse_url($request_uri);
 $path = $parsed_uri['path'];
-
-// Remove /api from path
 $path = str_replace('/api/', '/', $path);
 
-// Simple Router
 if (preg_match('/^\/auth\/login$/', $path)) {
     require_once 'controllers/AuthController.php';
     $controller = new AuthController();

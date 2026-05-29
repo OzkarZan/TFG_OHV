@@ -46,7 +46,6 @@ class ClienteController {
     private function create() {
         $data = json_decode(file_get_contents("php://input"));
 
-        // Se requiere nombre, correo y los datos del coche obligatoriamente
         if (!empty($data->nombre_completo) && !empty($data->correo) && !empty($data->matricula) && !empty($data->modelo)) {
             require_once 'models/Usuario.php';
             $user = new Usuario($this->db);
@@ -69,7 +68,6 @@ class ClienteController {
                 $this->cliente->direccion = $data->direccion ?? null;
 
                 if ($this->cliente->create()) {
-                    // Crear el vehículo asociado
                     require_once 'models/Vehiculo.php';
                     $vehiculo = new Vehiculo($this->db);
                     $vehiculo->id_cliente = $this->cliente->id_cliente;

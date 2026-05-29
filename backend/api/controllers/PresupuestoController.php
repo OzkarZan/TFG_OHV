@@ -387,10 +387,10 @@ class PresupuestoController {
         $pdf->SetTextColor(150, 150, 150);
         $pdf->Cell(0, 5, $this->latin('AutoSync - Taller Mecánico'), 0, 1, 'C');
 
-        // Get PDF as raw bytes — FPDF does NOT set headers with 'S'
+        // FPDF con 'S' devuelve bytes crudos sin emitir cabeceras
         $pdfContent = $pdf->Output('S');
 
-        // Flush every output buffer level so nothing contaminates the binary stream
+        // Limpiar todos los buffers de salida para que nada contamine el stream binario
         while (ob_get_level()) ob_end_clean();
         header_remove();
         header('Content-Type: application/pdf');
@@ -412,7 +412,6 @@ class PresupuestoController {
         }
     }
 
-    // Helper: single label+value row
     private function pdfInfoRow($pdf, $label, $value) {
         $pdf->SetFont('Helvetica', 'B', 10);
         $pdf->Cell(40, 6, $label, 0, 0, 'L');
@@ -420,7 +419,6 @@ class PresupuestoController {
         $pdf->Cell(0, 6, $value, 0, 1, 'L');
     }
 
-    // Helper: two label+value pairs in one row
     private function pdfTwoCol($pdf, $l1, $v1, $l2, $v2) {
         $pdf->SetFont('Helvetica', 'B', 10);
         $pdf->Cell(25, 6, $l1, 0, 0, 'L');
@@ -432,7 +430,6 @@ class PresupuestoController {
         $pdf->Cell(0, 6, $v2, 0, 1, 'L');
     }
 
-    // Helper: three label+value pairs in one row
     private function pdfThreeCol($pdf, $l1, $v1, $l2, $v2, $l3, $v3) {
         $pdf->SetFont('Helvetica', 'B', 10);
         $pdf->Cell(20, 6, $l1, 0, 0, 'L');
@@ -448,7 +445,6 @@ class PresupuestoController {
         $pdf->Cell(0, 6, $v3, 0, 1, 'L');
     }
 
-    // Helper: right-aligned summary row
     private function pdfSummaryRow($pdf, $xStart, $labelW, $valW, $label, $amount) {
         $pdf->SetX($xStart);
         $pdf->SetFont('Helvetica', '', 10);

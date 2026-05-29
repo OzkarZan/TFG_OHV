@@ -69,7 +69,6 @@ class BotpressWebhookController
         }
     }
 
-    // ── Ver estado del coche por matrícula ──────────────────────────────────
     private function checkCoche(array $body): void
     {
         $matricula = strtoupper(trim($body['matricula'] ?? ''));
@@ -118,7 +117,6 @@ class BotpressWebhookController
         ]);
     }
 
-    // ── Validar si cliente existe (acción previa a reservar) ────────────────
     public function validateClienteEmail(array $body): void
     {
         $email = strtolower(trim($body['email'] ?? ''));
@@ -154,7 +152,6 @@ class BotpressWebhookController
         ]);
     }
 
-    // ── Reservar una cita (el cliente debe estar registrado) ────────────────
     private function reservarCita(array $body): void
     {
         $nombre      = trim($body['nombre']      ?? '');
@@ -168,7 +165,6 @@ class BotpressWebhookController
             return;
         }
 
-        // ── Validar fecha y hora ─────────────────────────────────────────────
         $dt = \DateTime::createFromFormat('Y-m-d H:i:s', $fecha_hora)
            ?: \DateTime::createFromFormat('Y-m-d H:i',   $fecha_hora);
 
@@ -182,11 +178,10 @@ class BotpressWebhookController
             return;
         }
 
-        $diaSemana = (int)$dt->format('N'); // 1=Lun … 7=Dom
+        $diaSemana = (int)$dt->format('N');
         $hora      = (int)$dt->format('H');
         $minutos   = (int)$dt->format('i');
 
-        // Horario: Lun-Vie 08:00-18:00, Sáb 09:00-13:00, Dom cerrado
         if ($diaSemana === 7) {
             echo json_encode(["ok" => false, "message" => "El taller está cerrado los domingos. Puedes reservar de lunes a viernes de 08:00 a 18:00, o los sábados de 09:00 a 13:00."]);
             return;
@@ -225,7 +220,6 @@ class BotpressWebhookController
             return;
         }
 
-        // ── Buscar cliente por email ─────────────────────────────────────────
         $stmt = $this->db->prepare(
             "SELECT cl.id_cliente FROM CLIENTES cl
              JOIN USUARIOS u ON cl.id_usuario = u.id_usuario
@@ -242,7 +236,6 @@ class BotpressWebhookController
             return;
         }
 
-        // Insertar cita (sin vehículo asignado todavía)
         $insert = $this->db->prepare(
             "INSERT INTO CITAS (id_cliente, fecha_hora, motivo, estado)
              VALUES (?, ?, ?, 'Pendiente')"
@@ -260,7 +253,6 @@ class BotpressWebhookController
         ]);
     }
 
-    // ── Ver mis citas próximas por email ────────────────────────────────────
     private function misCitas(array $body): void
     {
         $email = strtolower(trim($body['email'] ?? ''));
@@ -270,7 +262,6 @@ class BotpressWebhookController
             return;
         }
 
-        // Primero verificar si el cliente existe
         $stmtCliente = $this->db->prepare(
             "SELECT cl.id_cliente FROM CLIENTES cl
              JOIN USUARIOS u ON cl.id_usuario = u.id_usuario
@@ -287,7 +278,6 @@ class BotpressWebhookController
             return;
         }
 
-        // Cliente existe, buscar sus citas próximas
         $stmt = $this->db->prepare(
             "SELECT c.id_cita, c.fecha_hora, c.motivo, c.estado,
                     v.matricula, v.marca, v.modelo
@@ -309,7 +299,6 @@ class BotpressWebhookController
         ]);
     }
 
-    // ── Cancelar una cita por id verificando el email ───────────────────────
     private function cancelarCita(array $body): void
     {
         $email   = strtolower(trim($body['email']   ?? ''));
@@ -321,7 +310,6 @@ class BotpressWebhookController
             return;
         }
 
-        // Verificar que la cita pertenece al cliente
         $stmt = $this->db->prepare(
             "SELECT c.id_cita FROM CITAS c
              JOIN CLIENTES cl ON c.id_cliente = cl.id_cliente
@@ -344,7 +332,6 @@ class BotpressWebhookController
         echo json_encode(["ok" => true, "message" => "Cita cancelada correctamente."]);
     }
 
-    // ── Enviar mensaje de contacto al taller ────────────────────────────────
     private function contacto(array $body): void
     {
         $nombre  = trim($body['nombre']  ?? 'Cliente del chatbot');

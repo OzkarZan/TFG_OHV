@@ -2,7 +2,6 @@ const API_URL = '/api/repuestos.php';
 
 document.addEventListener('DOMContentLoaded', () => {
 
-    // ===== 1. GESTIÓN DE VISTAS (SPA - Arquitectura de una sola página) =====
     const menuDashboard    = document.getElementById('menuDashboard');
     const menuInventario   = document.getElementById('menuInventario');
     const menuCalendario   = document.getElementById('menuCalendario');
@@ -92,7 +91,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
-    // ===== SIDEBAR TOGGLE MÓVIL =====
     const sidebarToggle   = document.getElementById('sidebarToggle');
     const sidebarBackdrop = document.getElementById('sidebar-backdrop');
     const wrapper         = document.getElementById('wrapper');
@@ -105,7 +103,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (window.innerWidth < 992) closeSidebar();
     }));
 
-    // ===== 2. LÓGICA CRUD =====
     const formRepuesto = document.getElementById('formRepuesto');
     const formEditRepuesto = document.getElementById('formEditRepuesto');
     const invTableBody = document.getElementById('invTableBody');
@@ -131,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 formRepuesto.reset();
                 bootstrap.Modal.getInstance(document.getElementById('addRepuestoModal')).hide();
-                await cargarInventario(); // Refresco visual
+                await cargarInventario();
             } catch (err) {
                 console.error(err);
                 alert("Hubo un fallo crítico contra Docker. Revisa tu consola.");
@@ -250,7 +247,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // ===== 3. COLA DE TRABAJOS (DASHBOARD) =====
     window.cargarColaTrabajos = async function() {
         const tbody = document.querySelector('#viewDashboard table tbody');
         if (!tbody) return;
@@ -329,7 +325,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (window.openCitaModal) window.openCitaModal(cita);
     };
 
-    // ===== 4b. CITAS DE HOY =====
     window.cargarCitasHoy = async function() {
         const tbody  = document.getElementById('citasHoyTableBody');
         const kpi    = document.getElementById('kpiCitasHoy');
@@ -407,13 +402,11 @@ document.addEventListener('DOMContentLoaded', () => {
         return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     }
 
-    // Llamar al inicio
     if (viewDashboard && !viewDashboard.classList.contains('d-none')) {
         cargarColaTrabajos();
         cargarCitasHoy();
     }
 
-    // ===== 4. SOLICITUDES DE PIEZAS =====
     const SOLICITUDES_URL = '/api/solicitudes.php';
 
     window.cargarSolicitudes = async function () {

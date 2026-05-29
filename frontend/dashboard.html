@@ -74,7 +74,6 @@
 
             <div class="container-fluid py-4 px-4">
                 
-                <!-- ==================== VISTA DASHBOARD (Inicial) ==================== -->
                 <div id="viewDashboard" class="row g-4 d-flex">
                     <div class="col-lg-9">
                         <div class="card border-0 shadow-sm custom-card h-100">
@@ -114,7 +113,6 @@
                         </div>
                     </div>
 
-                    <!-- Citas de Hoy -->
                     <div class="col-12">
                         <div class="card border-0 shadow-sm custom-card">
                             <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
@@ -143,9 +141,7 @@
                     </div>
                 </div>
 
-                <!-- ==================== VISTA INVENTARIO (SPA) ==================== -->
                 <div id="viewInventario" class="row g-4 d-none">
-                    <!-- Stock actual -->
                     <div class="col-lg-12">
                         <div class="card border-0 shadow-sm custom-card h-100">
                             <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
@@ -168,14 +164,13 @@
                                             </tr>
                                         </thead>
                                         <tbody id="invTableBody">
-                                            <!-- Se Inyecta via JS (CRUD) -->
+                                           
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <!-- Solicitudes de piezas -->
                     <div class="col-lg-12">
                         <div class="card border-0 shadow-sm custom-card">
                             <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
@@ -204,7 +199,6 @@
                     </div>
                 </div>
 
-                <!-- ==================== VISTA CALENDARIO ==================== -->
                 <div id="viewCalendario" class="row d-none">
                     <div class="col-12">
                         <div class="card border-0 shadow-sm custom-card">
@@ -221,7 +215,6 @@
                     </div>
                 </div>
 
-                <!-- ==================== VISTA REPARACIONES ==================== -->
                 <div id="viewReparaciones" class="row g-4 d-none">
                     <div class="col-lg-12">
                         <div class="card border-0 shadow-sm custom-card h-100">
@@ -245,7 +238,7 @@
                                             </tr>
                                         </thead>
                                         <tbody id="reparacionesTableBody">
-                                            <!-- Inyectado via JS -->
+                                           
                                         </tbody>
                                     </table>
                                 </div>
@@ -254,7 +247,6 @@
                     </div>
                 </div>
 
-                <!-- ==================== VISTA CLIENTES ==================== -->
                 <div id="viewClientes" class="row g-4 d-none">
                     <div class="col-lg-12">
                         <div class="card border-0 shadow-sm custom-card h-100">
@@ -278,7 +270,7 @@
                                             </tr>
                                         </thead>
                                         <tbody id="clientesTableBody">
-                                            <!-- Inyectado via JS -->
+                                           
                                         </tbody>
                                     </table>
                                 </div>
@@ -287,9 +279,7 @@
                     </div>
                 </div>
 
-                <!-- ==================== VISTA MECÁNICOS ==================== -->
                 <div id="viewMecanicos" class="row g-4 d-none">
-                    <!-- Lista de mecánicos -->
                     <div class="col-lg-5">
                         <div class="card border-0 shadow-sm custom-card h-100">
                             <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
@@ -316,7 +306,6 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Panel de detalle -->
                     <div class="col-lg-7" id="mecanicoDetailPanel" style="display:none">
                         <div class="card border-0 shadow-sm custom-card">
                             <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
@@ -339,7 +328,6 @@
                     </div>
                 </div>
 
-                <!-- ==================== VISTA PRESUPUESTOS ==================== -->
                 <div id="viewPresupuestos" class="row g-4 d-none">
                     <div class="col-lg-12">
                         <div class="card border-0 shadow-sm custom-card h-100">
@@ -379,9 +367,9 @@
                     </div>
                 </div>
 
-            </div> <!-- final container interno -->
+            </div>
         </div>
-    </div> <!-- final wrap -->
+    </div>
 
     <!-- Modal Añadir Repuesto -->
     <div class="modal fade custom-modal" id="addRepuestoModal" tabindex="-1" aria-hidden="true">
@@ -469,14 +457,14 @@
                             <label class="form-label small fw-bold text-muted">Cliente</label>
                             <select id="citaCliente" class="form-select custom-input" required>
                                 <option value="">Seleccione un cliente</option>
-                                <!-- Se inyecta por JS -->
+                               
                             </select>
                         </div>
                         <div class="mb-3">
                             <label class="form-label small fw-bold text-muted">Vehículo (Obligatorio)</label>
                             <select id="citaVehiculo" class="form-select custom-input" required disabled>
                                 <option value="">Seleccione primero un cliente</option>
-                                <!-- Se inyecta por JS -->
+                               
                             </select>
                         </div>
                         <div class="mb-3">
@@ -538,14 +526,14 @@
                                 <label class="form-label small fw-bold text-muted">Cliente</label>
                                 <select id="repCliente" class="form-select custom-input" required>
                                     <option value="">Seleccione un cliente</option>
-                                    <!-- Se inyecta por JS -->
+                                   
                                 </select>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label small fw-bold text-muted">Vehículo (Obligatorio)</label>
                                 <select id="repVehiculo" class="form-select custom-input" required disabled>
                                     <option value="">Seleccione primero un cliente</option>
-                                    <!-- Se inyecta por JS -->
+                                   
                                 </select>
                                 <input type="hidden" id="repMatriculaVal">
                                 <input type="hidden" id="repModeloVal">

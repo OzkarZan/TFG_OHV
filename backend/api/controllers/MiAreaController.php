@@ -25,7 +25,6 @@ class MiAreaController
             echo json_encode(["message" => "Acceso denegado."]);
             exit;
         }
-        // Obtener id_cliente a partir del id_usuario en sesión
         $stmt = $this->db->prepare(
             "SELECT id_cliente FROM CLIENTES WHERE id_usuario = ?"
         );
@@ -74,7 +73,6 @@ class MiAreaController
             return;
         }
 
-        // GET /api/mi-area — devuelve reparaciones, citas y vehículos del cliente
         $this->overview($id_cliente);
     }
 
@@ -188,9 +186,7 @@ class MiAreaController
 
     private function misPresupuestos(int $id_cliente): void
     {
-        // Descarga PDF si se pasa ?id_reparacion, si no devuelve lista JSON
         if (isset($_GET['id_reparacion'])) {
-            // Verificar que la reparación pertenece al cliente antes de generar el PDF
             $check = $this->db->prepare(
                 "SELECT r.id_reparacion FROM REPARACIONES r
                  INNER JOIN VEHICULOS v ON r.matricula = v.matricula

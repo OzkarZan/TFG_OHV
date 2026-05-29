@@ -7,7 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const DIAS = ['', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
     let currentMecanicoId = null;
 
-    // ── Carga la tabla de mecánicos ──
 
     window.cargarMecanicos = async function () {
         const tbody = document.getElementById('mecanicosTableBody');
@@ -63,7 +62,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // ── Selecciona un mecánico y carga su panel de detalle ──
 
     window.seleccionarMecanico = async function (id, nombre) {
         currentMecanicoId = id;
@@ -72,7 +70,6 @@ document.addEventListener('DOMContentLoaded', () => {
         await Promise.all([cargarHorario(id), cargarDetalle(id)]);
     };
 
-    // ── Horario semanal ──
 
     async function cargarHorario(id_mecanico) {
         const editor = document.getElementById('horarioEditor');
@@ -154,7 +151,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // ── Detalle: citas esta semana + presupuestos ──
 
     async function cargarDetalle(id_mecanico) {
         try {
@@ -204,7 +200,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // ── Crear mecánico ──
 
     document.getElementById('formMecanico')?.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -241,7 +236,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // ── Eliminar mecánico ──
 
     document.getElementById('btnDeleteMecanico')?.addEventListener('click', async () => {
         if (!currentMecanicoId || !confirm('¿Eliminar este mecánico? Esta acción no se puede deshacer.')) return;

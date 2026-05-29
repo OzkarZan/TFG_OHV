@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalInstance = new bootstrap.Modal(document.getElementById('clienteModal'));
     const btnDeleteCli = document.getElementById('btnDeleteCli');
 
-    // ── Cargar tabla de clientes ──────────────────────────────────────────────
     window.cargarClientes = async function() {
         if (!tableBody) return;
         tableBody.innerHTML = '<tr><td colspan="6" class="text-center p-4">Cargando clientes...</td></tr>';
@@ -49,7 +48,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // ── Cargar presupuestos dentro del modal de cliente ───────────────────────
     async function cargarPresupuestosEnModal(id_cliente) {
         const list = document.getElementById('cliPresupuestosList');
         if (!list) return;
@@ -83,7 +81,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // ── Cargar vehículos dentro del modal de edición ──────────────────────────
     async function cargarVehiculosEnModal(id_cliente) {
         const list   = document.getElementById('cliVehiculosList');
         const btnAdd = document.getElementById('btnMostrarAddVehiculo');
@@ -151,7 +148,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // ── Funciones globales para botones inline de vehículos ───────────────────
 
     window.toggleEditarVehiculo = function(id_vehiculo) {
         document.getElementById(`vehDisplay-${id_vehiculo}`)?.classList.toggle('d-none');
@@ -208,7 +204,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // ── Modal editar cliente ──────────────────────────────────────────────────
 
     window.abrirModalCliente = function(id, telefono, direccion) {
         document.getElementById('cliId').value = id;
@@ -232,7 +227,6 @@ document.addEventListener('DOMContentLoaded', () => {
         modalInstance.show();
     };
 
-    // ── Formulario actualizar datos de contacto ───────────────────────────────
 
     if (formCliente) {
         formCliente.addEventListener('submit', async (e) => {
@@ -267,7 +261,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ── Botón eliminar cliente ────────────────────────────────────────────────
 
     if (btnDeleteCli) {
         btnDeleteCli.addEventListener('click', async () => {
@@ -295,7 +288,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ── Formulario añadir cliente nuevo ──────────────────────────────────────
 
     const formAddCliente = document.getElementById('formAddCliente');
     if (formAddCliente) {
@@ -338,7 +330,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ── Botones de añadir vehículo inline ────────────────────────────────────
 
     const btnMostrarAddVehiculo = document.getElementById('btnMostrarAddVehiculo');
     const addVehiculoInline     = document.getElementById('addVehiculoInline');

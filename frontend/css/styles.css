@@ -26,9 +26,6 @@
     --spacing-2xl: 4rem;
 }
 
-/* =====================================================
-   2. Estilos Generales
-   ===================================================== */
 
 * {
     margin: 0;
@@ -83,9 +80,6 @@ button {
     transition: all 0.3s ease;
 }
 
-/* =====================================================
-   3. Barra de Navegacion
-   ===================================================== */
 
 .navbar-header {
     position: sticky;
@@ -148,9 +142,6 @@ button {
     }
 }
 
-/* =====================================================
-   4. Seccion del HERO
-   ===================================================== */
 
 .hero-section {
     background-color: var(--surface);
@@ -187,9 +178,6 @@ button {
     margin-bottom: 4rem;
 }
 
-/* =====================================================
-   5. Botones Primario y Secundario
-   ===================================================== */
 
 .btn-primary-custom {
     background: linear-gradient(135deg, var(--primary) 0%, var(--primary-container) 100%);
@@ -225,9 +213,6 @@ button {
     color: var(--primary-container);
 }
 
-/* =====================================================
-   6. HERO Estadisticas
-   ===================================================== */
 
 .hero-stats {
     display: grid;
@@ -260,9 +245,6 @@ button {
     letter-spacing: 0.05em;
 }
 
-/* =====================================================
-   7. Seccion "Feature-section"
-   ===================================================== */
 
 .feature-section {
     padding: 5rem var(--spacing-lg);
@@ -348,9 +330,6 @@ button {
     margin: 0;
 }
 
-/* =====================================================
-   8. CTA Final Section
-   ===================================================== */
 
 .cta-final-section {
     background: linear-gradient(135deg, var(--primary) 0%, var(--primary-container) 100%);
@@ -406,9 +385,6 @@ button {
     color: #ffffff;
 }
 
-/* =====================================================
-   9. FOOTER
-   ===================================================== */
 
 .footer-section {
     background-color: var(--on-surface);
@@ -445,9 +421,6 @@ button {
     color: #ffffff;
 }
 
-/* =====================================================
-   10. Responsive Cosas
-   ===================================================== */
 
 @media (max-width: 768px) {
     :root {
@@ -546,9 +519,6 @@ button {
     }
 }
 
-/* =====================================================
-   12. Utility Classes
-   ===================================================== */
 
 .container-lg {
     max-width: 1200px;
@@ -572,9 +542,6 @@ button {
     box-shadow: var(--shadow-elevation);
 }
 
-/* =====================================================
-   13. DASHBOARD styles
-   ===================================================== */
 
 #sidebar {
     width: 260px;
@@ -589,7 +556,6 @@ button {
     transition: margin 0.3s ease, width 0.3s ease;
 }
 
-/* Enlaces del Sidebar */
 .sidebar-link {
     color: rgba(255, 255, 255, 0.7);
     transition: all 0.3s ease;
@@ -601,7 +567,6 @@ button {
     border-radius: 0.375rem;
 }
 
-/* Tarjetas de Estadística */
 .custom-stat-card {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -611,7 +576,6 @@ button {
     box-shadow: var(--shadow-elevation) !important;
 }
 
-/* Forma del ícono */
 .icon-shape {
     width: 48px;
     height: 48px;
@@ -669,9 +633,6 @@ button {
     }
 }
 
-/* =====================================================
-   14. Login / Register
-   ===================================================== */
 
 .custom-modal .modal-content {
     border: none;
@@ -715,7 +676,6 @@ button {
     border-width: 0 4px 4px 0;
 }
 
-/* Estilos de input plano */
 .custom-input {
     border-radius: 0;
     border: 1px solid #dee2e6;

@@ -305,7 +305,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ── Modal de Presupuesto ────────────────────────────────────────────────────
     const presModalEl = document.getElementById('presupuestoModal');
     const presModal = presModalEl ? new bootstrap.Modal(presModalEl) : null;
     const formPresupuesto = document.getElementById('formPresupuesto');
