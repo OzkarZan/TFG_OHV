@@ -457,26 +457,35 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    window.abrirModalAgregarPieza = function(id_reparacion, id_presupuesto) {
-        console.log('Abriendo modal agregar pieza. Presupuesto:', id_presupuesto);
+    window.abrirModalAgregarPieza = function() {
+        console.log('Abriendo modal agregar pieza...');
+        const id_presupuesto = document.getElementById('presIdPresupuestoEdit').value;
+        console.log('ID presupuesto:', id_presupuesto);
+
         if (!id_presupuesto) {
             alert('Primero debe guardar el presupuesto');
             return;
         }
+
         const modal = document.getElementById('agregarPiezaModal');
         console.log('Modal existe:', !!modal);
-        if (modal) {
-            document.getElementById('pieza_id_presupuesto').value = id_presupuesto;
-            document.getElementById('pieza_id_repuesto').value = '';
-            document.getElementById('pieza_descripcion').value = '';
-            document.getElementById('pieza_cantidad').value = '1';
-            document.getElementById('pieza_precio').value = '';
-            cargarRepuestos();
-            const modalInstance = new bootstrap.Modal(modal);
-            modalInstance.show();
-        } else {
+
+        if (!modal) {
             console.error('Modal agregarPiezaModal no encontrado');
+            return;
         }
+
+        document.getElementById('pieza_id_presupuesto').value = id_presupuesto;
+        document.getElementById('pieza_id_repuesto').value = '';
+        document.getElementById('pieza_descripcion').value = '';
+        document.getElementById('pieza_cantidad').value = '1';
+        document.getElementById('pieza_precio').value = '';
+
+        cargarRepuestos();
+
+        const modalInstance = new bootstrap.Modal(modal);
+        modalInstance.show();
+        console.log('Modal abierto');
     };
 
     function cargarDetallesPresupuesto(id_presupuesto) {
