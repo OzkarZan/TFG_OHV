@@ -77,8 +77,10 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('pieza_id_presupuesto').value = id_presupuesto;
         document.getElementById('pieza_id_repuesto').value = '';
         document.getElementById('pieza_descripcion').value = '';
+        document.getElementById('pieza_descripcion').readOnly = false;
         document.getElementById('pieza_cantidad').value = '1';
         document.getElementById('pieza_precio').value = '';
+        document.getElementById('pieza_precio').readOnly = false;
         await cargarRepuestos();
         new bootstrap.Modal(modal).show();
     };
@@ -528,11 +530,17 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('pieza_id_repuesto')?.addEventListener('change', () => {
         const select = document.getElementById('pieza_id_repuesto');
         const selected = select.options[select.selectedIndex];
+        const descInput   = document.getElementById('pieza_descripcion');
+        const precioInput = document.getElementById('pieza_precio');
+
         if (selected && selected.dataset.nombre) {
-            document.getElementById('pieza_descripcion').value = selected.dataset.nombre;
-            if (selected.dataset.precio) {
-                document.getElementById('pieza_precio').value = selected.dataset.precio;
-            }
+            descInput.value    = selected.dataset.nombre;
+            descInput.readOnly = true;
+            precioInput.value    = selected.dataset.precio || '';
+            precioInput.readOnly = true;
+        } else {
+            descInput.readOnly   = false;
+            precioInput.readOnly = false;
         }
     });
 
