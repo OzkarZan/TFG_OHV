@@ -325,6 +325,29 @@ document.addEventListener('DOMContentLoaded', () => {
     const presupuestoReparacionModalInstance = new bootstrap.Modal(document.getElementById('presupuestoReparacionModal'));
     const formPresupuestoReparacion = document.getElementById('formPresupuestoReparacion');
 
+    function cargarDetallesPresupuesto(id_presupuesto) {
+        const rep = window.reparacionesData && window.reparacionesData.find(r => r.presupuesto && r.presupuesto.id_presupuesto == id_presupuesto);
+        const tbody = document.getElementById('cuerpoTablaPiezas');
+
+        if (!rep || !rep.presupuesto || !rep.presupuesto.detalles || rep.presupuesto.detalles.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted small">Sin piezas agregadas</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = '';
+        rep.presupuesto.detalles.forEach(detalle => {
+            const importe = (detalle.cantidad || 0) * (detalle.precio_unitario || 0);
+            const fila = `<tr>
+                <td class="small">${detalle.descripcion}</td>
+                <td class="small">${detalle.tipo_item}</td>
+                <td class="small text-end">${parseFloat(detalle.cantidad).toFixed(2)}</td>
+                <td class="small text-end">€ ${parseFloat(detalle.precio_unitario).toFixed(2)}</td>
+                <td class="small text-end fw-bold">€ ${importe.toFixed(2)}</td>
+            </tr>`;
+            tbody.innerHTML += fila;
+        });
+    }
+
     window.abrirModalPresupuestoReparacion = function(id_reparacion) {
         console.log('Modal presupuesto abierto para reparación:', id_reparacion);
         const rep = window.reparacionesData && window.reparacionesData.find(r => r.id_reparacion == id_reparacion);
@@ -487,29 +510,6 @@ document.addEventListener('DOMContentLoaded', () => {
         modalInstance.show();
         console.log('Modal abierto');
     };
-
-    function cargarDetallesPresupuesto(id_presupuesto) {
-        const rep = window.reparacionesData && window.reparacionesData.find(r => r.presupuesto && r.presupuesto.id_presupuesto == id_presupuesto);
-        const tbody = document.getElementById('cuerpoTablaPiezas');
-
-        if (!rep || !rep.presupuesto || !rep.presupuesto.detalles || rep.presupuesto.detalles.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted small">Sin piezas agregadas</td></tr>';
-            return;
-        }
-
-        tbody.innerHTML = '';
-        rep.presupuesto.detalles.forEach(detalle => {
-            const importe = (detalle.cantidad || 0) * (detalle.precio_unitario || 0);
-            const fila = `<tr>
-                <td class="small">${detalle.descripcion}</td>
-                <td class="small">${detalle.tipo_item}</td>
-                <td class="small text-end">${parseFloat(detalle.cantidad).toFixed(2)}</td>
-                <td class="small text-end">€ ${parseFloat(detalle.precio_unitario).toFixed(2)}</td>
-                <td class="small text-end fw-bold">€ ${importe.toFixed(2)}</td>
-            </tr>`;
-            tbody.innerHTML += fila;
-        });
-    }
 
     document.addEventListener('submit', async (e) => {
         if (e.target.id === 'formAgregarPieza') {
