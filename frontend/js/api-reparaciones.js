@@ -472,7 +472,10 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('pieza_cantidad').value = '1';
             document.getElementById('pieza_precio').value = '';
             cargarRepuestos();
-            new bootstrap.Modal(modal).show();
+            const modalInstance = new bootstrap.Modal(modal);
+            modalInstance.show();
+        } else {
+            console.error('Modal agregarPiezaModal no encontrado');
         }
     };
 
@@ -499,9 +502,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const formAgregarPieza = document.getElementById('formAgregarPieza');
-    if (formAgregarPieza) {
-        formAgregarPieza.addEventListener('submit', async (e) => {
+    document.addEventListener('submit', async (e) => {
+        if (e.target.id === 'formAgregarPieza') {
             e.preventDefault();
 
             const id_presupuesto = document.getElementById('pieza_id_presupuesto').value;
@@ -537,6 +539,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error('Error:', err);
                 alert('Error de conexión');
             }
-        });
-    }
+        }
+    });
 });
