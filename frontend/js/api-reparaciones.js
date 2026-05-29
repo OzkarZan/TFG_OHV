@@ -376,7 +376,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         presupuestoReparacionModalInstance.show();
-        cargarDetallesPresupuesto(rep.presupuesto.id_presupuesto);
+        if (rep.presupuesto) {
+            cargarDetallesPresupuesto(rep.presupuesto.id_presupuesto);
+        }
     };
 
     function actualizarTotalEdit() {
