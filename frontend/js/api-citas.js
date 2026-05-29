@@ -156,7 +156,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    function openCitaModal(cita = {}) {
+    async function openCitaModal(cita = {}) {
         document.getElementById('citaId').value = cita.id_cita || '';
         document.getElementById('citaFechaHora').value = cita.fecha_hora || '';
         document.getElementById('citaMotivo').value = cita.motivo || '';
@@ -164,10 +164,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('citaPrioridad').value = cita.prioridad || 'Media';
         document.getElementById('citaDisponibilidad').innerHTML = '';
 
-        cargarMecanicosParaCita(cita.id_mecanico || null);
-        loadClientesForSelect(cita.id_cliente);
+        await cargarMecanicosParaCita(cita.id_mecanico || null);
+        await loadClientesForSelect(cita.id_cliente);
         if (cita.id_cliente) {
-            loadVehiculosForSelect(cita.id_cliente, cita.id_vehiculo);
+            await loadVehiculosForSelect(cita.id_cliente, cita.id_vehiculo);
         } else {
             document.getElementById('citaVehiculo').innerHTML = '<option value="">Seleccione primero un cliente</option>';
             document.getElementById('citaVehiculo').disabled = true;

@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                     <i class="fas fa-file-pdf"></i>
                                 </button>
                                 <button class="btn btn-sm btn-outline-primary rounded-circle shadow-sm" 
-                                        onclick="abrirModalReparacion(${rep.id_reparacion}, '${rep.modelo_auto.replace(/'/g, "\\'")}', '${rep.matricula.replace(/'/g, "\\'")}', '${rep.descripcion_motivo.replace(/'/g, "\\'")}', '${rep.estado_presupuesto}', '${rep.estado}')"
+                                        onclick="abrirModalReparacion(${rep.id_reparacion}, '${rep.modelo_auto.replace(/'/g, "\\'")}', '${rep.matricula.replace(/'/g, "\\'")}', '${rep.descripcion_motivo.replace(/'/g, "\\'")}', '${rep.estado_presupuesto}', '${rep.estado}', ${rep.id_cliente || null})"
                                         title="Editar">
                                     <i class="fas fa-pencil-alt"></i>
                                 </button>
@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const repMatriculaVal = document.getElementById('repMatriculaVal');
     const repModeloVal = document.getElementById('repModeloVal');
 
-    async function loadClientesForRep() {
+    async function loadClientesForRep(selectedId = null) {
         if (!repClienteSelect) return;
         try {
             const res = await fetch('/api/clientes', { credentials: 'include' });
@@ -101,6 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const option = document.createElement('option');
                     option.value = cli.id_cliente;
                     option.textContent = cli.nombre_completo;
+                    if (selectedId && cli.id_cliente == selectedId) option.selected = true;
                     repClienteSelect.appendChild(option);
                 });
             }
@@ -109,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    async function loadVehiculosForRep(id_cliente) {
+    async function loadVehiculosForRep(id_cliente, selectedMatricula = null) {
         if (!repVehiculoSelect) return;
         repVehiculoSelect.innerHTML = '<option value="">Cargando...</option>';
         repVehiculoSelect.disabled = true;
@@ -127,16 +128,25 @@ document.addEventListener('DOMContentLoaded', () => {
                     repVehiculoSelect.innerHTML = '<option value="">Este cliente no tiene vehículos</option>';
                     return;
                 }
-                
+
                 repVehiculoSelect.innerHTML = '<option value="">Seleccione un vehículo</option>';
                 vehiculos.forEach(veh => {
                     const option = document.createElement('option');
                     option.value = veh.matricula;
                     option.dataset.modelo = veh.modelo;
                     option.textContent = `${veh.matricula} - ${veh.modelo} ${veh.marca || ''}`;
+                    if (selectedMatricula && veh.matricula === selectedMatricula) option.selected = true;
                     repVehiculoSelect.appendChild(option);
                 });
                 repVehiculoSelect.disabled = false;
+
+                if (selectedMatricula) {
+                    const sel = repVehiculoSelect.options[repVehiculoSelect.selectedIndex];
+                    if (sel && sel.value) {
+                        repMatriculaVal.value = sel.value;
+                        repModeloVal.value = sel.dataset.modelo;
+                    }
+                }
             }
         } catch (e) {
             console.error(e);
@@ -177,7 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    window.abrirModalReparacion = async function(id = '', modelo = '', matricula = '', descripcion = '', estadoPres = 'Pendiente', estadoRep = 'En Proceso') {
+    window.abrirModalReparacion = async function(id = '', modelo = '', matricula = '', descripcion = '', estadoPres = 'Pendiente', estadoRep = 'En Proceso', id_cliente = null) {
         document.getElementById('repId').value = id;
         document.getElementById('repDescripcion').value = descripcion;
         document.getElementById('repEstadoPresupuesto').value = estadoPres;
@@ -186,17 +196,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (id) {
             btnDeleteRep.classList.remove('d-none');
             btnVerPresupuesto.classList.remove('d-none');
-            // En modo edición es complejo repoblar los selects sin saber el id_cliente, 
-            // así que para simplificar forzamos el vehículo si ya está seteado.
             repMatriculaVal.value = matricula;
             repModeloVal.value = modelo;
-            
-            if (repClienteSelect) repClienteSelect.innerHTML = `<option value="">Edición (Seleccione cliente si desea cambiar vehículo)</option>`;
-            if (repVehiculoSelect) {
-                repVehiculoSelect.innerHTML = `<option value="${matricula}" data-modelo="${modelo}" selected>${matricula} - ${modelo} (Actual)</option>`;
-                repVehiculoSelect.disabled = false;
-            }
-            await loadClientesForRep(); // Cargar detrás para permitir cambio
+            await loadClientesForRep(id_cliente);
+            await loadVehiculosForRep(id_cliente, matricula);
         } else {
             btnDeleteRep.classList.add('d-none');
             btnVerPresupuesto.classList.add('d-none');

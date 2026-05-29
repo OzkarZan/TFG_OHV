@@ -18,11 +18,11 @@ class Reparacion {
     }
 
     public function readAll() {
-        $query = "SELECT r.*, u.nombre_completo as nombre_cliente 
-                  FROM " . $this->table_name . " r 
-                  LEFT JOIN VEHICULOS v ON r.matricula = v.matricula 
-                  LEFT JOIN CLIENTES c ON v.id_cliente = c.id_cliente 
-                  LEFT JOIN USUARIOS u ON c.id_usuario = u.id_usuario 
+        $query = "SELECT r.*, c.id_cliente, u.nombre_completo as nombre_cliente
+                  FROM " . $this->table_name . " r
+                  LEFT JOIN VEHICULOS v ON r.matricula = v.matricula
+                  LEFT JOIN CLIENTES c ON v.id_cliente = c.id_cliente
+                  LEFT JOIN USUARIOS u ON c.id_usuario = u.id_usuario
                   ORDER BY r.id_reparacion DESC";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
