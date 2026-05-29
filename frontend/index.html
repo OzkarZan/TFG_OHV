@@ -34,3 +34,470 @@
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
+    <header class="navbar-header">
+        <nav class="navbar navbar-expand-lg navbar-custom">
+            <div class="container-lg">
+                <a class="navbar-brand d-flex align-items-center gap-2" href="#home">
+                    <img src="img/logo.png" alt="AutoSync" style="height:38px; width:auto;">
+                </a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto align-items-center gap-4">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#sobre-nosotros">Sobre nosotros</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#servicios">Servicios</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#contacto">Contacto</a>
+                        </li>
+                        <li class="nav-item">
+                            <button type="button" class="btn btn-login" data-bs-toggle="modal" data-bs-target="#loginModal">Iniciar sesión</button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <section id="home" class="hero-section">
+        <div class="container-lg">
+            <div class="hero-content">
+                <h1 class="hero-title">GESTIÓN DE PRECISIÓN</h1>
+                <p class="hero-subtitle">Revoluciona el flujo de trabajo de tu taller con automatización avanzada. Desde el ingreso hasta la entrega, sincroniza cada reparación con precisión milimétrica.</p>
+
+                <div class="hero-buttons">
+                    <button id="btnReservar" class="btn btn-primary-custom btn-lg">Reservar en línea</button>
+                    <button id="btnConsultar" class="btn btn-secondary-custom btn-lg">Consultar estado de la reparación</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="servicios" class="feature-section" style="background:var(--surface-container-lowest);">
+        <div class="container-lg">
+            <div class="section-header text-center">
+                <span class="section-badge">LO QUE OFRECEMOS</span>
+                <h2 class="section-title">NUESTROS SERVICIOS</h2>
+                <p class="text-muted mt-2 mx-auto" style="max-width:560px;">Una plataforma completa para digitalizar y automatizar cada proceso de tu taller mecánico.</p>
+            </div>
+            <div class="row g-4 mt-3">
+                <div class="col-md-6 col-lg-4">
+                    <div class="p-4 h-100 rounded-4" style="background:#f0f4f8;">
+                        <div style="font-size:2.2rem; margin-bottom:.75rem;">🔧</div>
+                        <h5 class="fw-bold mb-2">Gestión de Reparaciones</h5>
+                        <p class="text-muted mb-0 small">Controla el estado de cada reparación en tiempo real — desde el ingreso hasta la entrega.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="p-4 h-100 rounded-4" style="background:#f0f4f8;">
+                        <div style="font-size:2.2rem; margin-bottom:.75rem;">📅</div>
+                        <h5 class="fw-bold mb-2">Reserva de Citas Online</h5>
+                        <p class="text-muted mb-0 small">Los clientes reservan su cita directamente desde la web, sin llamadas ni esperas.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="p-4 h-100 rounded-4" style="background:#f0f4f8;">
+                        <div style="font-size:2.2rem; margin-bottom:.75rem;">📄</div>
+                        <h5 class="fw-bold mb-2">Presupuestos en PDF</h5>
+                        <p class="text-muted mb-0 small">Genera presupuestos profesionales en PDF con un solo clic y compártelos al instante.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="p-4 h-100 rounded-4" style="background:#f0f4f8;">
+                        <div style="font-size:2.2rem; margin-bottom:.75rem;">👤</div>
+                        <h5 class="fw-bold mb-2">Portal del Cliente</h5>
+                        <p class="text-muted mb-0 small">Cada cliente accede a su historial de reparaciones, citas y presupuestos en línea.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="p-4 h-100 rounded-4" style="background:#f0f4f8;">
+                        <div style="font-size:2.2rem; margin-bottom:.75rem;">🤖</div>
+                        <h5 class="fw-bold mb-2">Consulta de Estado (Chatbot)</h5>
+                        <p class="text-muted mb-0 small">Los clientes consultan el estado de su vehículo en cualquier momento mediante el chatbot integrado.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="p-4 h-100 rounded-4" style="background:#f0f4f8;">
+                        <div style="font-size:2.2rem; margin-bottom:.75rem;">📧</div>
+                        <h5 class="fw-bold mb-2">Notificaciones por Email</h5>
+                        <p class="text-muted mb-0 small">El sistema notifica al cliente cambios en el estado de sus reparaciones y citas.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="feature-section feature-1">
+        <div class="container-lg">
+            <div class="section-header">
+                <span class="section-badge">EFICIENCIA TOTAL</span>
+                <h2 class="section-title">REPARACIONES EN TIEMPO REAL</h2>
+            </div>
+
+            <div class="row align-items-center">
+                <div class="col-md-6 feature-content">
+                    <ul class="feature-list">
+                        <li>
+                            <strong>Registro de estado:</strong> Cada reparación registra su estado actual (ingreso, en proceso, finalizada) en tiempo real.
+                        </li>
+                        <li>
+                            <strong>Historial de reparaciones:</strong> Acceso completo al historial de cada vehículo — motivo de entrada, diagnóstico y estado.
+                        </li>
+                        <li>
+                            <strong>Presupuestos vinculados:</strong> Genera presupuestos profesionales en PDF asociados a cada reparación.
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="col-md-6 feature-visual">
+                    <div class="feature-placeholder">
+                        <div class="placeholder-icon">⚙️</div>
+                        <p>Interfaz de seguimiento en tiempo real</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="feature-section feature-2">
+        <div class="container-lg">
+            <div class="section-header">
+                <span class="section-badge">ORGANIZACION OPERATIVA</span>
+                <h2 class="section-title">GESTIÓN DE MECÁNICOS Y DISPONIBILIDAD</h2>
+            </div>
+
+            <div class="row align-items-center">
+                <div class="col-md-6 feature-visual order-lg-2">
+                    <div class="feature-placeholder">
+                        <div class="placeholder-icon">👨‍🔧</div>
+                        <p>Asignación de mecánicos a reparaciones</p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 feature-content order-lg-1">
+                    <ul class="feature-list">
+                        <li>
+                            <strong>Panel de mecánicos:</strong> Administra el equipo técnico y asigna reparaciones según especialidad.
+                        </li>
+                        <li>
+                            <strong>Citas con disponibilidad:</strong> Los clientes ven horarios disponibles y reservan citas directamente en línea.
+                        </li>
+                        <li>
+                            <strong>Registro de vehículos:</strong> Cada cliente registra sus vehículos para facilitar futuras reservas y seguimiento.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="sobre-nosotros" class="feature-section" style="background:var(--surface-container-lowest);">
+        <div class="container-lg">
+            <div class="section-header text-center">
+                <span class="section-badge">NUESTRA HISTORIA</span>
+                <h2 class="section-title">SOBRE NOSOTROS</h2>
+            </div>
+            <div class="row align-items-center g-5 mt-2">
+                <div class="col-lg-6">
+                    <h3 class="fw-bold mb-4" style="font-family:'Space Grotesk',sans-serif; letter-spacing:-0.02em;">¿Por qué existe AutoSync?</h3>
+                    <p class="text-muted">El sector de la automoción mueve millones de vehículos cada año, sin embargo, la gran mayoría de los talleres —especialmente los pequeños y medianos— siguen gestionando su trabajo con métodos analógicos: libretas, pizarras y llamadas de teléfono.</p>
+                    <p class="text-muted">Esta realidad genera ineficiencias evidentes: clientes sin información sobre el estado de su vehículo, mecánicos interrumpidos constantemente con llamadas repetitivas y presupuestos creados a mano sin ningún tipo de trazabilidad.</p>
+                    <p class="text-muted"><strong class="text-dark">AutoSync nace como respuesta directa a este problema.</strong> Desarrollado como Trabajo de Fin de Grado en el IES Enrique Tierno Galván, nuestra plataforma digitaliza y automatiza la gestión integral del taller, poniendo al día un sector que lo necesita.</p>
+                </div>
+                <div class="col-lg-6">
+                    <div class="row g-4">
+                        <div class="col-6">
+                            <div class="p-4 h-100 text-center rounded-4" style="background:#f0f4f8;">
+                                <div style="font-size:2.5rem;">🎯</div>
+                                <h6 class="fw-bold mt-3 mb-2">Nuestra Misión</h6>
+                                <p class="text-muted small mb-0">Digitalizar el taller del siglo XXI con herramientas simples, potentes y accesibles para todos.</p>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-4 h-100 text-center rounded-4" style="background:#f0f4f8;">
+                                <div style="font-size:2.5rem;">🔭</div>
+                                <h6 class="fw-bold mt-3 mb-2">Nuestra Visión</h6>
+                                <p class="text-muted small mb-0">Ser la plataforma de referencia para la gestión de talleres en España y Latinoamérica.</p>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-4 h-100 text-center rounded-4" style="background:#f0f4f8;">
+                                <div style="font-size:2.5rem;">🏫</div>
+                                <h6 class="fw-bold mt-3 mb-2">Origen</h6>
+                                <p class="text-muted small mb-0">Proyecto TFG en el IES Enrique Tierno Galván, Madrid.</p>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-4 h-100 text-center rounded-4" style="background:#f0f4f8;">
+                                <div style="font-size:2.5rem;">💡</div>
+                                <h6 class="fw-bold mt-3 mb-2">Tecnología</h6>
+                                <p class="text-muted small mb-0">PHP, MySQL, Docker y CI/CD automatizado con GitHub Actions.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-final-section">
+        <div class="container-lg">
+            <div class="cta-content">
+                <h2 class="cta-title">¿LISTO PARA AUTOMATIZAR TU TALLER?</h2>
+                <p class="cta-description">Digitaliza y automatiza la gestión completa de tu taller de forma simple y efectiva.</p>
+
+                <div class="cta-buttons">
+                    <button id="btnEmpezar" class="btn btn-primary-custom btn-lg">Empezar ahora</button>
+                    <button id="btnContactarVentas" class="btn btn-secondary-custom btn-lg">Contactar a ventas</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contacto" class="feature-section feature-2">
+        <div class="container-lg">
+            <div class="section-header text-center">
+                <span class="section-badge">ESCRÍBENOS</span>
+                <h2 class="section-title">CONTACTO</h2>
+            </div>
+            <div class="row g-5 mt-2 align-items-start">
+                <div class="col-lg-4">
+                    <div class="d-flex flex-column gap-4">
+                        <div class="d-flex align-items-start gap-3">
+                            <div style="font-size:1.8rem; min-width:2.5rem;">📧</div>
+                            <div>
+                                <h6 class="fw-bold mb-1">Email</h6>
+                                <a href="mailto:autosyncohv@gmail.com" class="text-muted text-decoration-none">autosyncohv@gmail.com</a>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-start gap-3">
+                            <div style="font-size:1.8rem; min-width:2.5rem;">📍</div>
+                            <div>
+                                <h6 class="fw-bold mb-1">Ubicación</h6>
+                                <p class="text-muted mb-0">IES Enrique Tierno Galván<br>Madrid, España</p>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-start gap-3">
+                            <div style="font-size:1.8rem; min-width:2.5rem;">⏰</div>
+                            <div>
+                                <h6 class="fw-bold mb-1">Soporte</h6>
+                                <p class="text-muted mb-0">Lunes a Viernes<br>9:00 – 18:00</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-8">
+                    <form id="contactForm">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-uppercase text-muted">Nombre</label>
+                                <input type="text" id="contactNombre" class="form-control custom-input" placeholder="Tu nombre" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-uppercase text-muted">Email</label>
+                                <input type="email" id="contactEmail" class="form-control custom-input" placeholder="tu@email.com" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-bold text-uppercase text-muted">Asunto</label>
+                                <input type="text" id="contactAsunto" class="form-control custom-input" placeholder="¿En qué podemos ayudarte?" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-bold text-uppercase text-muted">Mensaje</label>
+                                <textarea id="contactMensaje" class="form-control custom-input" rows="5" placeholder="Cuéntanos más..." required style="resize:none;"></textarea>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" id="btnContactoSubmit" class="btn btn-primary-custom w-100 py-3 fw-bold">Enviar Mensaje</button>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="contactSuccess" class="d-none mt-3">
+                        <div class="alert alert-success border-0 rounded-4 py-3 px-4">
+                            <strong>¡Mensaje enviado!</strong> Te responderemos lo antes posible en <strong>autosyncohv@gmail.com</strong>.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="privacidad" class="py-5" style="background:var(--surface-container-lowest);">
+        <div class="container-lg" style="max-width:800px;">
+            <div class="section-header text-center mb-4">
+                <span class="section-badge">LEGAL</span>
+                <h2 class="section-title">POLÍTICA DE PRIVACIDAD</h2>
+            </div>
+            <div class="text-muted" style="line-height:1.8;">
+                <p><strong class="text-dark">Responsable del tratamiento:</strong> AutoSync (Proyecto TFG — IES Enrique Tierno Galván, Madrid).</p>
+                <p><strong class="text-dark">Datos que recogemos:</strong> nombre completo, dirección de correo electrónico y datos del vehículo necesarios para la gestión de reparaciones y citas.</p>
+                <p><strong class="text-dark">Finalidad:</strong> gestionar el registro de usuarios, la comunicación sobre el estado de reparaciones, la generación de presupuestos y la atención al cliente.</p>
+                <p><strong class="text-dark">Base legal:</strong> ejecución de un contrato de servicio y consentimiento expreso del usuario al registrarse en la plataforma.</p>
+                <p><strong class="text-dark">Conservación:</strong> los datos se conservan mientras la cuenta esté activa. Una vez eliminada, los datos se suprimen en un plazo máximo de 30 días, salvo obligación legal de conservación.</p>
+                <p><strong class="text-dark">Derechos:</strong> puedes ejercer tus derechos de acceso, rectificación, supresión, oposición y portabilidad escribiendo a <a href="mailto:autosyncohv@gmail.com">autosyncohv@gmail.com</a>.</p>
+                <p><strong class="text-dark">Seguridad:</strong> los datos se almacenan en servidores protegidos. Las contraseñas se guardan cifradas con bcrypt y nunca en texto plano.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="terminos" class="py-5" style="background:#f0f4f8;">
+        <div class="container-lg" style="max-width:800px;">
+            <div class="section-header text-center mb-4">
+                <span class="section-badge">LEGAL</span>
+                <h2 class="section-title">TÉRMINOS DE USO</h2>
+            </div>
+            <div class="text-muted" style="line-height:1.8;">
+                <p><strong class="text-dark">1. Aceptación:</strong> El uso de AutoSync implica la aceptación de estos términos. Si no estás de acuerdo, debes abstenerte de utilizar la plataforma.</p>
+                <p><strong class="text-dark">2. Uso permitido:</strong> AutoSync es una plataforma de gestión de talleres mecánicos. Queda prohibido su uso para fines ilícitos, fraudulentos o contrarios a estos términos.</p>
+                <p><strong class="text-dark">3. Cuentas:</strong> Eres responsable de mantener la confidencialidad de tus credenciales. AutoSync no se hace responsable de accesos no autorizados derivados de una gestión negligente de tu contraseña.</p>
+                <p><strong class="text-dark">4. Datos del vehículo:</strong> La información introducida en la plataforma es responsabilidad del usuario. AutoSync actúa como procesador de datos y no verifica la veracidad de la información introducida.</p>
+                <p><strong class="text-dark">5. Disponibilidad:</strong> AutoSync se esfuerza por mantener el servicio disponible 24/7, pero no garantiza la ausencia de interrupciones por mantenimiento o causas técnicas.</p>
+                <p><strong class="text-dark">6. Propiedad intelectual:</strong> El código, diseño y contenidos de AutoSync son propiedad de sus autores. Queda prohibida su reproducción total o parcial sin autorización expresa.</p>
+                <p><strong class="text-dark">7. Modificaciones:</strong> AutoSync se reserva el derecho de modificar estos términos. Los cambios se comunicarán por email con al menos 15 días de antelación.</p>
+                <p><strong class="text-dark">8. Contacto:</strong> Para cualquier consulta legal escríbenos a <a href="mailto:autosyncohv@gmail.com">autosyncohv@gmail.com</a>.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer-section">
+        <div class="container-lg">
+            <div class="footer-content">
+                <div class="footer-main d-flex align-items-center gap-3">
+                    <img src="img/logo.png" alt="AutoSync" style="height:32px; width:auto; opacity:.85;">
+                    <p class="footer-copyright mb-0">© 2026 AutoSync. Gestión de Precisión para Talleres Modernos.</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#privacidad" class="footer-link">Privacidad</a>
+                    <a href="#terminos" class="footer-link">Términos</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div class="modal fade custom-modal" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content modal-login-wrapper p-4 p-md-5">
+                
+                <div class="corner-bracket top-left"></div>
+                <div class="corner-bracket top-right"></div>
+                <div class="corner-bracket bottom-left"></div>
+                <div class="corner-bracket bottom-right"></div>
+                
+                <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close" style="z-index: 10;"></button>
+
+                <div class="modal-body p-0">
+                    <div class="text-center mb-4 pt-2">
+                        <h2 class="fw-bold mb-2 text-dark" style="letter-spacing: -1px; font-family: 'Space Grotesk', sans-serif;">INICIAR SESIÓN</h2>
+                        <p class="text-muted small fw-bold text-uppercase" style="letter-spacing: 2px;">Accede a tu cuenta</p>
+                    </div>
+
+                    <button id="btnGoogleLogin" class="btn btn-outline-dark w-100 py-2 mb-4 d-flex align-items-center justify-content-center gap-2 fw-bold" style="border-radius: 0;">
+                        <i class="fab fa-google"></i> Continuar con Google
+                    </button>
+
+                    <div class="d-flex align-items-center mb-4">
+                        <hr class="flex-grow-1 text-muted opacity-25">
+                        <span class="mx-3 text-muted small fw-bold text-uppercase">OR</span>
+                        <hr class="flex-grow-1 text-muted opacity-25">
+                    </div>
+
+                    <form action="dashboard.html" method="GET" id="loginForm">
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-uppercase d-block mb-1 text-muted">Correo Electrónico</label>
+                            <input type="email" id="loginEmail" class="form-control custom-input" placeholder="name@workshop.com" required>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between align-items-end mb-1">
+                                <label class="form-label small fw-bold text-uppercase mb-0 text-muted">Contraseña</label>
+                                <a href="reset-password.html" class="text-muted small text-decoration-none" style="font-size: 0.75rem;">¿Olvidaste la contraseña?</a>
+                            </div>
+                            <input type="password" class="form-control custom-input" placeholder="••••••••" required>
+                        </div>
+
+                        <div class="text-center mt-5">
+                            <button type="submit" class="btn text-dark fw-bold border-0 bg-transparent py-2 w-100 access-btn">
+                                Entrar a AutoSync
+                            </button>
+                        </div>
+                        <div class="text-center mt-3">
+                            <a href="#" id="empleadoLoginToggle" class="text-muted small text-decoration-none fw-bold"><i class="fas fa-lock me-1"></i>¿Eres empleado de AutoSync? Ingresa aquí</a>
+                        </div>
+                        <div class="text-center mt-4">
+                            <a href="#" class="text-primary small text-decoration-none fw-bold" data-bs-toggle="modal" data-bs-target="#registerModal" data-bs-dismiss="modal">¿No tienes cuenta? Regístrate aquí</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade custom-modal" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content modal-login-wrapper p-4 p-md-5">
+                
+                <div class="corner-bracket top-left"></div>
+                <div class="corner-bracket top-right"></div>
+                <div class="corner-bracket bottom-left"></div>
+                <div class="corner-bracket bottom-right"></div>
+                
+                <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close" style="z-index: 10;"></button>
+
+                <div class="modal-body p-0">
+                    <div class="text-center mb-4 pt-2">
+                        <h2 class="fw-bold mb-2 text-primary" style="letter-spacing: -1px; font-family: 'Space Grotesk', sans-serif;">CREAR CUENTA</h2>
+                        <p class="text-muted small fw-bold text-uppercase" style="letter-spacing: 2px;">Únete a AutoSync</p>
+                    </div>
+
+                    <form id="registerForm">
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-uppercase d-block mb-1 text-muted">Nombre Completo</label>
+                            <input type="text" id="regNombre" class="form-control custom-input" placeholder="Tu nombre" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-uppercase d-block mb-1 text-muted">Correo Electrónico</label>
+                            <input type="email" id="regEmail" class="form-control custom-input" placeholder="name@ejemplo.com" required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label small fw-bold text-uppercase d-block mb-1 text-muted">Contraseña</label>
+                            <input type="password" id="regPassword" class="form-control custom-input" placeholder="••••••••" required>
+                        </div>
+
+                        <div class="text-center mt-3">
+                            <a href="#" id="empleadoRegisterToggle" class="text-muted small text-decoration-none fw-bold">
+                                <i class="fas fa-lock me-1"></i>¿Eres empleado? Regístrate aquí
+                            </a>
+                        </div>
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-primary-custom fw-bold border-0 py-2 w-100 shadow-sm rounded-pill">Registrarse Ahora</button>
+                        </div>
+                        <div class="text-center mt-4">
+                            <a href="#" class="text-muted small text-decoration-none fw-bold" data-bs-toggle="modal" data-bs-target="#loginModal" data-bs-dismiss="modal"><i class="fas fa-arrow-left me-1"></i> Volver a Iniciar Sesión</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js" integrity="sha512-VK2zcvntEufaimc+efOYi622VN5ZacdnufnmX7zIhCPmjhKnOi9ZDMtg1/ug5l183f19gG1/cBstPO4D8N/Img==" crossorigin="anonymous"></script>
+
+    <!-- Google Identity Services -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+    <!-- Custom JavaScript -->
+    <script src="js/main.js"></script>
+    <script src="js/api-index.js?v=5"></script>
+    <!-- BotPress Cloud embed scripts go here (see comment above) -->
+    <script src="https://cdn.botpress.cloud/webchat/v3.6/inject.js"></script>
+    <script src="https://files.bpcontent.cloud/2026/05/24/16/20260524160914-UKIJUQ03.js" defer></script>
+    
+</body>
+</html>
